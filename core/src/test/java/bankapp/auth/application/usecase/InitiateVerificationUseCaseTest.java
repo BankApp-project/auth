@@ -21,11 +21,8 @@ public class InitiateVerificationUseCaseTest {
 
     //    Test Case 1: Successful Verification Initiation
     //    Given: A user is on the login page
-    //    When: A user provides their email and clicks 'continue'
+    //    When: A user provides their valid email address and clicks 'continue'
     //    Then: An "verification-otp-generated" event should be published
-    //    And: The event should contain the user's email
-    //    And: The event should contain a valid one-time password
-    //    And: The otp should contain 6 digit long code.
 
     @Test
     void should_publish_event_when_provided_valid_email() {
@@ -40,4 +37,10 @@ public class InitiateVerificationUseCaseTest {
         //then
        verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
     }
+
 }
+// next tests:
+//    And: The event should contain the user's email
+//    And: The event should contain a valid one-time password
+//    And: The otp should contain N digit long code.
+
