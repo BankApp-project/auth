@@ -1,19 +1,20 @@
-package bankapp.auth.domain.service;
+package bankapp.auth;
 
 import bankapp.auth.domain.model.Otp;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class OtpServiceTest {
+public class OtpGeneratorTest {
 
     private final static int OTP_LEN = 6;
-    private final OtpService otpService = new OtpService();
+    private final OtpGenerator otpGenerator = new OtpGenerator();
     //test generating new Otp()
     @Test
     void should_generate_and_return_new_Otp_with_given_length() {
         Otp otp = generateDefaultOtp();
-        assertEquals(OTP_LEN, otp.getValue().length());
+        Assertions.assertEquals(OTP_LEN, otp.getValue().length());
     }
 
     @Test
@@ -22,7 +23,7 @@ public class OtpServiceTest {
         Otp nextOtp = generateDefaultOtp();
 
         assertNotEquals(otp, nextOtp);
-        assertNotEquals(otp.getValue(), nextOtp.getValue());
+        Assertions.assertNotEquals(otp.getValue(), nextOtp.getValue());
     }
 
     @Test
@@ -30,16 +31,16 @@ public class OtpServiceTest {
         Otp otp = generateDefaultOtp();
         Otp nextOtp = generateDefaultOtp();
 
-        assertEquals(otp.getKey(), nextOtp.getKey());
+        Assertions.assertEquals(otp.getKey(), nextOtp.getKey());
     }
 
     @Test
     void should_generate_digit_only_otp() {
-        assertTrue(generateDefaultOtp().getValue().matches("\\d+"));
+        Assertions.assertTrue(generateDefaultOtp().getValue().matches("\\d+"));
     }
 
     private Otp generateDefaultOtp() {
         String validEmail = "valid@bankapp.online";
-        return otpService.generate(validEmail, OTP_LEN);
+        return otpGenerator.generate(validEmail, OTP_LEN);
     }
 }

@@ -1,10 +1,12 @@
-package bankapp.auth.domain.service;
+package bankapp.auth;
 
+//is it right? to have dependency on core domain in infra?
+import bankapp.auth.application.port.out.OtpGeneratorPort;
 import bankapp.auth.domain.model.Otp;
 
 import java.security.SecureRandom;
 
-public class OtpService {
+public class OtpGenerator implements OtpGeneratorPort {
 
     private final static SecureRandom random = new SecureRandom();
 
