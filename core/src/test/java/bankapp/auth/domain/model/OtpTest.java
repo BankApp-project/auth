@@ -2,7 +2,6 @@ package bankapp.auth.domain.model;
 
 import bankapp.auth.domain.model.exception.OtpFormatException;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.Null;
 
 import static org.junit.jupiter.api.Assertions.*;
 
