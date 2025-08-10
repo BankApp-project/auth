@@ -2,20 +2,47 @@ package bankapp.auth.application.usecase;
 
 import bankapp.auth.application.dto.commands.InitiateVerificationCommand;
 import bankapp.auth.application.dto.events.EmailVerificationOtpGeneratedEvent;
+import bankapp.auth.application.port.out.OtpGeneratorPort;
+import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.exception.InvalidEmailFormatException;
 import bankapp.auth.application.port.out.EventPublisher;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.security.SecureRandom;
+
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class InitiateVerificationUseCaseTest {
 
-    private static final EventPublisher eventPublisher = mock(EventPublisher.class);
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    private EventPublisher eventPublisher;
+
+    OtpGeneratorPort otpGenerator = new OtpGeneratorPort() {
+        @Override
+        public Otp generate(String email, int len) {
+            return new Otp(getOtpValue(len), email);
+        }
+
+        private String getOtpValue(int len) {
+            int min = (int) Math.pow(10, len -1);
+            int max = (int) Math.pow(10, len);
+
+            var otp = min + RANDOM.nextInt(max - min);
+            return String.valueOf(otp);
+        }
+    };
+
+    @BeforeEach
+    void setUp() {
+        eventPublisher = mock(EventPublisher.class);
+    }
 
     //    Test Case 1: Successful Verification Initiation
     //    Given: A user is on the login page
@@ -34,9 +61,9 @@ public class InitiateVerificationUseCaseTest {
 
         //when
         var command = new InitiateVerificationCommand(validEmail);
-        var useCase = new InitiateVerificationUseCase(eventPublisher);
-        useCase.handle(command);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
 
+        useCase.handle(command);
         //then
         verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
     }
@@ -57,19 +84,21 @@ public class InitiateVerificationUseCaseTest {
     })
     void should_throw_exception_when_provided_invalid_email(String invalidEmail) {
         var command = new InitiateVerificationCommand(invalidEmail);
-        var useCase = new InitiateVerificationUseCase(eventPublisher);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
 
         assertThrows(InvalidEmailFormatException.class, () -> useCase.handle(command));
     }
 
-    void should_generate_safe_otp() {
+    @Test
+    void should_generate_nonrepeatable_otp() {
         //given
         String validEmail = "test@bankapp.online";
 
         //when
         var command = new InitiateVerificationCommand(validEmail);
-        var useCase = new InitiateVerificationUseCase(eventPublisher);
-        useCase.handle(command);
+        var useCase1 = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
+        var useCase2 = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
+        assertNotEquals(useCase1.handle(command), useCase2.handle(command));
     }
 
 }
