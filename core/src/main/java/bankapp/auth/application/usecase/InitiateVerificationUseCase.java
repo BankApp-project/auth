@@ -7,7 +7,6 @@ import bankapp.auth.application.port.out.HashingPort;
 import bankapp.auth.application.port.out.OtpGeneratorPort;
 import bankapp.auth.application.port.out.OtpRepositoryPort;
 import bankapp.auth.domain.model.Otp;
-import bankapp.auth.domain.model.vo.EmailAddress;
 
 public class InitiateVerificationUseCase {
 
@@ -30,13 +29,16 @@ public class InitiateVerificationUseCase {
     }
 
     public Otp handle(InitiateVerificationCommand command) {
-        EmailAddress email = new EmailAddress(command.email());
-        //generateSecureOtpCommand ???
-        Otp otp = otpGenerator.generate(email.toString(),OTP_SIZE);
+        Otp otp = otpGenerator.generate(command.email().toString(),OTP_SIZE);
+
         var hashedValue = hasher.hashSecurely(otp.getValue());
-        Otp hashedOtp = new Otp(hashedValue, email.toString());
+
+        Otp hashedOtp = new Otp(hashedValue, command.email().toString());
+
         otpRepository.save(hashedOtp);
+
         eventPublisher.publish(new EmailVerificationOtpGeneratedEvent(otp));
+
         return otp;
     }
 }

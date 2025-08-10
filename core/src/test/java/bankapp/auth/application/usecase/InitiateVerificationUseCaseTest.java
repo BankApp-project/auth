@@ -6,12 +6,10 @@ import bankapp.auth.application.port.out.HashingPort;
 import bankapp.auth.application.port.out.OtpGeneratorPort;
 import bankapp.auth.application.port.out.OtpRepositoryPort;
 import bankapp.auth.domain.model.Otp;
-import bankapp.auth.domain.model.exception.InvalidEmailFormatException;
 import bankapp.auth.application.port.out.EventPublisher;
+import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,10 +23,10 @@ public class InitiateVerificationUseCaseTest {
     private OtpGeneratorPort otpGenerator;
     private OtpRepositoryPort otpRepository;
 
-    private final static String VALID_EMAIL = "test@bankapp.online";
+    private final static EmailAddress VALID_EMAIL = new EmailAddress("test@bankapp.online");
     private final static String DEFAULT_VALUE = "123456";
     private final static String DEFAULT_HASHED_VALUE = DEFAULT_VALUE + "-hashed";
-    private final static Otp DEFAULT_OTP = new Otp(DEFAULT_VALUE, VALID_EMAIL);
+    private final static Otp DEFAULT_OTP = new Otp(DEFAULT_VALUE, VALID_EMAIL.toString());
     private final static int DEFAULT_OTP_LEN = 6;
 
     @BeforeEach
@@ -69,22 +67,6 @@ public class InitiateVerificationUseCaseTest {
     Then: The command is rejected, and no event is published.
  */
 
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "test@.online",
-            "test.dd.online",
-            "testowy@email",
-            "testmail",
-            "test.mail",
-    })
-    void should_throw_exception_when_provided_invalid_email(String invalidEmail) {
-        //when
-        var command = new InitiateVerificationCommand(invalidEmail);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository);
-
-        //then
-        assertThrows(InvalidEmailFormatException.class, () -> useCase.handle(command));
-    }
 
     @Test
     void should_use_correct_otp_length() {
@@ -135,7 +117,7 @@ public class InitiateVerificationUseCaseTest {
         //then
         verify(otpRepository).save(argThat(otp ->
                 otp.getValue().equals(DEFAULT_HASHED_VALUE) &&
-                otp.getKey().equals(VALID_EMAIL)
+                otp.getKey().equals(VALID_EMAIL.toString())
         ));
     }
 }

@@ -20,6 +20,10 @@ public class EmailAddress implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * A practical regex for email syntax validation. It prevents common typos like leading, trailing,
+     * or consecutive dots and hyphens. Intended for user input validation, not strict RFC compliance.
+     */
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$"
     );
@@ -46,8 +50,6 @@ public class EmailAddress implements Serializable {
 
         // Additional validations could be added here:
         // - Check for disposable email domains
-        // - Validate domain has valid MX record
-        // - Check for common typo
     }
 
     @Override

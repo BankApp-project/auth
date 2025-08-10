@@ -1,4 +1,6 @@
 package bankapp.auth.application.dto.commands;
 
-public record InitiateVerificationCommand(String email) {
+import bankapp.auth.domain.model.vo.EmailAddress;
+
+public record InitiateVerificationCommand(EmailAddress email) {
 }
