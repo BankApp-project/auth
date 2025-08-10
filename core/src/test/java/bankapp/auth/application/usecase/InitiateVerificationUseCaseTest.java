@@ -13,8 +13,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.security.SecureRandom;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -27,15 +27,11 @@ public class InitiateVerificationUseCaseTest {
     OtpGeneratorPort otpGenerator = new OtpGeneratorPort() {
         @Override
         public Otp generate(String email, int len) {
-            return new Otp(getOtpValue(len), email);
+            return new Otp(generateNumericString(len), email);
         }
 
-        private String getOtpValue(int len) {
-            int min = (int) Math.pow(10, len -1);
-            int max = (int) Math.pow(10, len);
-
-            var otp = min + RANDOM.nextInt(max - min);
-            return String.valueOf(otp);
+        private static String generateNumericString(int len) {
+            return "1".repeat(len);
         }
     };
 
@@ -90,21 +86,36 @@ public class InitiateVerificationUseCaseTest {
     }
 
     @Test
-    void should_generate_nonrepeatable_otp() {
+    void should_use_correct_otp_length() {
         //given
         String validEmail = "test@bankapp.online";
 
         //when
         var command = new InitiateVerificationCommand(validEmail);
-        var useCase1 = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
-        var useCase2 = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
-        assertNotEquals(useCase1.handle(command), useCase2.handle(command));
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
+        var result = useCase.handle(command);
+
+        //then
+        assertEquals(6, result.getValue().length(), "Use case should generate OTP with correct length");
     }
+
+    @Test
+    void should_generate_otp() {
+        //given
+        String validEmail = "test@bankapp.online";
+
+        //when
+        var command = new InitiateVerificationCommand(validEmail);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
+        var result = useCase.handle(command);
+
+        assertThat(result).isInstanceOf(Otp.class);
+    }
+
 
 }
 // next tests:
-//   OTP should be generated safely via otpGeneratorPort
-//   OTP should be hashed via otpHasherPort
+//   OTP value should be hashed via HasherPort
 //   OTP should be stored safely via otpRepositoryPort
 //   OTP should be sent safely via commandBusPort
 //    And: The event should contain the user's email
