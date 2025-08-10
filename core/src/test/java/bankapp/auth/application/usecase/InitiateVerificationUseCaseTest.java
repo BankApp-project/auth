@@ -2,6 +2,7 @@ package bankapp.auth.application.usecase;
 
 import bankapp.auth.application.dto.commands.InitiateVerificationCommand;
 import bankapp.auth.application.dto.events.EmailVerificationOtpGeneratedEvent;
+import bankapp.auth.application.port.out.HashingPort;
 import bankapp.auth.application.port.out.OtpGeneratorPort;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.exception.InvalidEmailFormatException;
@@ -11,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.security.SecureRandom;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,24 +19,23 @@ import static org.mockito.Mockito.*;
 
 public class InitiateVerificationUseCaseTest {
 
-    private static final SecureRandom RANDOM = new SecureRandom();
-
     private EventPublisher eventPublisher;
+    private HashingPort hasher;
+    private OtpGeneratorPort otpGenerator;
 
-    OtpGeneratorPort otpGenerator = new OtpGeneratorPort() {
-        @Override
-        public Otp generate(String email, int len) {
-            return new Otp(generateNumericString(len), email);
-        }
-
-        private static String generateNumericString(int len) {
-            return "1".repeat(len);
-        }
-    };
+    private final static String VALID_EMAIL = "test@bankapp.online";
+    private final static String DEFAULT_VALUE = "123456";
+    private final static Otp DEFAULT_OTP = new Otp(DEFAULT_VALUE, VALID_EMAIL);
+    private final static int DEFAULT_OTP_LEN = 6;
 
     @BeforeEach
     void setUp() {
         eventPublisher = mock(EventPublisher.class);
+        hasher = mock(HashingPort.class);
+        otpGenerator = mock(OtpGeneratorPort.class);
+
+        when(otpGenerator.generate(anyString(), anyInt())).thenReturn(DEFAULT_OTP);
+        when(hasher.hashSecurely(anyString())).thenReturn(DEFAULT_VALUE + "-hashed");
     }
 
     //    Test Case 1: Successful Verification Initiation
@@ -52,12 +50,9 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_publish_event_when_provided_valid_email() {
-        //given
-        String validEmail = "test@bankapp.online";
-
         //when
-        var command = new InitiateVerificationCommand(validEmail);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher);
 
         useCase.handle(command);
         //then
@@ -79,40 +74,50 @@ public class InitiateVerificationUseCaseTest {
             "test.mail",
     })
     void should_throw_exception_when_provided_invalid_email(String invalidEmail) {
+        //when
         var command = new InitiateVerificationCommand(invalidEmail);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher);
 
+        //then
         assertThrows(InvalidEmailFormatException.class, () -> useCase.handle(command));
     }
 
     @Test
     void should_use_correct_otp_length() {
-        //given
-        String validEmail = "test@bankapp.online";
 
         //when
-        var command = new InitiateVerificationCommand(validEmail);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher);
         var result = useCase.handle(command);
 
         //then
-        assertEquals(6, result.getValue().length(), "Use case should generate OTP with correct length");
+        assertEquals(DEFAULT_OTP_LEN, result.getValue().length(), "Use case should generate OTP with correct length");
     }
 
     @Test
     void should_generate_otp() {
-        //given
-        String validEmail = "test@bankapp.online";
 
         //when
-        var command = new InitiateVerificationCommand(validEmail);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator);
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher);
         var result = useCase.handle(command);
 
+        //then
         assertThat(result).isInstanceOf(Otp.class);
     }
 
+    @Test
+    void should_hash_otp() {
 
+        //when
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher);
+
+        useCase.handle(command);
+
+        //then
+        verify(hasher).hashSecurely(DEFAULT_VALUE);
+    }
 }
 // next tests:
 //   OTP value should be hashed via HasherPort
