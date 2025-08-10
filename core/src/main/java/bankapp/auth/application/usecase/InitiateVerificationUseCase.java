@@ -14,8 +14,11 @@ public class InitiateVerificationUseCase {
         this.eventPublisher = eventPublisher;
     }
 
+    private static final int OTP_SIZE = 6;
+
     public void handle(InitiateVerificationCommand command) {
         EmailAddress email = new EmailAddress(command.email());
+        //generateSecureOtpCommand ???
         var otp = new Otp("123456", email.toString());
 
         eventPublisher.publish(new EmailVerificationOtpGeneratedEvent(otp));

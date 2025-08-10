@@ -17,7 +17,6 @@ public class InitiateVerificationUseCaseTest {
 
     private static final EventPublisher eventPublisher = mock(EventPublisher.class);
 
-    private static final int OTP_SIZE = 6;
     //    Test Case 1: Successful Verification Initiation
     //    Given: A user is on the login page
     //    When: A user provides email to `provide email` form and clicks `continue` button
@@ -34,12 +33,12 @@ public class InitiateVerificationUseCaseTest {
         String validEmail = "test@bankapp.online";
 
         //when
-        var command = new InitiateVerificationCommand(validEmail, OTP_SIZE);
+        var command = new InitiateVerificationCommand(validEmail);
         var useCase = new InitiateVerificationUseCase(eventPublisher);
         useCase.handle(command);
 
         //then
-       verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
+        verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
     }
 /*
     Test Case 2: Invalid Email Format
@@ -57,15 +56,30 @@ public class InitiateVerificationUseCaseTest {
             "test.mail",
     })
     void should_throw_exception_when_provided_invalid_email(String invalidEmail) {
-        var command = new InitiateVerificationCommand(invalidEmail,OTP_SIZE);
+        var command = new InitiateVerificationCommand(invalidEmail);
         var useCase = new InitiateVerificationUseCase(eventPublisher);
 
-        assertThrows(InvalidEmailFormatException.class,() -> useCase.handle(command));
+        assertThrows(InvalidEmailFormatException.class, () -> useCase.handle(command));
     }
+
+    void should_generate_safe_otp() {
+        //given
+        String validEmail = "test@bankapp.online";
+
+        //when
+        var command = new InitiateVerificationCommand(validEmail);
+        var useCase = new InitiateVerificationUseCase(eventPublisher);
+        useCase.handle(command);
+    }
+
 }
 // next tests:
-// OTP_LEN is outside range (4-8) should throw exception
+//   OTP should be generated safely via otpGeneratorPort
+//   OTP should be hashed via otpHasherPort
+//   OTP should be stored safely via otpRepositoryPort
+//   OTP should be sent safely via commandBusPort
 //    And: The event should contain the user's email
 //    And: The event should contain a valid one-time password
 //    And: The otp should contain N digit long code.
 
+// OTP_LEN is outside range (4-8) should throw exception
