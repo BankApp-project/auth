@@ -135,7 +135,6 @@ public class InitiateVerificationUseCaseTest {
                 otpValue.equals(DEFAULT_VALUE)));
     }
 
-
 // BDD Test Cases: Should not send email to user when any of the steps fail
 
     @Test
@@ -346,7 +345,7 @@ public class InitiateVerificationUseCaseTest {
         verify(eventPublisher).publish(argThat(event -> {
             if (event instanceof EmailVerificationOtpGeneratedEvent otpEvent) {
                 return VALID_EMAIL.toString().equals(otpEvent.getEmail()) &&
-                        DEFAULT_VALUE.equals(otpEvent.getOtpValue());
+                        DEFAULT_HASHED_VALUE.equals(otpEvent.getOtpValue());
             }
             return false;
         }));

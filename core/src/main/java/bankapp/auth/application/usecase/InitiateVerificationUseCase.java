@@ -48,7 +48,7 @@ public class InitiateVerificationUseCase {
 
             commandBus.sendOtpToUserEmail(otp.getKey(), otp.getValue());
 
-            eventPublisher.publish(new EmailVerificationOtpGeneratedEvent(otp));
+            eventPublisher.publish(new EmailVerificationOtpGeneratedEvent(hashedOtp));
 
             return otp;
         } catch (Exception e) {
