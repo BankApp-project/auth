@@ -200,9 +200,102 @@ public class InitiateVerificationUseCaseTest {
         verify(commandBus, never()).sendOtpToUserEmail(anyString(), anyString());
     }
 
+
+// BDD Test Cases: Should throw InitiateVerificationException when any of the steps fail
+
+    @Test
+    void should_throw_InitiateVerificationException_when_otp_generation_fails() {
+        // Given: OTP generation will fail
+        when(otpGenerator.generate(anyString(), anyInt())).thenThrow(new RuntimeException("OTP generation failed"));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When & Then: Should throw InitiateVerificationException
+        assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
+    }
+
+    @Test
+    void should_throw_InitiateVerificationException_when_hashing_fails() {
+        // Given: Hashing will fail
+        when(hasher.hashSecurely(anyString())).thenThrow(new RuntimeException("Hashing failed"));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When & Then: Should throw InitiateVerificationException
+        assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
+    }
+
+    @Test
+    void should_throw_InitiateVerificationException_when_otp_saving_fails() {
+        // Given: OTP saving will fail
+        doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When & Then: Should throw InitiateVerificationException
+        assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
+    }
+
+    @Test
+    void should_throw_InitiateVerificationException_when_event_publishing_fails() {
+        // Given: Event publishing will fail
+        doThrow(new RuntimeException("Event publishing failed")).when(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When & Then: Should throw InitiateVerificationException
+        assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
+    }
+
+    @Test
+    void should_throw_InitiateVerificationException_when_command_bus_fails() {
+        // Given: Command bus will fail
+        doThrow(new RuntimeException("Command bus failed")).when(commandBus).sendOtpToUserEmail(anyString(), anyString());
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When & Then: Should throw InitiateVerificationException
+        assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
+    }
+
+    // Scenario: Multiple step failures should still throw InitiateVerificationException
+    @Test
+    void should_throw_InitiateVerificationException_when_multiple_steps_fail() {
+        // Given: Multiple operations will fail
+        when(otpGenerator.generate(anyString(), anyInt())).thenThrow(new RuntimeException("OTP generation failed"));
+        when(hasher.hashSecurely(anyString())).thenThrow(new RuntimeException("Hashing failed"));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When & Then: Should throw InitiateVerificationException
+        assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
+    }
+
+    // BDD Test Case: Should include meaningful error message in exception
+    @Test
+    void should_throw_InitiateVerificationException_with_meaningful_message_when_otp_generation_fails() {
+        // Given: OTP generation will fail with specific error
+        when(otpGenerator.generate(anyString(), anyInt())).thenThrow(new RuntimeException("Database connection timeout"));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When & Then: Should throw InitiateVerificationException with meaningful message
+        InitiateVerificationException exception = assertThrows(InitiateVerificationException.class,
+                () -> useCase.handle(command));
+
+        assertThat(exception.getMessage()).contains("Failed to initiate verification");
+    }
+
 }
 // next tests:
-//    And: should throw InitiateVerificationException when any of the step fails
+//    And: should only publish event when all previous steps completed successfully.
 //    And: should not publish event when any of the steps fail
 //    And: The otp should contain N digit long code.
 

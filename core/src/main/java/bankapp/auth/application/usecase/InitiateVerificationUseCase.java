@@ -37,18 +37,22 @@ public class InitiateVerificationUseCase {
 
     public Otp handle(InitiateVerificationCommand command) {
 
-        Otp otp = otpGenerator.generate(command.email().toString(), otpSize);
+        try {
+            Otp otp = otpGenerator.generate(command.email().toString(), otpSize);
 
-        var hashedValue = hasher.hashSecurely(otp.getValue());
+            var hashedValue = hasher.hashSecurely(otp.getValue());
 
-        Otp hashedOtp = new Otp(hashedValue, command.email().toString());
+            Otp hashedOtp = new Otp(hashedValue, command.email().toString());
 
-        otpRepository.save(hashedOtp);
+            otpRepository.save(hashedOtp);
 
-        commandBus.sendOtpToUserEmail(otp.getKey(), otp.getValue());
+            commandBus.sendOtpToUserEmail(otp.getKey(), otp.getValue());
 
-        eventPublisher.publish(new EmailVerificationOtpGeneratedEvent(otp));
+            eventPublisher.publish(new EmailVerificationOtpGeneratedEvent(otp));
 
-        return otp;
+            return otp;
+        } catch (Exception e) {
+            throw new InitiateVerificationException("Failed to initiate verification: " + e.getMessage(), e);
+        }
     }
 }
