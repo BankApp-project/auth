@@ -54,7 +54,7 @@ public class InitiateVerificationUseCaseTest {
     void should_publish_event_when_provided_valid_email() {
         //when
         var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository, DEFAULT_OTP_LEN);
 
         useCase.handle(command);
         //then
@@ -73,7 +73,7 @@ public class InitiateVerificationUseCaseTest {
 
         //when
         var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository, DEFAULT_OTP_LEN);
         var result = useCase.handle(command);
 
         //then
@@ -85,7 +85,7 @@ public class InitiateVerificationUseCaseTest {
 
         //when
         var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository, DEFAULT_OTP_LEN);
         var result = useCase.handle(command);
 
         //then
@@ -97,7 +97,7 @@ public class InitiateVerificationUseCaseTest {
 
         //when
         var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository, DEFAULT_OTP_LEN);
 
         useCase.handle(command);
 
@@ -110,7 +110,7 @@ public class InitiateVerificationUseCaseTest {
 
         //when
         var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpRepository, DEFAULT_OTP_LEN);
 
         useCase.handle(command);
 
@@ -122,10 +122,7 @@ public class InitiateVerificationUseCaseTest {
     }
 }
 // next tests:
-//   OTP should be stored safely via otpRepositoryPort
-//   OTP should be sent safely via commandBusPort
-//    And: The event should contain the user's email
-//    And: The event should contain a valid one-time password
+//   OTP should be sent via commandBusPort
 //    And: The otp should contain N digit long code.
 
 // OTP_LEN is outside range (4-8) should throw exception

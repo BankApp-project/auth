@@ -7,10 +7,12 @@ import bankapp.auth.application.port.out.HashingPort;
 import bankapp.auth.application.port.out.OtpGeneratorPort;
 import bankapp.auth.application.port.out.OtpRepositoryPort;
 import bankapp.auth.domain.model.Otp;
+import bankapp.auth.domain.model.annotations.NotNull;
+import bankapp.auth.domain.model.annotations.Nullable;
 
 public class InitiateVerificationUseCase {
 
-    private static final int OTP_SIZE = 6;
+    private final int otpSize;
 
     private final EventPublisher eventPublisher;
     private final OtpGeneratorPort otpGenerator;
@@ -18,18 +20,24 @@ public class InitiateVerificationUseCase {
     private final OtpRepositoryPort otpRepository;
 
 
-    public InitiateVerificationUseCase(EventPublisher eventPublisher,
-    OtpGeneratorPort otpGenerator,
-    HashingPort hasher,
-    OtpRepositoryPort otpRepository) {
+    public InitiateVerificationUseCase(
+            @NotNull EventPublisher eventPublisher,
+            @NotNull OtpGeneratorPort otpGenerator,
+            @NotNull HashingPort hasher,
+            @NotNull OtpRepositoryPort otpRepository,
+            @Nullable Integer otpSize
+            ) {
         this.eventPublisher = eventPublisher;
         this.otpGenerator = otpGenerator;
         this.hasher = hasher;
         this.otpRepository = otpRepository;
+
+       this.otpSize = otpSize == null ? 6 : otpSize;
     }
 
     public Otp handle(InitiateVerificationCommand command) {
-        Otp otp = otpGenerator.generate(command.email().toString(),OTP_SIZE);
+
+        Otp otp = otpGenerator.generate(command.email().toString(), otpSize);
 
         var hashedValue = hasher.hashSecurely(otp.getValue());
 
