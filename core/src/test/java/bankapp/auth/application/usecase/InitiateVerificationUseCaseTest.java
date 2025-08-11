@@ -133,8 +133,79 @@ public class InitiateVerificationUseCaseTest {
                 email.equals(VALID_EMAIL.getValue())), argThat(otpValue ->
                 otpValue.equals(DEFAULT_VALUE)));
     }
+
+
+// BDD Test Cases: Should not send email to user when any of the steps fail
+
+    @Test
+    void should_not_send_email_when_otp_generation_fails() {
+        // Given: OTP generation will fail
+        when(otpGenerator.generate(anyString(), anyInt())).thenThrow(new RuntimeException("OTP generation failed"));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed and fails
+        assertThrows(RuntimeException.class, () -> useCase.handle(command));
+
+        // Then: No email should be sent to the user
+        verify(commandBus, never()).sendOtpToUserEmail(anyString(), anyString());
+    }
+
+    @Test
+    void should_not_send_email_when_hashing_fails() {
+        // Given: Hashing will fail
+        when(hasher.hashSecurely(anyString())).thenThrow(new RuntimeException("Hashing failed"));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed and fails
+        assertThrows(RuntimeException.class, () -> useCase.handle(command));
+
+        // Then: No email should be sent to the user
+        verify(commandBus, never()).sendOtpToUserEmail(anyString(), anyString());
+    }
+
+    @Test
+    void should_not_send_email_when_otp_saving_fails() {
+        // Given: OTP saving will fail
+        doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed and fails
+        assertThrows(RuntimeException.class, () -> useCase.handle(command));
+
+        // Then: No email should be sent to the user
+        verify(commandBus, never()).sendOtpToUserEmail(anyString(), anyString());
+    }
+
+
+    // Scenario: Multiple step failures
+    @Test
+    void should_not_send_email_when_multiple_steps_fail() {
+        // Given: Multiple operations will fail
+        when(otpGenerator.generate(anyString(), anyInt())).thenThrow(new RuntimeException("OTP generation failed"));
+        when(hasher.hashSecurely(anyString())).thenThrow(new RuntimeException("Hashing failed"));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed and fails
+        assertThrows(RuntimeException.class, () -> useCase.handle(command));
+
+        // Then: No email should be sent to the user
+        verify(commandBus, never()).sendOtpToUserEmail(anyString(), anyString());
+    }
+
 }
 // next tests:
-//    And: should not send email to user when any of the steps fail
+//    And: should throw InitiateVerificationException when any of the step fails
 //    And: should not publish event when any of the steps fail
 //    And: The otp should contain N digit long code.
+
+/*
+notes: email will be sent to user even if publishing event `EmailVerificationOtpGeneratedEvent` fails.
+ */
