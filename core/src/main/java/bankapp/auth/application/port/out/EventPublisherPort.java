@@ -1,5 +1,5 @@
 package bankapp.auth.application.port.out;
 
-public interface EventPublisher {
+public interface EventPublisherPort {
     void publish(Object object);
 }

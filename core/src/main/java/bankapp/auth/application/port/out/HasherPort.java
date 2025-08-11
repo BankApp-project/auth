@@ -1,5 +1,5 @@
 package bankapp.auth.application.port.out;
 
-public interface HashingPort {
+public interface HasherPort {
     String hashSecurely(String value);
 }

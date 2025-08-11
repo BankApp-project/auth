@@ -1,11 +1,11 @@
 package bankapp.auth.application.usecase;
 
-import bankapp.auth.application.dto.commands.InitiateVerificationCommand;
+import bankapp.auth.application.port.in.commands.InitiateVerificationCommand;
 import bankapp.auth.application.dto.events.EmailVerificationOtpGeneratedEvent;
-import bankapp.auth.application.port.out.EventPublisher;
-import bankapp.auth.application.port.out.HashingPort;
+import bankapp.auth.application.port.out.EventPublisherPort;
+import bankapp.auth.application.port.out.HasherPort;
 import bankapp.auth.application.port.out.OtpGeneratorPort;
-import bankapp.auth.application.port.out.OtpRepositoryPort;
+import bankapp.auth.application.port.out.OtpSaverPort;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.annotations.Nullable;
@@ -14,17 +14,17 @@ public class InitiateVerificationUseCase {
 
     private final int otpSize;
 
-    private final EventPublisher eventPublisher;
+    private final EventPublisherPort eventPublisher;
     private final OtpGeneratorPort otpGenerator;
-    private final HashingPort hasher;
-    private final OtpRepositoryPort otpRepository;
+    private final HasherPort hasher;
+    private final OtpSaverPort otpRepository;
 
 
     public InitiateVerificationUseCase(
-            @NotNull EventPublisher eventPublisher,
+            @NotNull EventPublisherPort eventPublisher,
             @NotNull OtpGeneratorPort otpGenerator,
-            @NotNull HashingPort hasher,
-            @NotNull OtpRepositoryPort otpRepository,
+            @NotNull HasherPort hasher,
+            @NotNull OtpSaverPort otpRepository,
             @Nullable Integer otpSize
             ) {
         this.eventPublisher = eventPublisher;
