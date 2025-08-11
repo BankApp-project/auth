@@ -14,6 +14,7 @@ import bankapp.auth.domain.model.annotations.Nullable;
 public class InitiateVerificationUseCase {
 
     private final int otpSize;
+    private final int ttl;
 
     private final EventPublisherPort eventPublisher;
     private final OtpGeneratorPort otpGenerator;
@@ -28,8 +29,8 @@ public class InitiateVerificationUseCase {
             @NotNull HasherPort hasher,
             @NotNull OtpSaverPort otpRepository,
             @NotNull CommandBus commandBus,
-            @Nullable Integer otpSize
-            ) {
+            @Nullable Integer otpSize,
+            @Nullable Integer defaultTtl) {
         this.eventPublisher = eventPublisher;
         this.otpGenerator = otpGenerator;
         this.hasher = hasher;
@@ -37,6 +38,7 @@ public class InitiateVerificationUseCase {
         this.commandBus = commandBus;
 
        this.otpSize = otpSize == null ? 6 : otpSize;
+       this.ttl = defaultTtl == null ? 10 : defaultTtl;
     }
 
     public Otp handle(InitiateVerificationCommand command) {
@@ -48,7 +50,7 @@ public class InitiateVerificationUseCase {
 
             Otp hashedOtp = new Otp(hashedValue, command.email().toString());
 
-            otpRepository.save(hashedOtp);
+            otpRepository.save(hashedOtp, ttl);
 
             commandBus.sendOtpToUserEmail(otp.getKey(), otp.getValue());
 
