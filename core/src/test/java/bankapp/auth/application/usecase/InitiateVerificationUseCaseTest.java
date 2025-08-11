@@ -2,11 +2,8 @@ package bankapp.auth.application.usecase;
 
 import bankapp.auth.application.port.in.commands.InitiateVerificationCommand;
 import bankapp.auth.application.dto.events.EmailVerificationOtpGeneratedEvent;
-import bankapp.auth.application.port.out.HasherPort;
-import bankapp.auth.application.port.out.OtpGeneratorPort;
-import bankapp.auth.application.port.out.OtpSaverPort;
+import bankapp.auth.application.port.out.*;
 import bankapp.auth.domain.model.Otp;
-import bankapp.auth.application.port.out.EventPublisherPort;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +19,7 @@ public class InitiateVerificationUseCaseTest {
     private HasherPort hasher;
     private OtpGeneratorPort otpGenerator;
     private OtpSaverPort otpSaver;
+    private CommandBus commandBus;
 
     private final static EmailAddress VALID_EMAIL = new EmailAddress("test@bankapp.online");
     private final static String DEFAULT_VALUE = "123456";
@@ -35,6 +33,7 @@ public class InitiateVerificationUseCaseTest {
         hasher = mock(HasherPort.class);
         otpGenerator = mock(OtpGeneratorPort.class);
         otpSaver = mock(OtpSaverPort.class);
+        commandBus = mock(CommandBus.class);
 
         when(otpGenerator.generate(anyString(), anyInt())).thenReturn(DEFAULT_OTP);
         when(hasher.hashSecurely(anyString())).thenReturn(DEFAULT_HASHED_VALUE);
@@ -54,7 +53,7 @@ public class InitiateVerificationUseCaseTest {
     void should_publish_event_when_provided_valid_email() {
         //when
         var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, DEFAULT_OTP_LEN);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
 
         useCase.handle(command);
         //then
@@ -73,7 +72,7 @@ public class InitiateVerificationUseCaseTest {
 
         //when
         var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, DEFAULT_OTP_LEN);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
         var result = useCase.handle(command);
 
         //then
@@ -85,7 +84,7 @@ public class InitiateVerificationUseCaseTest {
 
         //when
         var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, DEFAULT_OTP_LEN);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
         var result = useCase.handle(command);
 
         //then
@@ -97,7 +96,7 @@ public class InitiateVerificationUseCaseTest {
 
         //when
         var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, DEFAULT_OTP_LEN);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
 
         useCase.handle(command);
 
@@ -110,7 +109,7 @@ public class InitiateVerificationUseCaseTest {
 
         //when
         var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, DEFAULT_OTP_LEN);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
 
         useCase.handle(command);
 
@@ -120,9 +119,22 @@ public class InitiateVerificationUseCaseTest {
                 otp.getKey().equals(VALID_EMAIL.toString())
         ));
     }
+
+    @Test
+    void should_send_otp_via_commandBusPort() {
+
+        //when
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        useCase.handle(command);
+
+        verify(commandBus).sendOtpToUserEmail(argThat(email ->
+                email.equals(VALID_EMAIL.getValue())), argThat(otpValue ->
+                otpValue.equals(DEFAULT_VALUE)));
+    }
 }
 // next tests:
-//   OTP should be sent via commandBusPort
+//    And: should not send email to user when any of the steps fail
+//    And: should not publish event when any of the steps fail
 //    And: The otp should contain N digit long code.
-
-// OTP_LEN is outside range (4-8) should throw exception
