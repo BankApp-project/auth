@@ -7,6 +7,7 @@ import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -293,12 +294,161 @@ public class InitiateVerificationUseCaseTest {
         assertThat(exception.getMessage()).contains("Failed to initiate verification");
     }
 
+
+// BDD Test Cases: Should only publish event when all previous steps completed successfully
+
+    @Test
+    void should_only_publish_event_after_otp_generation_completes_successfully() {
+        // Given: All operations will succeed
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed
+        useCase.handle(command);
+
+        // Then: Event should be published only after OTP generation
+        InOrder inOrder = inOrder(otpGenerator, eventPublisher);
+        inOrder.verify(otpGenerator).generate(VALID_EMAIL.toString(), DEFAULT_OTP_LEN);
+        inOrder.verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
+    }
+
+    @Test
+    void should_only_publish_event_after_otp_hashing_completes_successfully() {
+        // Given: All operations will succeed
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed
+        useCase.handle(command);
+
+        // Then: Event should be published only after OTP hashing
+        InOrder inOrder = inOrder(hasher, eventPublisher);
+        inOrder.verify(hasher).hashSecurely(DEFAULT_VALUE);
+        inOrder.verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
+    }
+
+    @Test
+    void should_only_publish_event_after_otp_saving_completes_successfully() {
+        // Given: All operations will succeed
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed
+        useCase.handle(command);
+
+        // Then: Event should be published only after OTP saving
+        InOrder inOrder = inOrder(otpSaver, eventPublisher);
+        inOrder.verify(otpSaver).save(any(Otp.class));
+        inOrder.verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
+    }
+
+    @Test
+    void should_follow_correct_execution_order_before_publishing_event() {
+        // Given: All operations will succeed
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed
+        useCase.handle(command);
+
+        // Then: All prerequisite steps should complete before event publishing
+        InOrder inOrder = inOrder(otpGenerator, hasher, otpSaver, eventPublisher);
+        inOrder.verify(otpGenerator).generate(VALID_EMAIL.toString(), DEFAULT_OTP_LEN);
+        inOrder.verify(hasher).hashSecurely(DEFAULT_VALUE);
+        inOrder.verify(otpSaver).save(any(Otp.class));
+        inOrder.verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
+    }
+
+// BDD Test Cases: Should not publish event when any of the previous steps fail
+
+    @Test
+    void should_not_publish_event_when_otp_generation_fails() {
+        // Given: OTP generation will fail
+        when(otpGenerator.generate(anyString(), anyInt())).thenThrow(new RuntimeException("OTP generation failed"));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed and fails
+        assertThrows(Exception.class, () -> useCase.handle(command));
+
+        // Then: No event should be published
+        verify(eventPublisher, never()).publish(any(EmailVerificationOtpGeneratedEvent.class));
+    }
+
+    @Test
+    void should_not_publish_event_when_hashing_fails() {
+        // Given: Hashing will fail
+        when(hasher.hashSecurely(anyString())).thenThrow(new RuntimeException("Hashing failed"));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed and fails
+        assertThrows(Exception.class, () -> useCase.handle(command));
+
+        // Then: No event should be published
+        verify(eventPublisher, never()).publish(any(EmailVerificationOtpGeneratedEvent.class));
+    }
+
+    @Test
+    void should_not_publish_event_when_otp_saving_fails() {
+        // Given: OTP saving will fail
+        doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed and fails
+        assertThrows(Exception.class, () -> useCase.handle(command));
+
+        // Then: No event should be published
+        verify(eventPublisher, never()).publish(any(EmailVerificationOtpGeneratedEvent.class));
+    }
+
+    @Test
+    void should_not_publish_event_when_any_prerequisite_step_fails() {
+        // Scenario: Testing with OTP generation failure as representative case
+        // Given: A prerequisite step will fail
+        when(otpGenerator.generate(anyString(), anyInt())).thenThrow(new RuntimeException("Step failed"));
+
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed and fails
+        assertThrows(Exception.class, () -> useCase.handle(command));
+
+        // Then: Event publishing should never be attempted
+        verify(eventPublisher, never()).publish(any(EmailVerificationOtpGeneratedEvent.class));
+
+        // And: Subsequent steps should not be executed
+        verify(hasher, never()).hashSecurely(anyString());
+        verify(otpSaver, never()).save(any(Otp.class));
+    }
+
+    // Scenario: Verify event contains correct data when all steps succeed
+    @Test
+    void should_publish_event_with_correct_data_when_all_steps_succeed() {
+        // Given: All operations will succeed
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, commandBus, DEFAULT_OTP_LEN);
+
+        // When: The use case is executed successfully
+        useCase.handle(command);
+
+        // Then: Event should be published with correct email and OTP data
+        verify(eventPublisher).publish(argThat(event -> {
+            if (event instanceof EmailVerificationOtpGeneratedEvent otpEvent) {
+                return VALID_EMAIL.toString().equals(otpEvent.getEmail()) &&
+                        DEFAULT_VALUE.equals(otpEvent.getOtpValue());
+            }
+            return false;
+        }));
+    }
+
 }
 // next tests:
-//    And: should only publish event when all previous steps completed successfully.
-//    And: should not publish event when any of the steps fail
-//    And: The otp should contain N digit long code.
-
+// - ???
 /*
 notes: email will be sent to user even if publishing event `EmailVerificationOtpGeneratedEvent` fails.
  */
