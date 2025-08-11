@@ -1,4 +1,4 @@
-package bankapp.auth.application.port.out;
+package bankapp.auth.application.initiate_verification.port.out;
 
 import bankapp.auth.domain.model.Otp;
 

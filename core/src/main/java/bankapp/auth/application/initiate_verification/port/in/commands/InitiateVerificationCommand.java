@@ -1,4 +1,4 @@
-package bankapp.auth.application.port.in.commands;
+package bankapp.auth.application.initiate_verification.port.in.commands;
 
 import bankapp.auth.domain.model.vo.EmailAddress;
 

@@ -1,7 +1,7 @@
 package bankapp.auth;
 
 //is it right? to have dependency on core domain in infra?
-import bankapp.auth.application.port.out.OtpGeneratorPort;
+import bankapp.auth.application.initiate_verification.port.out.OtpGeneratorPort;
 import bankapp.auth.domain.model.Otp;
 
 import java.security.SecureRandom;

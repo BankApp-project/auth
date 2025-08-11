@@ -1,4 +1,4 @@
-package bankapp.auth.application.port.out;
+package bankapp.auth.application.shared.port.out;
 
 public interface CommandBus {
     void sendOtpToUserEmail(String userEmail, String otpValue);

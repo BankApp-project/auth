@@ -1,5 +1,6 @@
-package bankapp.auth.application.dto.events;
+package bankapp.auth.application.initiate_verification.port.out.events;
 
+import bankapp.auth.application.shared.EventTemplate;
 import bankapp.auth.domain.model.Otp;
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package bankapp.auth.application.port.out;
+package bankapp.auth.application.shared.port.out;
 
 public interface EventPublisherPort {
     void publish(Object object);

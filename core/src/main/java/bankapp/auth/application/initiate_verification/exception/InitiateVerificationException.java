@@ -1,4 +1,4 @@
-package bankapp.auth.application.usecase;
+package bankapp.auth.application.initiate_verification.exception;
 
 public class InitiateVerificationException extends RuntimeException{
 

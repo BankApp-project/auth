@@ -1,10 +1,14 @@
-package bankapp.auth.application.usecase;
+package bankapp.auth.application.initiate_verification;
 
-import bankapp.auth.application.port.in.commands.InitiateVerificationCommand;
-import bankapp.auth.application.dto.events.EmailVerificationOtpGeneratedEvent;
-import bankapp.auth.application.port.out.*;
+import bankapp.auth.application.initiate_verification.port.in.commands.InitiateVerificationCommand;
+import bankapp.auth.application.initiate_verification.port.out.HasherPort;
+import bankapp.auth.application.initiate_verification.port.out.OtpGeneratorPort;
+import bankapp.auth.application.initiate_verification.port.out.OtpSaverPort;
+import bankapp.auth.application.initiate_verification.port.out.events.EmailVerificationOtpGeneratedEvent;
+import bankapp.auth.application.shared.port.out.*;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;
+import bankapp.auth.application.initiate_verification.exception.InitiateVerificationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -445,6 +449,7 @@ public class InitiateVerificationUseCaseTest {
     }
 }
 // next tests:
+// - should make sure that persisted otp is deleted within N minutes.
 // - ???
 /*
 notes: email will be sent to user even if publishing event `EmailVerificationOtpGeneratedEvent` fails.
