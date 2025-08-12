@@ -2,16 +2,21 @@ package bankapp.auth.domain.model;
 
 import bankapp.auth.domain.model.exception.OtpFormatException;
 import lombok.Getter;
+import lombok.Setter;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
 @Getter
+//extend this class to make persistable variant
 public class Otp {
 
     private final UUID id = UUID.randomUUID();
     private final String key;
     private final String value;
+    @Setter
+    private Instant validationTime;
 
     public Otp( String value, String key) {
         this.value = Objects.requireNonNull(value, "OTP value cannot be null");

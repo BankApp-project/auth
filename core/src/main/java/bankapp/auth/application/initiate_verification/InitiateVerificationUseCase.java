@@ -11,6 +11,8 @@ import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.annotations.Nullable;
 
+import java.time.Instant;
+
 public class InitiateVerificationUseCase {
 
     private final int otpSize;
@@ -52,7 +54,9 @@ public class InitiateVerificationUseCase {
 
             Otp hashedOtp = new Otp(hashedValue, command.email().toString());
 
-            otpRepository.save(hashedOtp, ttl);
+            hashedOtp.setValidationTime(Instant.now().plusSeconds(ttl));
+
+            otpRepository.save(hashedOtp);
 
             notificator.sendOtpToUserEmail(otp.getKey(), otp.getValue());
 

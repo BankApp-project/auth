@@ -122,7 +122,7 @@ public class InitiateVerificationUseCaseTest {
         verify(otpSaver).save(argThat(otp ->
                 otp.getValue().equals(DEFAULT_HASHED_VALUE) &&
                 otp.getKey().equals(VALID_EMAIL.toString())
-        ), eq(DEFAULT_TTL));
+        ));
     }
 
     @Test
@@ -174,7 +174,7 @@ public class InitiateVerificationUseCaseTest {
     @Test
     void should_not_send_email_when_otp_saving_fails() {
         // Given: OTP saving will fail
-        doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class), eq(DEFAULT_TTL));
+        doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class));
 
         var command = new InitiateVerificationCommand(VALID_EMAIL);
         var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
@@ -247,7 +247,7 @@ public class InitiateVerificationUseCaseTest {
 
         // Then: Event should be published only after OTP saving
         InOrder inOrder = inOrder(otpSaver, eventPublisher);
-        inOrder.verify(otpSaver).save(any(Otp.class), eq(DEFAULT_TTL));
+        inOrder.verify(otpSaver).save(any(Otp.class));
         inOrder.verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
     }
 
@@ -264,7 +264,7 @@ public class InitiateVerificationUseCaseTest {
         InOrder inOrder = inOrder(otpGenerator, hasher, otpSaver, eventPublisher);
         inOrder.verify(otpGenerator).generate(DEFAULT_OTP_LEN);
         inOrder.verify(hasher).hashSecurely(DEFAULT_VALUE);
-        inOrder.verify(otpSaver).save(any(Otp.class), eq(DEFAULT_TTL));
+        inOrder.verify(otpSaver).save(any(Otp.class));
         inOrder.verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
     }
 
@@ -303,7 +303,7 @@ public class InitiateVerificationUseCaseTest {
     @Test
     void should_not_publish_event_when_otp_saving_fails() {
         // Given: OTP saving will fail
-        doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class), eq(DEFAULT_TTL));
+        doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class));
 
         var command = new InitiateVerificationCommand(VALID_EMAIL);
         var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
@@ -332,7 +332,7 @@ public class InitiateVerificationUseCaseTest {
 
         // And: Subsequent steps should not be executed
         verify(hasher, never()).hashSecurely(anyString());
-        verify(otpSaver, never()).save(any(Otp.class), eq(DEFAULT_TTL));
+        verify(otpSaver, never()).save(any(Otp.class));
     }
 
     // Scenario: Verify event contains correct data when all steps succeed
@@ -365,7 +365,7 @@ public class InitiateVerificationUseCaseTest {
         // When: The use case is executed successfully
         useCase.handle(command);
 
-        verify(otpSaver).save(any(Otp.class), eq(DEFAULT_TTL));
+        verify(otpSaver).save(any(Otp.class));
     }
 
 // BDD Test Cases: Should throw InitiateVerificationException when any of the steps fail
@@ -397,7 +397,7 @@ public class InitiateVerificationUseCaseTest {
     @Test
     void should_throw_InitiateVerificationException_when_otp_saving_fails() {
         // Given: OTP saving will fail
-        doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class), eq(DEFAULT_TTL));
+        doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class));
 
         var command = new InitiateVerificationCommand(VALID_EMAIL);
         var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
@@ -460,7 +460,18 @@ public class InitiateVerificationUseCaseTest {
         assertThat(exception.getMessage()).contains("Failed to initiate verification");
     }
 
+    @Test
+    void should_set_ttl_to_persisted_otp() {
+        // Given: All operations will succeed
+        var command = new InitiateVerificationCommand(VALID_EMAIL);
+        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
 
+        // When: The use case is executed successfully
+        useCase.handle(command);
+
+        verify(otpSaver).save(
+                argThat(otp -> otp.getValidationTime() != null));
+    }
 }
 // next tests:
 // - should make sure that persisted otp is deleted within N minutes.

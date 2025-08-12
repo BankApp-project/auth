@@ -10,8 +10,8 @@ public class StubOtpRepository implements OtpRepository {
     private final Map<String, Otp> inMemoryOtpRepo = new ConcurrentHashMap<>();
 
     @Override
-    public void save(Otp otp, int ttlSeconds) {
-        String key = otp.getKey(); // Assuming Otp has a getKey() method
+    public void save(Otp otp) {
+        String key = otp.getKey();
         inMemoryOtpRepo.put(key, otp);
     }
 

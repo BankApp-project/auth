@@ -35,7 +35,7 @@ public class VerifyEmailOtpUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        otpRepository.save(VALID_OTP,10);
+        otpRepository.save(VALID_OTP);
     }
 
     @Test
@@ -73,5 +73,15 @@ public class VerifyEmailOtpUseCaseTest {
 
         assertThat(good).isFalse();
     }
+
+//    @Test
+//    void should_return_false_when_valid_otp_but_expired() throws InterruptedException {
+//        otpRepository.save(VALID_OTP);
+//        Thread.sleep(5);
+//
+//        var good = useCase.handle(command);
+//
+//        assertThat(good).isFalse();
+//    }
 }
 // should return false when otp expired
