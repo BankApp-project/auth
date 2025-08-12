@@ -64,5 +64,14 @@ public class VerifyEmailOtpUseCaseTest {
         assertThat(good).isFalse();
     }
 
+    @Test
+    void should_return_false_when_otp_value_doesnt_match_with_valid_key() {
+        var otpWithInvalidValue = new Otp("9999", VALID_OTP_KEY);
+        var testCommand = new VerifyEmailOtpCommand(otpWithInvalidValue);
+
+        var good = useCase.handle(testCommand);
+
+        assertThat(good).isFalse();
+    }
 }
 // should return false when otp expired
