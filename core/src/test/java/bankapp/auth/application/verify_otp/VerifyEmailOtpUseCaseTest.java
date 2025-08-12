@@ -25,6 +25,7 @@ public class VerifyEmailOtpUseCaseTest {
 
 
     private final static String VALID_OTP_KEY = "test@bankapp.online";
+    public static final String INVALID_OTP_KEY = "nonexisting@bankapp.online";
     public static final String VALID_OTP_VALUE = "123456";
     public static final Otp VALID_OTP = new Otp(VALID_OTP_VALUE, VALID_OTP_KEY);
 
@@ -55,12 +56,13 @@ public class VerifyEmailOtpUseCaseTest {
 
     @Test
     void should_return_false_when_provide_non_existing_email() {
-        var invalidOtp = new Otp("321", "nonexisting@bankapp.online");
-        var invalidCommand = new VerifyEmailOtpCommand(invalidOtp);
+        var otpWithInvalidkey = new Otp(VALID_OTP_VALUE, INVALID_OTP_KEY);
+        var invalidCommand = new VerifyEmailOtpCommand(otpWithInvalidkey);
 
         var good = useCase.handle(invalidCommand);
 
         assertThat(good).isFalse();
     }
+
 }
 // should return false when otp expired
