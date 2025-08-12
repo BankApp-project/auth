@@ -32,6 +32,9 @@ public class InitiateVerificationUseCaseTest {
     private final static int DEFAULT_OTP_LEN = 6;
     private final static int DEFAULT_TTL = 10;
 
+    private InitiateVerificationCommand command;
+    private InitiateVerificationUseCase useCase;
+
     @BeforeEach
     void setUp() {
         eventPublisher = mock(EventPublisherPort.class);
@@ -42,6 +45,11 @@ public class InitiateVerificationUseCaseTest {
 
         when(otpGenerator.generate(anyInt())).thenReturn(DEFAULT_VALUE);
         when(hasher.hashSecurely(anyString())).thenReturn(DEFAULT_HASHED_VALUE);
+
+        // Given: All operations will succeed
+        command = new InitiateVerificationCommand(VALID_EMAIL);
+        useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
+
     }
 
     //    Test Case 1: Successful Verification Initiation
@@ -56,10 +64,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_publish_event_when_provided_valid_email() {
-        //when
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         useCase.handle(command);
         //then
         verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
@@ -74,10 +78,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_use_correct_otp_length() {
-
-        //when
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
         var result = useCase.handle(command);
 
         //then
@@ -86,10 +86,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_generate_otp() {
-
-        //when
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
         var result = useCase.handle(command);
 
         //then
@@ -98,11 +94,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_hash_otp() {
-
-        //when
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         useCase.handle(command);
 
         //then
@@ -111,11 +102,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_store_hashed_otp_in_repository() {
-
-        //when
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         useCase.handle(command);
 
         //then
@@ -127,11 +113,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_send_otp_via_commandBusPort() {
-
-        //when
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         useCase.handle(command);
 
         verify(notificationPort).sendOtpToUserEmail(argThat(email ->
@@ -146,9 +127,6 @@ public class InitiateVerificationUseCaseTest {
         // Given: OTP generation will fail
         when(otpGenerator.generate(anyInt())).thenThrow(new RuntimeException("OTP generation failed"));
 
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed and fails
         assertThrows(RuntimeException.class, () -> useCase.handle(command));
 
@@ -161,9 +139,6 @@ public class InitiateVerificationUseCaseTest {
         // Given: Hashing will fail
         when(hasher.hashSecurely(anyString())).thenThrow(new RuntimeException("Hashing failed"));
 
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed and fails
         assertThrows(RuntimeException.class, () -> useCase.handle(command));
 
@@ -175,9 +150,6 @@ public class InitiateVerificationUseCaseTest {
     void should_not_send_email_when_otp_saving_fails() {
         // Given: OTP saving will fail
         doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class));
-
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
 
         // When: The use case is executed and fails
         assertThrows(RuntimeException.class, () -> useCase.handle(command));
@@ -194,9 +166,6 @@ public class InitiateVerificationUseCaseTest {
         when(otpGenerator.generate(anyInt())).thenThrow(new RuntimeException("OTP generation failed"));
         when(hasher.hashSecurely(anyString())).thenThrow(new RuntimeException("Hashing failed"));
 
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed and fails
         assertThrows(RuntimeException.class, () -> useCase.handle(command));
 
@@ -208,10 +177,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_only_publish_event_after_otp_generation_completes_successfully() {
-        // Given: All operations will succeed
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed
         useCase.handle(command);
 
@@ -223,10 +188,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_only_publish_event_after_otp_hashing_completes_successfully() {
-        // Given: All operations will succeed
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed
         useCase.handle(command);
 
@@ -238,10 +199,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_only_publish_event_after_otp_saving_completes_successfully() {
-        // Given: All operations will succeed
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed
         useCase.handle(command);
 
@@ -253,10 +210,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_follow_correct_execution_order_before_publishing_event() {
-        // Given: All operations will succeed
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed
         useCase.handle(command);
 
@@ -275,9 +228,6 @@ public class InitiateVerificationUseCaseTest {
         // Given: OTP generation will fail
         when(otpGenerator.generate(anyInt())).thenThrow(new RuntimeException("OTP generation failed"));
 
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed and fails
         assertThrows(Exception.class, () -> useCase.handle(command));
 
@@ -289,9 +239,6 @@ public class InitiateVerificationUseCaseTest {
     void should_not_publish_event_when_hashing_fails() {
         // Given: Hashing will fail
         when(hasher.hashSecurely(anyString())).thenThrow(new RuntimeException("Hashing failed"));
-
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
 
         // When: The use case is executed and fails
         assertThrows(Exception.class, () -> useCase.handle(command));
@@ -305,9 +252,6 @@ public class InitiateVerificationUseCaseTest {
         // Given: OTP saving will fail
         doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class));
 
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed and fails
         assertThrows(Exception.class, () -> useCase.handle(command));
 
@@ -320,9 +264,6 @@ public class InitiateVerificationUseCaseTest {
         // Scenario: Testing with OTP generation failure as representative case
         // Given: A prerequisite step will fail
         when(otpGenerator.generate(anyInt())).thenThrow(new RuntimeException("Step failed"));
-
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
 
         // When: The use case is executed and fails
         assertThrows(Exception.class, () -> useCase.handle(command));
@@ -338,10 +279,6 @@ public class InitiateVerificationUseCaseTest {
     // Scenario: Verify event contains correct data when all steps succeed
     @Test
     void should_publish_event_with_correct_data_when_all_steps_succeed() {
-        // Given: All operations will succeed
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed successfully
         useCase.handle(command);
 
@@ -357,11 +294,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_pass_ttl_with_persistance_request() {
-
-        // Given: All operations will succeed
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed successfully
         useCase.handle(command);
 
@@ -375,9 +307,6 @@ public class InitiateVerificationUseCaseTest {
         // Given: OTP generation will fail
         when(otpGenerator.generate(anyInt())).thenThrow(new RuntimeException("OTP generation failed"));
 
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When & Then: Should throw InitiateVerificationException
         assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
     }
@@ -386,9 +315,6 @@ public class InitiateVerificationUseCaseTest {
     void should_throw_InitiateVerificationException_when_hashing_fails() {
         // Given: Hashing will fail
         when(hasher.hashSecurely(anyString())).thenThrow(new RuntimeException("Hashing failed"));
-
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
 
         // When & Then: Should throw InitiateVerificationException
         assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
@@ -399,9 +325,6 @@ public class InitiateVerificationUseCaseTest {
         // Given: OTP saving will fail
         doThrow(new RuntimeException("Database save failed")).when(otpSaver).save(any(Otp.class));
 
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When & Then: Should throw InitiateVerificationException
         assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
     }
@@ -411,9 +334,6 @@ public class InitiateVerificationUseCaseTest {
         // Given: Event publishing will fail
         doThrow(new RuntimeException("Event publishing failed")).when(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
 
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When & Then: Should throw InitiateVerificationException
         assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
     }
@@ -422,9 +342,6 @@ public class InitiateVerificationUseCaseTest {
     void should_throw_InitiateVerificationException_when_command_bus_fails() {
         // Given: Command bus will fail
         doThrow(new RuntimeException("Command bus failed")).when(notificationPort).sendOtpToUserEmail(anyString(), anyString());
-
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
 
         // When & Then: Should throw InitiateVerificationException
         assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
@@ -437,9 +354,6 @@ public class InitiateVerificationUseCaseTest {
         when(otpGenerator.generate(anyInt())).thenThrow(new RuntimeException("OTP generation failed"));
         when(hasher.hashSecurely(anyString())).thenThrow(new RuntimeException("Hashing failed"));
 
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When & Then: Should throw InitiateVerificationException
         assertThrows(InitiateVerificationException.class, () -> useCase.handle(command));
     }
@@ -450,9 +364,6 @@ public class InitiateVerificationUseCaseTest {
         // Given: OTP generation will fail with specific error
         when(otpGenerator.generate(anyInt())).thenThrow(new RuntimeException("Database connection timeout"));
 
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When & Then: Should throw InitiateVerificationException with meaningful message
         InitiateVerificationException exception = assertThrows(InitiateVerificationException.class,
                 () -> useCase.handle(command));
@@ -462,10 +373,6 @@ public class InitiateVerificationUseCaseTest {
 
     @Test
     void should_set_ttl_to_persisted_otp() {
-        // Given: All operations will succeed
-        var command = new InitiateVerificationCommand(VALID_EMAIL);
-        var useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
-
         // When: The use case is executed successfully
         useCase.handle(command);
 
