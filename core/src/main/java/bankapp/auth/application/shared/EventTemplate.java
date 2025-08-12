@@ -1,4 +1,4 @@
-package bankapp.auth.application.dto.events;
+package bankapp.auth.application.shared;
 
 import lombok.Getter;
 
@@ -11,7 +11,7 @@ public abstract class EventTemplate {
     private final Instant timestamp;
     private final int version;
 
-    EventTemplate() {
+    public EventTemplate() {
         this.eventId = UUID.randomUUID();
         this.timestamp = Instant.now();
         this.version = 1;
