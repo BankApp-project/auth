@@ -12,7 +12,8 @@ public class VerifyEmailOtpUseCase {
     }
 
     public boolean handle(VerifyEmailOtpCommand command) {
-        var otp = otpRepository.load(command.otp().getKey());
-        return otp != null && (otp.getValue().equals(command.otp().getValue()) && otp.getKey().equals(command.otp().getKey()));
+        var otp = command.otp();
+        var persistedOtp = otpRepository.load(command.otp().getKey());
+        return otp.equals(persistedOtp);
     }
 }
