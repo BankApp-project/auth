@@ -4,7 +4,7 @@ import bankapp.auth.application.initiate_verification.exception.InitiateVerifica
 import bankapp.auth.application.initiate_verification.port.in.commands.InitiateVerificationCommand;
 import bankapp.auth.application.initiate_verification.port.out.HashingPort;
 import bankapp.auth.application.initiate_verification.port.out.OtpGenerationPort;
-import bankapp.auth.application.initiate_verification.port.out.OtpSavingPort;
+import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.initiate_verification.port.out.events.EmailVerificationOtpGeneratedEvent;
 import bankapp.auth.application.shared.port.out.*;
 import bankapp.auth.domain.model.Otp;
@@ -19,7 +19,7 @@ public class InitiateVerificationUseCase {
     private final EventPublisherPort eventPublisher;
     private final OtpGenerationPort otpGenerator;
     private final HashingPort hasher;
-    private final OtpSavingPort otpRepository;
+    private final OtpRepository otpRepository;
     private final NotificationPort notificator;
 
 
@@ -27,7 +27,7 @@ public class InitiateVerificationUseCase {
             @NotNull EventPublisherPort eventPublisher,
             @NotNull OtpGenerationPort otpGenerator,
             @NotNull HashingPort hasher,
-            @NotNull OtpSavingPort otpRepository,
+            @NotNull OtpRepository otpRepository,
             @NotNull NotificationPort notificator,
             @Nullable Integer otpSize,
             @Nullable Integer defaultTtl) {

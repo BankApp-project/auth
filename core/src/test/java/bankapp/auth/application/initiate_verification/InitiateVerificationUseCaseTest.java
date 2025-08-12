@@ -3,7 +3,7 @@ package bankapp.auth.application.initiate_verification;
 import bankapp.auth.application.initiate_verification.port.in.commands.InitiateVerificationCommand;
 import bankapp.auth.application.initiate_verification.port.out.HashingPort;
 import bankapp.auth.application.initiate_verification.port.out.OtpGenerationPort;
-import bankapp.auth.application.initiate_verification.port.out.OtpSavingPort;
+import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.initiate_verification.port.out.events.EmailVerificationOtpGeneratedEvent;
 import bankapp.auth.application.shared.port.out.*;
 import bankapp.auth.domain.model.Otp;
@@ -23,7 +23,7 @@ public class InitiateVerificationUseCaseTest {
     private EventPublisherPort eventPublisher;
     private HashingPort hasher;
     private OtpGenerationPort otpGenerator;
-    private OtpSavingPort otpSaver;
+    private OtpRepository otpSaver;
     private NotificationPort notificationPort;
 
     private final static EmailAddress VALID_EMAIL = new EmailAddress("test@bankapp.online");
@@ -37,7 +37,7 @@ public class InitiateVerificationUseCaseTest {
         eventPublisher = mock(EventPublisherPort.class);
         hasher = mock(HashingPort.class);
         otpGenerator = mock(OtpGenerationPort.class);
-        otpSaver = mock(OtpSavingPort.class);
+        otpSaver = mock(OtpRepository.class);
         notificationPort = mock(NotificationPort.class);
 
         when(otpGenerator.generate(anyInt())).thenReturn(DEFAULT_VALUE);
