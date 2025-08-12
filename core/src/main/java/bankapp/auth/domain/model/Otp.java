@@ -9,13 +9,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Getter
-//extend this class to make persistable variant
 public class Otp {
 
     private final UUID id = UUID.randomUUID();
     private final String key;
     private final String value;
-    @Setter
     private Instant validationTime;
 
     public Otp( String value, String key) {
@@ -49,5 +47,9 @@ public class Otp {
     public String toString() {
         // Avoid logging the actual OTP value and keys in production for security.
         return "OTP[value=******, key=" + (key != null ? key.substring(0, Math.min(3, key.length())) + "..." : "null") + "]";
+    }
+
+    public void setExpirationTime(int seconds) {
+        this.validationTime = Instant.now().plusSeconds(seconds);
     }
 }

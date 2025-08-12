@@ -1,6 +1,7 @@
 package bankapp.auth.domain.model;
 
 import bankapp.auth.domain.model.exception.OtpFormatException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +10,7 @@ class OtpTest {
 
     private static final String DEFAULT_VALUE = "123456";
     private static final String DEFAULT_KEY = "test@bankapp.online";
-    private static final Otp DEFAULT_OTP = new Otp(DEFAULT_VALUE, DEFAULT_KEY);
+    private static Otp DEFAULT_OTP;
 
 
     /**
@@ -19,6 +20,10 @@ class OtpTest {
      */
 
 
+    @BeforeEach
+    void setup() {
+       DEFAULT_OTP = new Otp(DEFAULT_VALUE, DEFAULT_KEY);
+    }
 
     @Test
     void should_generate_unique_id_for_each_otp_instance() {
@@ -101,5 +106,16 @@ class OtpTest {
         Otp otp2 = new Otp("9999", DEFAULT_KEY);
 
         assertNotEquals(DEFAULT_OTP, otp2);
+    }
+
+    @Test
+    void should_be_able_to_set_expiration_time_in_minutes() {
+        DEFAULT_OTP.setExpirationTime(5);
+
+        assertNotNull(DEFAULT_OTP.getValidationTime());
+    }
+
+    @Test
+    void should_return_true_if_not_expired() {
     }
 }

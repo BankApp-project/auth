@@ -54,7 +54,7 @@ public class InitiateVerificationUseCase {
 
             Otp hashedOtp = new Otp(hashedValue, command.email().toString());
 
-            hashedOtp.setValidationTime(Instant.now().plusSeconds(ttl));
+            hashedOtp.setExpirationTime(getTtlInSeconds());
 
             otpRepository.save(hashedOtp);
 
@@ -66,5 +66,9 @@ public class InitiateVerificationUseCase {
         } catch (Exception e) {
             throw new InitiateVerificationException("Failed to initiate verification: " + e.getMessage(), e);
         }
+    }
+
+    private int getTtlInSeconds() {
+        return ttl * 60;
     }
 }
