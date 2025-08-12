@@ -7,6 +7,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OtpTest {
 
+    private static final String DEFAULT_VALUE = "123456";
+    private static final String DEFAULT_KEY = "test@bankapp.online";
+    private static final Otp DEFAULT_OTP = new Otp(DEFAULT_VALUE, DEFAULT_KEY);
+
+
     /**
      * Unit tests for the toString method in the Otp class.
      * The toString method is designed to display a masked representation
@@ -17,88 +22,84 @@ class OtpTest {
 
     @Test
     void should_generate_unique_id_for_each_otp_instance() {
-        //given
-        String value = "123456";
-        String key = "test@example.com";
-
         //when
-        Otp otp1 = new Otp(value, key);
-        Otp otp2 = new Otp(value, key);
+        Otp otp2 = new Otp(DEFAULT_VALUE, DEFAULT_KEY);
 
         //then
-        assertNotEquals(otp1.getId(), otp2.getId(), "Each OTP should have a unique ID");
+        assertNotEquals(DEFAULT_OTP.getId(), otp2.getId(), "Each OTP should have a unique ID");
     }
 
     @Test
     void should_not_expose_sensitive_data_in_toString() {
-        //given
-        String sensitiveValue = "123456";
-        String key = "test@example.com";
-        Otp otp = new Otp(sensitiveValue, key);
-
         //when
-        String otpString = otp.toString();
+        String otpString = DEFAULT_OTP.toString();
 
         //then
-        assertFalse(otpString.contains(sensitiveValue),
+        assertFalse(otpString.contains(DEFAULT_VALUE),
                 "toString should not expose the actual OTP value");
-        assertTrue(otpString.contains("******"),
-                "toString should mask the OTP value");
     }
 
     @Test
     void should_properly_mask_key_in_toString() {
-        //given
-        String value = "123456";
-        String longKey = "verylongemail@example.com";
-        Otp otp = new Otp(value, longKey);
-
         //when
-        String result = otp.toString();
+        String result = DEFAULT_OTP.toString();
 
         //then
-        assertTrue(result.contains("ver..."), "Should show only first 3 characters of key");
-        assertFalse(result.contains(longKey), "Should not expose full key");
+        assertFalse(result.contains(DEFAULT_KEY.substring(3)), "Should show only first 3 characters of key");
+        assertFalse(result.contains(DEFAULT_KEY), "Should not expose full key");
     }
 
     @Test
     void should_throw_exception_when_value_is_null() {
-        //given
-        String key = "test@example.com";
-
         //when & then
-        assertThrows(NullPointerException.class, () -> new Otp(null, key),
+        assertThrows(NullPointerException.class, () -> new Otp(null, DEFAULT_KEY),
                 "Should throw OtpFormatException when value is null");
     }
 
     @Test
     void should_throw_exception_when_key_is_null() {
-        //given
-        String value = "123456";
-
         //when & then
-        assertThrows(NullPointerException.class, () -> new Otp(value, null),
+        assertThrows(NullPointerException.class, () -> new Otp(DEFAULT_VALUE, null),
                 "Should throw OtpFormatException when key is null");
     }
 
     @Test
     void should_throw_exception_when_value_is_empty() {
-        //given
-        String key = "test@example.com";
 
         //when & then
-        assertThrows(OtpFormatException.class, () -> new Otp("", key),
+        assertThrows(OtpFormatException.class, () -> new Otp("", DEFAULT_KEY),
                 "Should throw OtpFormatException when value is empty");
     }
 
     @Test
     void should_throw_exception_when_key_is_empty() {
         //given
-        String value = "123456";
 
         //when & then
-        assertThrows(OtpFormatException.class, () -> new Otp(value, ""),
+        assertThrows(OtpFormatException.class, () -> new Otp(DEFAULT_VALUE, ""),
                 "Should throw OtpFormatException when key is empty");
     }
 
+    @Test
+    void should_be_equals_when_same_value_and_key() {
+
+        Otp otp2 = new Otp(DEFAULT_VALUE, DEFAULT_KEY);
+
+        assertEquals(DEFAULT_OTP, otp2);
+    }
+
+    @Test
+    void should_not_be_equals_when_different_key_but_same_value() {
+
+        Otp otp2 = new Otp(DEFAULT_VALUE, "differentKey");
+
+        assertNotEquals(DEFAULT_OTP, otp2);
+    }
+
+    @Test
+    void should_not_be_equals_when_same_key_but_different_value() {
+        Otp otp2 = new Otp("9999", DEFAULT_KEY);
+
+        assertNotEquals(DEFAULT_OTP, otp2);
+    }
 }

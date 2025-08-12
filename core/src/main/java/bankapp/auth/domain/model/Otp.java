@@ -1,14 +1,12 @@
 package bankapp.auth.domain.model;
 
 import bankapp.auth.domain.model.exception.OtpFormatException;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Objects;
 import java.util.UUID;
 
 @Getter
-@EqualsAndHashCode
 public class Otp {
 
     private final UUID id = UUID.randomUUID();
@@ -26,6 +24,20 @@ public class Otp {
         if (key.trim().isEmpty()) {
             throw new OtpFormatException("OTP key cannot be empty");
         }
+    }
+
+    @Override
+    public final boolean equals(Object object) {
+        if (!(object instanceof Otp otp)) return false;
+
+        return key.equals(otp.key) && value.equals(otp.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = key.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
     }
 
     @Override
