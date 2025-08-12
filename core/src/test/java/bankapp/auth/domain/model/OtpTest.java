@@ -112,10 +112,20 @@ class OtpTest {
     void should_be_able_to_set_expiration_time_in_minutes() {
         DEFAULT_OTP.setExpirationTime(5);
 
-        assertNotNull(DEFAULT_OTP.getValidationTime());
+        assertNotNull(DEFAULT_OTP.getExpirationTime());
     }
 
     @Test
     void should_return_true_if_not_expired() {
+        DEFAULT_OTP.setExpirationTime(5);
+
+        assertTrue(DEFAULT_OTP.isValid());
+    }
+
+    @Test
+    void should_return_false_if_expired() throws InterruptedException {
+        DEFAULT_OTP.setExpirationTime(1);
+        Thread.sleep(1001);
+        assertFalse(DEFAULT_OTP.isValid());
     }
 }

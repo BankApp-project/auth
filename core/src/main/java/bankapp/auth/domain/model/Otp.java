@@ -2,7 +2,6 @@ package bankapp.auth.domain.model;
 
 import bankapp.auth.domain.model.exception.OtpFormatException;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -14,7 +13,7 @@ public class Otp {
     private final UUID id = UUID.randomUUID();
     private final String key;
     private final String value;
-    private Instant validationTime;
+    private Instant expirationTime;
 
     public Otp( String value, String key) {
         this.value = Objects.requireNonNull(value, "OTP value cannot be null");
@@ -50,6 +49,10 @@ public class Otp {
     }
 
     public void setExpirationTime(int seconds) {
-        this.validationTime = Instant.now().plusSeconds(seconds);
+        this.expirationTime = Instant.now().plusSeconds(seconds);
+    }
+
+    public boolean isValid() {
+        return Instant.now().isBefore(this.getExpirationTime());
     }
 }

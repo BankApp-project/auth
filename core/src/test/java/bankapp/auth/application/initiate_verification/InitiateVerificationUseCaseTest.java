@@ -377,7 +377,7 @@ public class InitiateVerificationUseCaseTest {
         useCase.handle(command);
 
         verify(otpSaver).save(
-                argThat(otp -> otp.getValidationTime() != null));
+                argThat(otp -> otp.getExpirationTime() != null));
     }
 }
 // next tests:
