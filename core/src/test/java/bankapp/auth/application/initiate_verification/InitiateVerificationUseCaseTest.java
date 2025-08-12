@@ -1,20 +1,24 @@
 package bankapp.auth.application.initiate_verification;
 
+import bankapp.auth.application.initiate_verification.exception.InitiateVerificationException;
 import bankapp.auth.application.initiate_verification.port.in.commands.InitiateVerificationCommand;
 import bankapp.auth.application.initiate_verification.port.out.HashingPort;
 import bankapp.auth.application.initiate_verification.port.out.OtpGenerationPort;
-import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.initiate_verification.port.out.events.EmailVerificationOtpGeneratedEvent;
-import bankapp.auth.application.shared.port.out.*;
+import bankapp.auth.application.shared.port.out.EventPublisherPort;
+import bankapp.auth.application.shared.port.out.NotificationPort;
+import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.application.initiate_verification.exception.InitiateVerificationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import java.time.Instant;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -107,7 +111,7 @@ public class InitiateVerificationUseCaseTest {
         //then
         verify(otpSaver).save(argThat(otp ->
                 otp.getValue().equals(DEFAULT_HASHED_VALUE) &&
-                otp.getKey().equals(VALID_EMAIL.toString())
+                        otp.getKey().equals(VALID_EMAIL.toString())
         ));
     }
 
@@ -379,9 +383,22 @@ public class InitiateVerificationUseCaseTest {
         verify(otpSaver).save(
                 argThat(otp -> otp.getExpirationTime() != null));
     }
+
+    @Test
+    void should_set_ttl_to_persisted_otp_correctly() {
+        // When: The use case is executed successfully
+        useCase.handle(command);
+
+        Instant justBefore = Instant.now().minusSeconds((DEFAULT_TTL * 60 - 1));
+        Instant justAfter = Instant.now().plusSeconds((DEFAULT_TTL * 60 + 1));
+
+        verify(otpSaver).save(argThat(otp ->
+                otp.getExpirationTime().isAfter(justBefore) &&
+                        otp.getExpirationTime().isBefore(justAfter)
+        ));
+    }
 }
 // next tests:
-// - should make sure that persisted otp is deleted within N minutes.
 // - ???
 /*
 notes: email will be sent to user even if publishing event `EmailVerificationOtpGeneratedEvent` fails.
