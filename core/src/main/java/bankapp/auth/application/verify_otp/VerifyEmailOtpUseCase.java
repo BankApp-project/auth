@@ -19,23 +19,20 @@ public class VerifyEmailOtpUseCase {
     }
 
     public Challenge handle(VerifyEmailOtpCommand command) {
-        Otp otp = command.otp();
-        Otp persistedOtp = otpRepository.load(command.otp().getKey());
+        String key = command.key().getValue();
+        Otp persistedOtp = otpRepository.load(key);
 
-        verifyPersistedOtp(persistedOtp, otp);
+        verifyPersistedOtp(persistedOtp);
 
          return new Challenge();
     }
 
-    private void verifyPersistedOtp(Otp persistedOtp, Otp otp) {
+    private void verifyPersistedOtp(Otp persistedOtp) {
         if (persistedOtp == null) {
             throw new VerifyEmailOtpException("No such OTP in the system");
         }
         if (!persistedOtp.isValid(clock)) {
             throw new VerifyEmailOtpException("Otp has expired");
-        }
-        if (!otp.equals(persistedOtp)) {
-            throw new VerifyEmailOtpException("Otp does not match");
         }
     }
 }
