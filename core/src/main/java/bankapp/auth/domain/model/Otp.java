@@ -2,7 +2,6 @@ package bankapp.auth.domain.model;
 
 import bankapp.auth.domain.model.exception.OtpFormatException;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -14,8 +13,6 @@ public class Otp {
     private final String key;
     private final String value;
 
-    @Setter
-    private Clock clock = Clock.systemUTC();
     private Instant expirationTime;
 
     public Otp( String value, String key) {
@@ -51,11 +48,11 @@ public class Otp {
         return "OTP[value=******, key=" + (key != null ? key.substring(0, Math.min(3, key.length())) + "..." : "null") + "]";
     }
 
-    public void setExpirationTime(int seconds) {
+    public void setExpirationTime(Clock clock, int seconds) {
         this.expirationTime = Instant.now(clock).plusSeconds(seconds);
     }
 
-    public boolean isValid() {
+    public boolean isValid(Clock clock) {
         return Instant.now(clock).isBefore(this.getExpirationTime());
     }
 

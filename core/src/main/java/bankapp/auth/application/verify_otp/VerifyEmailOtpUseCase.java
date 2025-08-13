@@ -4,17 +4,22 @@ import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.domain.model.Otp;
 
+import java.time.Clock;
+
 public class VerifyEmailOtpUseCase {
 
     OtpRepository otpRepository;
 
-    public VerifyEmailOtpUseCase(OtpRepository otpRepository) {
+    Clock clock;
+
+    public VerifyEmailOtpUseCase(Clock clock, OtpRepository otpRepository) {
         this.otpRepository = otpRepository;
+        this.clock = clock;
     }
 
     public boolean handle(VerifyEmailOtpCommand command) {
         Otp otp = command.otp();
         Otp persistedOtp = otpRepository.load(command.otp().getKey());
-        return persistedOtp != null && persistedOtp.isValid() && otp.equals(persistedOtp);
+        return persistedOtp != null && persistedOtp.isValid(clock) && otp.equals(persistedOtp);
     }
 }

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import java.time.Clock;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +36,7 @@ public class InitiateVerificationUseCaseTest {
     private final static String DEFAULT_HASHED_VALUE = DEFAULT_VALUE + "-hashed";
     private final static int DEFAULT_OTP_LEN = 6;
     private final static int DEFAULT_TTL = 10;
+    private final static Clock DEFAULT_CLOCK = Clock.systemUTC();
 
     private InitiateVerificationCommand command;
     private InitiateVerificationUseCase useCase;
@@ -52,7 +54,7 @@ public class InitiateVerificationUseCaseTest {
 
         // Given: All operations will succeed
         command = new InitiateVerificationCommand(VALID_EMAIL);
-        useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_OTP_LEN, DEFAULT_TTL);
+        useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_CLOCK, DEFAULT_OTP_LEN, DEFAULT_TTL);
 
     }
 

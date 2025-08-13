@@ -7,6 +7,8 @@ import bankapp.auth.domain.service.StubOtpRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VerifyEmailOtpUseCasePersistenceTest {
@@ -35,11 +37,12 @@ public class VerifyEmailOtpUseCasePersistenceTest {
 
     @BeforeEach
     void setUp() {
+        Clock standardClock = Clock.systemUTC();
         Otp VALID_OTP = new Otp(VALID_OTP_VALUE, VALID_OTP_KEY);
-        VALID_OTP.setExpirationTime(DEFAULT_TTL);
+        VALID_OTP.setExpirationTime(standardClock, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         command = new VerifyEmailOtpCommand(VALID_OTP);
-        useCase = new VerifyEmailOtpUseCase(otpRepository);
+        useCase = new VerifyEmailOtpUseCase(standardClock, otpRepository);
     }
 
         @Test

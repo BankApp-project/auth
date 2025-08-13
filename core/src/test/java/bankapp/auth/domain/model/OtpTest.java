@@ -105,22 +105,26 @@ class OtpTest {
 
     @Test
     void should_be_able_to_set_expiration_time_in_minutes() {
-        DEFAULT_OTP.setExpirationTime(5);
+        Clock clock = Clock.systemUTC();
+        DEFAULT_OTP.setExpirationTime(clock, 5);
 
         assertNotNull(DEFAULT_OTP.getExpirationTime());
     }
 
     @Test
     void should_return_true_if_not_expired() {
-        DEFAULT_OTP.setExpirationTime(5);
+        Clock clock = Clock.systemUTC();
+        DEFAULT_OTP.setExpirationTime(clock, 5);
 
-        assertTrue(DEFAULT_OTP.isValid());
+        assertTrue(DEFAULT_OTP.isValid(clock));
     }
 
     @Test
     void should_return_false_if_expired() {
-        DEFAULT_OTP.setExpirationTime(5);
-        DEFAULT_OTP.setClock(Clock.fixed(Instant.now().plusSeconds(6), ZoneId.of("Z")));
-        assertFalse(DEFAULT_OTP.isValid());
+        Clock clock = Clock.systemUTC();
+        DEFAULT_OTP.setExpirationTime(clock, 5);
+
+        Clock fixedClock = Clock.fixed(Instant.now().plusSeconds(6),ZoneId.of("Z"));
+        assertFalse(DEFAULT_OTP.isValid(fixedClock));
     }
 }

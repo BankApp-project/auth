@@ -11,9 +11,11 @@ import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.annotations.Nullable;
 
-import java.time.Instant;
+import java.time.Clock;
 
 public class InitiateVerificationUseCase {
+
+    private final Clock clock;
 
     private final int otpSize;
     private final int ttl;
@@ -31,13 +33,16 @@ public class InitiateVerificationUseCase {
             @NotNull HashingPort hasher,
             @NotNull OtpRepository otpRepository,
             @NotNull NotificationPort notificator,
+            @NotNull Clock clock,
             @Nullable Integer otpSize,
-            @Nullable Integer defaultTtl) {
+            @Nullable Integer defaultTtl
+            ) {
         this.eventPublisher = eventPublisher;
         this.otpGenerator = otpGenerator;
         this.hasher = hasher;
         this.otpRepository = otpRepository;
         this.notificator = notificator;
+        this.clock = clock;
 
        this.otpSize = otpSize == null ? 6 : otpSize;
        this.ttl = defaultTtl == null ? 10 : defaultTtl;
@@ -54,7 +59,7 @@ public class InitiateVerificationUseCase {
 
             Otp hashedOtp = new Otp(hashedValue, command.email().toString());
 
-            hashedOtp.setExpirationTime(getTtlInSeconds());
+            hashedOtp.setExpirationTime(clock, getTtlInSeconds());
 
             otpRepository.save(hashedOtp);
 
