@@ -1,5 +1,6 @@
 package bankapp.auth.application.verify_otp;
 
+import bankapp.auth.application.initiate_verification.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.domain.model.Challenge;
@@ -10,12 +11,14 @@ import java.time.Clock;
 public class VerifyEmailOtpUseCase {
 
     OtpRepository otpRepository;
+    HashingPort hasher;
 
     Clock clock;
 
-    public VerifyEmailOtpUseCase(Clock clock, OtpRepository otpRepository) {
+    public VerifyEmailOtpUseCase(Clock clock, OtpRepository otpRepository, HashingPort hasher) {
         this.otpRepository = otpRepository;
         this.clock = clock;
+        this.hasher = hasher;
     }
 
     public Challenge handle(VerifyEmailOtpCommand command) {
@@ -23,6 +26,10 @@ public class VerifyEmailOtpUseCase {
         Otp persistedOtp = otpRepository.load(key);
 
         verifyPersistedOtp(persistedOtp);
+
+        if (!hasher.verify(persistedOtp.getValue(), command.value())) {
+            throw new VerifyEmailOtpException("Otp does not match");
+        }
 
          return new Challenge();
     }
