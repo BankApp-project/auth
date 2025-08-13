@@ -4,6 +4,10 @@ import bankapp.auth.domain.model.exception.OtpFormatException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class OtpTest {
@@ -114,9 +118,9 @@ class OtpTest {
     }
 
     @Test
-    void should_return_false_if_expired() throws InterruptedException {
-        DEFAULT_OTP.setExpirationTime(1);
-        Thread.sleep(1001);
+    void should_return_false_if_expired() {
+        DEFAULT_OTP.setExpirationTime(5);
+        DEFAULT_OTP.setClock(Clock.fixed(Instant.now().plusSeconds(6), ZoneId.of("Z")));
         assertFalse(DEFAULT_OTP.isValid());
     }
 }
