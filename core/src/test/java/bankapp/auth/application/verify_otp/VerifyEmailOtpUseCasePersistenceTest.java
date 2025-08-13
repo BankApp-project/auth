@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Clock;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class VerifyEmailOtpUseCasePersistenceTest {
 
@@ -54,20 +55,12 @@ public class VerifyEmailOtpUseCasePersistenceTest {
     }
 
     @Test
-    void should_return_true_when_provide_existing_email() {
-
-        boolean good = useCase.handle(command);
-
-        assertThat(good).isTrue();
-    }
-
-    @Test
-    void should_return_false_when_provide_non_existing_email() {
+    void should_throw_exception_when_provide_non_existing_email() {
         Otp otpWithInvalidkey = new Otp(VALID_OTP_VALUE, INVALID_OTP_KEY);
         VerifyEmailOtpCommand invalidCommand = new VerifyEmailOtpCommand(otpWithInvalidkey);
 
-        boolean good = useCase.handle(invalidCommand);
 
-        assertThat(good).isFalse();
+        var exception = assertThrows(VerifyEmailOtpException.class,() -> useCase.handle(invalidCommand));
+        assertThat(exception).hasMessageContaining("No such OTP in the system");
     }
 }
