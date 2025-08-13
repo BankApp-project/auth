@@ -23,11 +23,10 @@ public class VerifyEmailOtpUseCasePersistenceTest {
     Then: handler should return true. so FE can send passkey creation form.
     */
 
-
+    private static final int DEFAULT_TTL = 98;
     private static final String INVALID_OTP_KEY = "nonexisting@bankapp.online";
     private final static String VALID_OTP_KEY = "test@bankapp.online";
     private final static String VALID_OTP_VALUE = "123456";
-    private Otp VALID_OTP;
 
     private final OtpRepository otpRepository = new StubOtpRepository();
 
@@ -36,8 +35,8 @@ public class VerifyEmailOtpUseCasePersistenceTest {
 
     @BeforeEach
     void setUp() {
-        VALID_OTP = new Otp(VALID_OTP_VALUE, VALID_OTP_KEY);
-        VALID_OTP.setExpirationTime(98);
+        Otp VALID_OTP = new Otp(VALID_OTP_VALUE, VALID_OTP_KEY);
+        VALID_OTP.setExpirationTime(DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         command = new VerifyEmailOtpCommand(VALID_OTP);
         useCase = new VerifyEmailOtpUseCase(otpRepository);
