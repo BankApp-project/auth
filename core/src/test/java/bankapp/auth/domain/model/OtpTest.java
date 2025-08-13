@@ -26,15 +26,6 @@ class OtpTest {
     }
 
     @Test
-    void should_generate_unique_id_for_each_otp_instance() {
-        //when
-        Otp otp2 = new Otp(DEFAULT_VALUE, DEFAULT_KEY);
-
-        //then
-        assertNotEquals(DEFAULT_OTP.getId(), otp2.getId(), "Each OTP should have a unique ID");
-    }
-
-    @Test
     void should_not_expose_sensitive_data_in_toString() {
         //when
         String otpString = DEFAULT_OTP.toString();

@@ -2,6 +2,7 @@ package bankapp.auth.application.verify_otp;
 
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.in.commands.VerifyEmailOtpCommand;
+import bankapp.auth.domain.model.Otp;
 
 public class VerifyEmailOtpUseCase {
 
@@ -12,8 +13,8 @@ public class VerifyEmailOtpUseCase {
     }
 
     public boolean handle(VerifyEmailOtpCommand command) {
-        var otp = command.otp();
-        var persistedOtp = otpRepository.load(command.otp().getKey());
-        return otp.equals(persistedOtp);
+        Otp otp = command.otp();
+        Otp persistedOtp = otpRepository.load(command.otp().getKey());
+        return persistedOtp != null && persistedOtp.isValid() && otp.equals(persistedOtp);
     }
 }
