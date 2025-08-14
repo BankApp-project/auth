@@ -15,20 +15,16 @@ import java.util.Optional;
 
 public class VerifyEmailOtpUseCase {
 
-    OtpRepository otpRepository;
-    HashingPort hasher;
-    UserRepository userRepository;
+    private final Clock clock;
 
-    Clock clock;
+    private final OtpRepository otpRepository;
+    private final HashingPort hasher;
+    private final UserRepository userRepository;
 
-    public VerifyEmailOtpUseCase(Clock clock, OtpRepository otpRepository, HashingPort hasher) {
+    public VerifyEmailOtpUseCase(Clock clock, OtpRepository otpRepository, HashingPort hasher, UserRepository userRepository) {
         this.otpRepository = otpRepository;
         this.clock = clock;
         this.hasher = hasher;
-    }
-
-    public VerifyEmailOtpUseCase(Clock defaultClock, OtpRepository otpRepository, HashingPort hasher, UserRepository userRepository) {
-        this(defaultClock, otpRepository, hasher);
         this.userRepository = userRepository;
     }
 
@@ -36,18 +32,26 @@ public class VerifyEmailOtpUseCase {
         EmailAddress email = command.key();
         String key = email.getValue();
         String value = command.value();
-        Otp persistedOtp = otpRepository.load(key);
 
+        Otp persistedOtp = otpRepository.load(key);
         verifyOtp(persistedOtp, value);
 
         Optional<User> userOpt = userRepository.findByEmail(command.key());
         if (userOpt.isEmpty()) {
             User user = new User(email);
             userRepository.save(user);
-            return new RegistrationResponse(new PublicKeyCredentialCreationOptions(null,null,null,null,null,null,null,null,null,null,null));
+            return getRegistrationResponse();
         } else {
-            return new LoginResponse(new PublicKeyCredentialRequestOptions());
+            return getLoginResponse();
         }
+    }
+
+    private LoginResponse getLoginResponse() {
+        return new LoginResponse(new PublicKeyCredentialRequestOptions(null, null, null, null, null, null));
+    }
+
+    private RegistrationResponse getRegistrationResponse() {
+        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(null, null, null, null, null, null, null, null, null, null, null));
     }
 
     private void verifyOtp(Otp persistedOtp, String value) {
