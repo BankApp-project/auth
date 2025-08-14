@@ -3,7 +3,7 @@ package bankapp.auth.application.verify_otp;
 import bankapp.auth.application.initiate_verification.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.in.commands.VerifyEmailOtpCommand;
-import bankapp.auth.domain.model.Challenge;
+import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
 
 import java.time.Clock;
@@ -12,6 +12,7 @@ public class VerifyEmailOtpUseCase {
 
     OtpRepository otpRepository;
     HashingPort hasher;
+    UserRepository userRepository;
 
     Clock clock;
 
@@ -21,14 +22,20 @@ public class VerifyEmailOtpUseCase {
         this.hasher = hasher;
     }
 
-    public Challenge handle(VerifyEmailOtpCommand command) {
+    public VerifyEmailOtpUseCase(Clock defaultClock, OtpRepository otpRepository, HashingPort hasher, UserRepository userRepository) {
+        this(defaultClock, otpRepository, hasher);
+        this.userRepository = userRepository;
+    }
+
+    public void handle(VerifyEmailOtpCommand command) {
         String key = command.key().getValue();
         String value = command.value();
         Otp persistedOtp = otpRepository.load(key);
 
         verifyOtp(persistedOtp, value);
 
-         return new Challenge();
+        userRepository.findByEmail(command.key());
+
     }
 
     private void verifyOtp(Otp persistedOtp, String value) {

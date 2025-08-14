@@ -3,10 +3,13 @@ package bankapp.auth.application.verify_otp;
 import bankapp.auth.application.initiate_verification.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.in.commands.VerifyEmailOtpCommand;
+import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
+import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.service.StubHasher;
 import bankapp.auth.domain.service.StubOtpRepository;
+import bankapp.auth.domain.service.StubUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,8 +20,8 @@ import java.time.ZoneId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-public class VerifyEmailOtpUseCaseTest {
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
    /*
     Test Case 2: Verify Otp
@@ -32,38 +35,43 @@ public class VerifyEmailOtpUseCaseTest {
     Then: handler should return true. so FE can send passkey creation form.
     */
 
+public class VerifyEmailOtpUseCaseTest {
+
+
+    private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
     private static final int DEFAULT_TTL = 98;
     private static final String INVALID_OTP_KEY = "nonexisting@bankapp.online";
-    private final static String VALID_OTP_KEY = "test@bankapp.online";
-    private final static String VALID_OTP_VALUE = "123456";
+    private final static String DEFAULT_OTP_KEY = "test@bankapp.online";
+    public static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
+    private final static String DEFAULT_OTP_VALUE = "123456";
 
     private final OtpRepository otpRepository = new StubOtpRepository();
     private final HashingPort hasher = new StubHasher();
+    private final UserRepository userRepository = new StubUserRepository();
 
     private VerifyEmailOtpCommand defaultCommand;
     private VerifyEmailOtpUseCase defaultUseCase;
 
     @BeforeEach
     void setUp() {
-        Clock standardClock = Clock.systemUTC();
-        String hashedOtpValue = hasher.hashSecurely(VALID_OTP_VALUE);
-        Otp VALID_OTP = new Otp(hashedOtpValue, VALID_OTP_KEY);
-        VALID_OTP.setExpirationTime(standardClock, DEFAULT_TTL);
+        String hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);
+        Otp VALID_OTP = new Otp(hashedOtpValue, DEFAULT_OTP_KEY);
+        VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
-        defaultCommand = new VerifyEmailOtpCommand(new EmailAddress(VALID_OTP_KEY), VALID_OTP_VALUE);
-        defaultUseCase = new VerifyEmailOtpUseCase(standardClock, otpRepository, hasher);
+        defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
     }
 
         @Test
     void should_load_otp_when_otp_with_valid_email_provided() {
         defaultUseCase.handle(defaultCommand);
 
-        assertThat(otpRepository.load(VALID_OTP_KEY)).isNotNull();
+        assertThat(otpRepository.load(DEFAULT_OTP_KEY)).isNotNull();
     }
 
     @Test
     void should_throw_exception_when_provide_non_existing_email() {
-        VerifyEmailOtpCommand invalidCommand = new VerifyEmailOtpCommand(new EmailAddress(INVALID_OTP_KEY), VALID_OTP_VALUE);
+        VerifyEmailOtpCommand invalidCommand = new VerifyEmailOtpCommand(new EmailAddress(INVALID_OTP_KEY), DEFAULT_OTP_VALUE);
 
         var exception = assertThrows(VerifyEmailOtpException.class,() -> defaultUseCase.handle(invalidCommand));
         assertThat(exception).hasMessageContaining("No such OTP in the system");
@@ -81,7 +89,7 @@ public class VerifyEmailOtpUseCaseTest {
 
     @Test
     void should_throw_exception_when_otp_does_not_match() {
-        var commandWithInvalidOtp = new VerifyEmailOtpCommand(new EmailAddress(VALID_OTP_KEY), "invalidOtp");
+        var commandWithInvalidOtp = new VerifyEmailOtpCommand(DEFAULT_EMAIL, "invalidOtp");
         var exception = assertThrows(VerifyEmailOtpException.class, () -> defaultUseCase.handle(commandWithInvalidOtp));
         assertThat(exception).hasMessageContaining("Otp does not match");
     }
@@ -90,4 +98,15 @@ public class VerifyEmailOtpUseCaseTest {
     void should_not_throw_exception_when_otp_does_match() {
         assertDoesNotThrow(() -> defaultUseCase.handle(defaultCommand));
     }
+
+    @Test
+    void should_check_if_user_with_given_email_exists() {
+        UserRepository userRepository = mock(UserRepository.class);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
+
+        useCase.handle(defaultCommand);
+
+        verify(userRepository).findByEmail(DEFAULT_EMAIL);
+    }
+
 }
