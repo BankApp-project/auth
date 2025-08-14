@@ -120,17 +120,17 @@ public class VerifyEmailOtpUseCaseTest {
         when(userRepository.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.of(defaultUser));
 
         VerifyEmailOtpResponse res = useCase.handle(defaultCommand);
-        assertNotNull(res.requestOptions());
+        assertInstanceOf(LoginResponse.class,res);
     }
 
     @Test
-    void should_return_Response_with_null_PublicKeyCredentialRequestOptions_if_user_does_not_exists() {
+    void should_return_Response_with_PublicKeyCredentialCreationOptions_if_user_does_not_exists() {
         UserRepository userRepository = mock(UserRepository.class);
         VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
 
         when(userRepository.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.empty());
 
         VerifyEmailOtpResponse res = useCase.handle(defaultCommand);
-        assertNull(res.requestOptions());
+        assertInstanceOf(RegistrationResponse.class, res);
     }
 }
