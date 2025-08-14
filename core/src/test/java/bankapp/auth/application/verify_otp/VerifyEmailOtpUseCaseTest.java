@@ -5,6 +5,9 @@ import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
+import bankapp.auth.domain.model.PublicKeyCredentialRequestOptions;
+import bankapp.auth.domain.model.User;
+import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.service.StubHasher;
 import bankapp.auth.domain.service.StubOtpRepository;
@@ -17,10 +20,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
    /*
     Test Case 2: Verify Otp
@@ -43,6 +44,7 @@ public class VerifyEmailOtpUseCaseTest {
     private final static String DEFAULT_OTP_KEY = "test@bankapp.online";
     public static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
     private final static String DEFAULT_OTP_VALUE = "123456";
+    private String hashedOtpValue;
 
     private final OtpRepository otpRepository = new StubOtpRepository();
     private final HashingPort hasher = new StubHasher();
@@ -53,7 +55,7 @@ public class VerifyEmailOtpUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        String hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);
+        hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);
         Otp VALID_OTP = new Otp(hashedOtpValue, DEFAULT_OTP_KEY);
         VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
@@ -61,18 +63,19 @@ public class VerifyEmailOtpUseCaseTest {
         defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
     }
 
-        @Test
-    void should_load_otp_when_otp_with_valid_email_provided() {
-        defaultUseCase.handle(defaultCommand);
-
-        assertThat(otpRepository.load(DEFAULT_OTP_KEY)).isNotNull();
+    @Test
+    void should_load_correct_otp_when_otp_with_valid_email_provided() {
+        Otp otp = otpRepository.load(DEFAULT_OTP_KEY);
+        assertThat(otp).isNotNull();
+        assertThat(otp.getKey()).isEqualTo(DEFAULT_OTP_KEY);
+        assertThat(otp.getValue()).isEqualTo(hashedOtpValue);
     }
 
     @Test
     void should_throw_exception_when_provide_non_existing_email() {
         VerifyEmailOtpCommand invalidCommand = new VerifyEmailOtpCommand(new EmailAddress(INVALID_OTP_KEY), DEFAULT_OTP_VALUE);
 
-        var exception = assertThrows(VerifyEmailOtpException.class,() -> defaultUseCase.handle(invalidCommand));
+        var exception = assertThrows(VerifyEmailOtpException.class, () -> defaultUseCase.handle(invalidCommand));
         assertThat(exception).hasMessageContaining("No such OTP in the system");
     }
 
@@ -106,6 +109,18 @@ public class VerifyEmailOtpUseCaseTest {
         useCase.handle(defaultCommand);
 
         verify(userRepository).findByEmail(DEFAULT_EMAIL);
+    }
+
+    @Test
+    void should_return_PublicKeyCredentialRequestOptions_if_user_already_exists() {
+        UserRepository userRepository = mock(UserRepository.class);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
+
+        User defaultUser = new User();
+        when(userRepository.findByEmail(DEFAULT_EMAIL)).thenReturn(defaultUser);
+
+        PublicKeyCredentialRequestOptions res = useCase.handle(defaultCommand);
+        assertNotNull(res);
     }
 
 }

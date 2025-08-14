@@ -5,6 +5,7 @@ import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
+import bankapp.auth.domain.model.PublicKeyCredentialRequestOptions;
 
 import java.time.Clock;
 
@@ -27,7 +28,7 @@ public class VerifyEmailOtpUseCase {
         this.userRepository = userRepository;
     }
 
-    public void handle(VerifyEmailOtpCommand command) {
+    public PublicKeyCredentialRequestOptions handle(VerifyEmailOtpCommand command) {
         String key = command.key().getValue();
         String value = command.value();
         Otp persistedOtp = otpRepository.load(key);
@@ -36,6 +37,7 @@ public class VerifyEmailOtpUseCase {
 
         userRepository.findByEmail(command.key());
 
+        return new PublicKeyCredentialRequestOptions();
     }
 
     private void verifyOtp(Otp persistedOtp, String value) {
