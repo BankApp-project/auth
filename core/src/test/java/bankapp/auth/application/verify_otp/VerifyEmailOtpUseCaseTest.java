@@ -124,7 +124,7 @@ public class VerifyEmailOtpUseCaseTest {
     }
 
     @Test
-    void should_create_new_user_when_user_does_not_exists() {
+    void should_create_and_persist_new_user_when_user_does_not_exists() {
         // Given
         assertEquals(Optional.empty(), userRepository.findByEmail(DEFAULT_EMAIL));
 
@@ -137,7 +137,7 @@ public class VerifyEmailOtpUseCaseTest {
    }
 
    @Test
-   void should_return_same_user_as_original() {
+   void should_return_same_user_as_original_when_user_does_not_exists() {
        // Given
        assertEquals(Optional.empty(), userRepository.findByEmail(DEFAULT_EMAIL));
 
@@ -166,13 +166,8 @@ public class VerifyEmailOtpUseCaseTest {
 
     @Test
     void should_return_Response_with_PublicKeyCredentialCreationOptions_if_user_does_not_exists() {
-        // Given
-        UserRepository userRepositoryMock = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock);
-        when(userRepositoryMock.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.empty());
-
-        // When
-        VerifyEmailOtpResponse res = useCase.handle(defaultCommand);
+        // Given & When
+        VerifyEmailOtpResponse res = defaultUseCase.handle(defaultCommand);
 
         // Then
         assertInstanceOf(RegistrationResponse.class, res);
