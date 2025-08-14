@@ -8,8 +8,8 @@ import java.util.UUID;
 @Data
 public class User {
 
-    private UUID id = UUID.randomUUID();
-    private EmailAddress email;
+    private final UUID id = UUID.randomUUID();
+    private final EmailAddress email;
 
     public User(EmailAddress email) {
         this.email = email;
