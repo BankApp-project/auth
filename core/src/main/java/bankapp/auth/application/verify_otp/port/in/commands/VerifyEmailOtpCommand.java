@@ -1,4 +1,4 @@
-package bankapp.auth.application.verify_otp.in.commands;
+package bankapp.auth.application.verify_otp.port.in.commands;
 
 import bankapp.auth.domain.model.vo.EmailAddress;
 

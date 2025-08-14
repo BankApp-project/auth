@@ -2,10 +2,9 @@ package bankapp.auth.application.verify_otp;
 
 import bankapp.auth.application.initiate_verification.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
-import bankapp.auth.application.verify_otp.in.commands.VerifyEmailOtpCommand;
+import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
-import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.service.StubHasher;
 import bankapp.auth.domain.service.StubOtpRepository;
