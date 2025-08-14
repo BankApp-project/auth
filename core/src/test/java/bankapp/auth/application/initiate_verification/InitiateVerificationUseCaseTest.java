@@ -49,13 +49,11 @@ public class InitiateVerificationUseCaseTest {
         otpSaver = mock(OtpRepository.class);
         notificationPort = mock(NotificationPort.class);
 
-        when(otpGenerator.generate(anyInt())).thenReturn(DEFAULT_VALUE);
-        when(hasher.hashSecurely(anyString())).thenReturn(DEFAULT_HASHED_VALUE);
-
-        // Given: All operations will succeed
         command = new InitiateVerificationCommand(VALID_EMAIL);
         useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_CLOCK, DEFAULT_OTP_LEN, DEFAULT_TTL);
 
+        when(otpGenerator.generate(anyInt())).thenReturn(DEFAULT_VALUE);
+        when(hasher.hashSecurely(anyString())).thenReturn(DEFAULT_HASHED_VALUE);
     }
 
     //    Test Case 1: Successful Verification Initiation
