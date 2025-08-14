@@ -3,7 +3,9 @@ package bankapp.auth.application.verify_otp.port.out;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 
+import java.util.Optional;
+
 public interface UserRepository {
 
-    User findByEmail(EmailAddress email);
+    Optional<User> findByEmail(EmailAddress email);
 }

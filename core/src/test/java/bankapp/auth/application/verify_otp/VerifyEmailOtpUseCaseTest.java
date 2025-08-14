@@ -7,7 +7,6 @@ import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.PublicKeyCredentialRequestOptions;
 import bankapp.auth.domain.model.User;
-import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.service.StubHasher;
 import bankapp.auth.domain.service.StubOtpRepository;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -112,15 +112,14 @@ public class VerifyEmailOtpUseCaseTest {
     }
 
     @Test
-    void should_return_PublicKeyCredentialRequestOptions_if_user_already_exists() {
+    void should_return_Response_with_PublicKeyCredentialRequestOptions_if_user_already_exists() {
         UserRepository userRepository = mock(UserRepository.class);
         VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
 
         User defaultUser = new User();
-        when(userRepository.findByEmail(DEFAULT_EMAIL)).thenReturn(defaultUser);
+        when(userRepository.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.of(defaultUser));
 
-        PublicKeyCredentialRequestOptions res = useCase.handle(defaultCommand);
-        assertNotNull(res);
+        VerifyEmailOtpResponse res = useCase.handle(defaultCommand);
+        assertNotNull(res.requestOptions());
     }
-
 }
