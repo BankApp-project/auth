@@ -8,6 +8,7 @@ import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.PublicKeyCredentialRequestOptions;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
+import bankapp.auth.domain.model.vo.EmailAddress;
 
 import java.time.Clock;
 import java.util.Optional;
@@ -32,7 +33,8 @@ public class VerifyEmailOtpUseCase {
     }
 
     public VerifyEmailOtpResponse handle(VerifyEmailOtpCommand command) {
-        String key = command.key().getValue();
+        EmailAddress email = command.key();
+        String key = email.getValue();
         String value = command.value();
         Otp persistedOtp = otpRepository.load(key);
 
@@ -40,6 +42,8 @@ public class VerifyEmailOtpUseCase {
 
         Optional<User> userOpt = userRepository.findByEmail(command.key());
         if (userOpt.isEmpty()) {
+            User user = new User(email);
+            userRepository.save(user);
             return new RegistrationResponse(new PublicKeyCredentialCreationOptions(null,null,null,null,null,null,null,null,null,null,null));
         } else {
             return new LoginResponse(new PublicKeyCredentialRequestOptions());

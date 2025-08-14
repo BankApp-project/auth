@@ -15,4 +15,9 @@ public class StubUserRepository implements UserRepository {
     public Optional<User> findByEmail(EmailAddress email) {
         return Optional.ofNullable(emailToUserRepo.get(email));
     }
+
+    @Override
+    public void save(User user) {
+        this.emailToUserRepo.put(user.getEmail(), user);
+    }
 }

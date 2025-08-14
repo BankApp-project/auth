@@ -5,7 +5,6 @@ import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
-import bankapp.auth.domain.model.PublicKeyCredentialRequestOptions;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.service.StubHasher;
@@ -112,11 +111,23 @@ public class VerifyEmailOtpUseCaseTest {
     }
 
     @Test
+    void should_create_new_user_when_user_does_not_exists() {
+        assertEquals(Optional.empty(),userRepository.findByEmail(DEFAULT_EMAIL));
+
+        defaultUseCase.handle(defaultCommand);
+        Optional<User> userOpt = userRepository.findByEmail(DEFAULT_EMAIL);
+        assertTrue(userOpt.isPresent());
+
+        //for next test
+        //assertTrue(userOpt.get().getEmail().equals(DEFAULT_EMAIL));
+    }
+
+    @Test
     void should_return_Response_with_PublicKeyCredentialRequestOptions_if_user_already_exists() {
         UserRepository userRepository = mock(UserRepository.class);
         VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
 
-        User defaultUser = new User();
+        User defaultUser = new User(DEFAULT_EMAIL);
         when(userRepository.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.of(defaultUser));
 
         VerifyEmailOtpResponse res = useCase.handle(defaultCommand);
@@ -134,3 +145,4 @@ public class VerifyEmailOtpUseCaseTest {
         assertInstanceOf(RegistrationResponse.class, res);
     }
 }
+//should create new user when does not exists yet
