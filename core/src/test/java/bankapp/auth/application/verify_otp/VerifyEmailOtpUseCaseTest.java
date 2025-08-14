@@ -4,19 +4,24 @@ import bankapp.auth.application.initiate_verification.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
+import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
+import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.service.StubHasher;
 import bankapp.auth.domain.service.StubOtpRepository;
 import bankapp.auth.domain.service.StubUserRepository;
+import bankapp.auth.domain.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.ByteBuffer;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,6 +53,7 @@ public class VerifyEmailOtpUseCaseTest {
     private final OtpRepository otpRepository = new StubOtpRepository();
     private final HashingPort hasher = new StubHasher();
     private final UserRepository userRepository = new StubUserRepository();
+    private final UserService userService = new UserService();
 
     private VerifyEmailOtpCommand defaultCommand;
     private VerifyEmailOtpUseCase defaultUseCase;
@@ -59,7 +65,7 @@ public class VerifyEmailOtpUseCaseTest {
         VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
-        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService);
     }
 
     @Test
@@ -87,7 +93,7 @@ public class VerifyEmailOtpUseCaseTest {
     void should_throw_exception_when_otp_expired() {
         // Given
         Clock clock = Clock.fixed(Instant.now().plusSeconds(DEFAULT_TTL + 1), ZoneId.of("Z"));
-        defaultUseCase = new VerifyEmailOtpUseCase(clock, otpRepository, hasher, userRepository);
+        defaultUseCase = new VerifyEmailOtpUseCase(clock, otpRepository, hasher, userRepository, userService);
 
         // When / Then
         var exception = assertThrows(VerifyEmailOtpException.class, () -> defaultUseCase.handle(defaultCommand));
@@ -114,7 +120,7 @@ public class VerifyEmailOtpUseCaseTest {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService);
 
         // When
         useCase.handle(defaultCommand);
@@ -122,19 +128,6 @@ public class VerifyEmailOtpUseCaseTest {
         // Then
         verify(userRepositoryMock).findByEmail(DEFAULT_EMAIL);
     }
-
-    @Test
-    void should_create_and_persist_new_user_when_user_does_not_exists() {
-        // Given
-        assertEquals(Optional.empty(), userRepository.findByEmail(DEFAULT_EMAIL));
-
-        // When
-        defaultUseCase.handle(defaultCommand);
-
-        // Then
-        Optional<User> userOpt = userRepository.findByEmail(DEFAULT_EMAIL);
-        assertTrue(userOpt.isPresent());
-   }
 
    @Test
    void should_return_same_user_as_original_when_user_does_not_exists() {
@@ -146,6 +139,7 @@ public class VerifyEmailOtpUseCaseTest {
 
        // Then
        Optional<User> userOpt = userRepository.findByEmail(DEFAULT_EMAIL);
+       assertTrue(userOpt.isPresent());
        assertEquals(DEFAULT_EMAIL, userOpt.get().getEmail());
    }
 
@@ -153,7 +147,7 @@ public class VerifyEmailOtpUseCaseTest {
     void should_return_Response_with_PublicKeyCredentialRequestOptions_if_user_already_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService);
         User defaultUser = new User(DEFAULT_EMAIL);
         when(userRepositoryMock.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.of(defaultUser));
 
@@ -175,6 +169,25 @@ public class VerifyEmailOtpUseCaseTest {
 
     @Test
     void should_return_Response_with_userId_as_userHandle_if_user_does_not_exists() {
+        // Given
+        User testUser = new User(DEFAULT_EMAIL);
+        UserService userService = mock(UserService.class);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService);
+        when(userService.createUser(DEFAULT_EMAIL)).thenReturn(testUser);
+        // When
+        var res = useCase.handle(defaultCommand);
 
+        //Then
+        assertThat(res).isInstanceOf(RegistrationResponse.class);
+        RegistrationResponse registrationRes = (RegistrationResponse) res;
+        byte[] userHandle = registrationRes.options().user().id();
+        assertArrayEquals(userHandle, uuidToBytes(testUser.getId()));
+    }
+
+    public static byte[] uuidToBytes(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return bb.array();
     }
 }
