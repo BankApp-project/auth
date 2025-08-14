@@ -64,7 +64,10 @@ public class VerifyEmailOtpUseCaseTest {
 
     @Test
     void should_load_correct_otp_when_otp_with_valid_email_provided() {
+        // When
         Otp otp = otpRepository.load(DEFAULT_OTP_KEY);
+
+        // Then
         assertThat(otp).isNotNull();
         assertThat(otp.getKey()).isEqualTo(DEFAULT_OTP_KEY);
         assertThat(otp.getValue()).isEqualTo(hashedOtpValue);
@@ -72,77 +75,106 @@ public class VerifyEmailOtpUseCaseTest {
 
     @Test
     void should_throw_exception_when_provide_non_existing_email() {
+        // Given
         VerifyEmailOtpCommand invalidCommand = new VerifyEmailOtpCommand(new EmailAddress(INVALID_OTP_KEY), DEFAULT_OTP_VALUE);
 
+        // When / Then
         var exception = assertThrows(VerifyEmailOtpException.class, () -> defaultUseCase.handle(invalidCommand));
         assertThat(exception).hasMessageContaining("No such OTP in the system");
     }
 
-
     @Test
     void should_throw_exception_when_otp_expired() {
+        // Given
         Clock clock = Clock.fixed(Instant.now().plusSeconds(DEFAULT_TTL + 1), ZoneId.of("Z"));
-        defaultUseCase = new VerifyEmailOtpUseCase(clock, otpRepository, hasher);
+        defaultUseCase = new VerifyEmailOtpUseCase(clock, otpRepository, hasher, userRepository);
 
+        // When / Then
         var exception = assertThrows(VerifyEmailOtpException.class, () -> defaultUseCase.handle(defaultCommand));
         assertThat(exception).hasMessageContaining("has expired");
     }
 
     @Test
     void should_throw_exception_when_otp_does_not_match() {
+        // Given
         var commandWithInvalidOtp = new VerifyEmailOtpCommand(DEFAULT_EMAIL, "invalidOtp");
+
+        // When / Then
         var exception = assertThrows(VerifyEmailOtpException.class, () -> defaultUseCase.handle(commandWithInvalidOtp));
         assertThat(exception).hasMessageContaining("Otp does not match");
     }
 
     @Test
     void should_not_throw_exception_when_otp_does_match() {
+        // When / Then
         assertDoesNotThrow(() -> defaultUseCase.handle(defaultCommand));
     }
 
     @Test
     void should_check_if_user_with_given_email_exists() {
-        UserRepository userRepository = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
+        // Given
+        UserRepository userRepositoryMock = mock(UserRepository.class);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock);
 
+        // When
         useCase.handle(defaultCommand);
 
-        verify(userRepository).findByEmail(DEFAULT_EMAIL);
+        // Then
+        verify(userRepositoryMock).findByEmail(DEFAULT_EMAIL);
     }
 
     @Test
     void should_create_new_user_when_user_does_not_exists() {
-        assertEquals(Optional.empty(),userRepository.findByEmail(DEFAULT_EMAIL));
+        // Given
+        assertEquals(Optional.empty(), userRepository.findByEmail(DEFAULT_EMAIL));
 
+        // When
         defaultUseCase.handle(defaultCommand);
+
+        // Then
         Optional<User> userOpt = userRepository.findByEmail(DEFAULT_EMAIL);
         assertTrue(userOpt.isPresent());
+   }
 
-        //for next test
-        //assertTrue(userOpt.get().getEmail().equals(DEFAULT_EMAIL));
-    }
+   @Test
+   void should_return_same_user_as_original() {
+       // Given
+       assertEquals(Optional.empty(), userRepository.findByEmail(DEFAULT_EMAIL));
+
+       // When
+       defaultUseCase.handle(defaultCommand);
+
+       // Then
+       Optional<User> userOpt = userRepository.findByEmail(DEFAULT_EMAIL);
+       assertEquals(DEFAULT_EMAIL, userOpt.get().getEmail());
+   }
 
     @Test
     void should_return_Response_with_PublicKeyCredentialRequestOptions_if_user_already_exists() {
-        UserRepository userRepository = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
-
+        // Given
+        UserRepository userRepositoryMock = mock(UserRepository.class);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock);
         User defaultUser = new User(DEFAULT_EMAIL);
-        when(userRepository.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.of(defaultUser));
+        when(userRepositoryMock.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.of(defaultUser));
 
+        // When
         VerifyEmailOtpResponse res = useCase.handle(defaultCommand);
-        assertInstanceOf(LoginResponse.class,res);
+
+        // Then
+        assertInstanceOf(LoginResponse.class, res);
     }
 
     @Test
     void should_return_Response_with_PublicKeyCredentialCreationOptions_if_user_does_not_exists() {
-        UserRepository userRepository = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
+        // Given
+        UserRepository userRepositoryMock = mock(UserRepository.class);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock);
+        when(userRepositoryMock.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.empty());
 
-        when(userRepository.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.empty());
-
+        // When
         VerifyEmailOtpResponse res = useCase.handle(defaultCommand);
+
+        // Then
         assertInstanceOf(RegistrationResponse.class, res);
     }
 }
-//should create new user when does not exists yet
