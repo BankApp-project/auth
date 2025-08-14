@@ -42,7 +42,7 @@ public class VerifyEmailOtpUseCaseTest {
     private static final int DEFAULT_TTL = 98;
     private static final String INVALID_OTP_KEY = "nonexisting@bankapp.online";
     private final static String DEFAULT_OTP_KEY = "test@bankapp.online";
-    public static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
+    private static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
     private final static String DEFAULT_OTP_VALUE = "123456";
     private String hashedOtpValue;
 
@@ -121,5 +121,16 @@ public class VerifyEmailOtpUseCaseTest {
 
         VerifyEmailOtpResponse res = useCase.handle(defaultCommand);
         assertNotNull(res.requestOptions());
+    }
+
+    @Test
+    void should_return_Response_with_null_PublicKeyCredentialRequestOptions_if_user_does_not_exists() {
+        UserRepository userRepository = mock(UserRepository.class);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository);
+
+        when(userRepository.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.empty());
+
+        VerifyEmailOtpResponse res = useCase.handle(defaultCommand);
+        assertNull(res.requestOptions());
     }
 }

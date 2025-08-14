@@ -6,9 +6,11 @@ import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpComman
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.PublicKeyCredentialRequestOptions;
+import bankapp.auth.domain.model.User;
 
 import java.security.PublicKey;
 import java.time.Clock;
+import java.util.Optional;
 
 public class VerifyEmailOtpUseCase {
 
@@ -36,9 +38,12 @@ public class VerifyEmailOtpUseCase {
 
         verifyOtp(persistedOtp, value);
 
-        userRepository.findByEmail(command.key());
-        var res = new VerifyEmailOtpResponse(new PublicKeyCredentialRequestOptions());
-        return res;
+        Optional<User> userOpt = userRepository.findByEmail(command.key());
+        if (userOpt.isEmpty()) {
+            return new VerifyEmailOtpResponse(null);
+        } else {
+            return new VerifyEmailOtpResponse(new PublicKeyCredentialRequestOptions());
+        }
     }
 
     private void verifyOtp(Otp persistedOtp, String value) {
