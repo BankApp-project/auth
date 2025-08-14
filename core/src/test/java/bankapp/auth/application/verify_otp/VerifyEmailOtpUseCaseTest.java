@@ -172,4 +172,9 @@ public class VerifyEmailOtpUseCaseTest {
         // Then
         assertInstanceOf(RegistrationResponse.class, res);
     }
+
+    @Test
+    void should_return_Response_with_userId_as_userHandle_if_user_does_not_exists() {
+
+    }
 }

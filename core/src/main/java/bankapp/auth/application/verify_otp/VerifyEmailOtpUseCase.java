@@ -5,7 +5,7 @@ import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
-import bankapp.auth.domain.model.PublicKeyCredentialRequestOptions;
+import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.domain.model.vo.EmailAddress;
