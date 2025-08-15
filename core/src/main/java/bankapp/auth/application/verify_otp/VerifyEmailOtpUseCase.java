@@ -3,16 +3,11 @@ package bankapp.auth.application.verify_otp;
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
-import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
-import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
-import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
-import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
-import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.domain.service.ByteArrayUtil;
+import bankapp.auth.domain.service.PasskeyOptionsService;
 import bankapp.auth.domain.service.UserService;
 
 import java.time.Clock;
@@ -20,40 +15,29 @@ import java.util.*;
 
 public class VerifyEmailOtpUseCase {
 
-    //"smartphone" for smartphone-first userflow
-    //anything else / "default" for default userflow
-    //it can be enum later on
-    private final String authMode;
-    private final String rpId;
-    private final long timeout;
+
     private final Clock clock;
 
     private final OtpRepository otpRepository;
     private final HashingPort hasher;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final ChallengeGenerationPort challengeGenerator;
+    private final PasskeyOptionsService passkeyOptionsService;
 
     public VerifyEmailOtpUseCase(
-            String authMode,
-            String rpId,
-            long timeout,
             Clock clock,
             OtpRepository otpRepository,
             HashingPort hasher,
             UserRepository userRepository,
             UserService userService,
-            ChallengeGenerationPort challengeGenerator
+            PasskeyOptionsService passkeyOptionsService
     ) {
-        this.authMode = authMode;
-        this.rpId = rpId;
-        this.timeout = timeout;
         this.otpRepository = otpRepository;
         this.clock = clock;
         this.hasher = hasher;
         this.userRepository = userRepository;
         this.userService = userService;
-        this.challengeGenerator = challengeGenerator;
+        this.passkeyOptionsService = passkeyOptionsService;
     }
 
     public VerifyEmailOtpResponse handle(VerifyEmailOtpCommand command) {
@@ -67,74 +51,15 @@ public class VerifyEmailOtpUseCase {
         Optional<User> userOpt = userRepository.findByEmail(command.key());
 
         if (userOpt.isPresent() && userOpt.get().isEnabled()) {
-            return getLoginResponse();
+            return passkeyOptionsService.getLoginResponse();
         } else {
             User user = userService.createUser(email);
             userRepository.save(user);
-            return getRegistrationResponse(user);
+            return passkeyOptionsService.getRegistrationResponse(user);
         }
     }
 
-    private LoginResponse getLoginResponse() {
-        byte[] challenge = challengeGenerator.generate();
-        return new LoginResponse(new PublicKeyCredentialRequestOptions(challenge, null, null, null, null, null));
-    }
 
-    private RegistrationResponse getRegistrationResponse(User user) {
-        String name = user.getEmail().getValue();
-        UUID userId = user.getId();
-
-        byte[] challenge = challengeGenerator.generate();
-        byte[] userHandle = ByteArrayUtil.uuidToBytes(userId);
-
-        var userEntity = new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(userHandle, name, name);
-        var rp = new PublicKeyCredentialCreationOptions.PublicKeyCredentialRpEntity(rpId, rpId);
-
-        var pubKeyCredParamList = getPublicKeyCredentialParametersList();
-
-         /*
-         *    this criteria is to make sure that user will be verificated at new credential registration
-         *    according to: https://www.w3.org/TR/webauthn-3/#dom-authenticatorselectioncriteria-residentkey
-         */
-        String authAttach = "";
-        List<String> hints = new ArrayList<>();
-        if (authMode.equals("smartphone")) {
-            authAttach = "cross-platform";
-            hints.add("hybrid");
-        }
-            var authSelectionCrit = new PublicKeyCredentialCreationOptions.AuthenticatorSelectionCriteria(
-                    authAttach,
-                    true,
-                    "required"
-            );
-
-        return new RegistrationResponse(
-                new PublicKeyCredentialCreationOptions(
-                        rp,
-                        userEntity,
-                        challenge,
-                        pubKeyCredParamList,
-                        timeout,
-                        null,
-                        authSelectionCrit,
-                        hints,
-                        null,
-                        null,
-                        null
-                ));
-    }
-
-
-    /**
-     * these parameters are default according to official documentation of webauthn:
-     * <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters">...</a>
-     **/
-    private List<PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters> getPublicKeyCredentialParametersList() {
-        var pubKeyCredParamES256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key", -7);
-        var pubKeyCredParamRS256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key",-257);
-
-        return List.of(pubKeyCredParamES256, pubKeyCredParamRS256);
-    }
 
     private void verifyOtp(Otp persistedOtp, String value) {
         if (persistedOtp == null) {

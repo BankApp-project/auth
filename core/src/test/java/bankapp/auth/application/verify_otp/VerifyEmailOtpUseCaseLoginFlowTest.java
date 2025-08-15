@@ -3,7 +3,6 @@ package bankapp.auth.application.verify_otp;
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
-import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
 import bankapp.auth.domain.model.Otp;
@@ -37,7 +36,11 @@ public class VerifyEmailOtpUseCaseLoginFlowTest {
     private final HashingPort hasher = new StubHasher();
     private final UserRepository userRepository = new StubUserRepository();
     private final UserService userService = new UserService();
-    private final ChallengeGenerationPort challengeGenerator = new StubChallengeGenerator();
+    private final PasskeyOptionsService passkeyOptionsService = new PasskeyOptionsServiceImpl(
+            DEFAULT_AUTH_MODE,
+            DEFAULT_RPID,
+            DEFAULT_TIMEOUT,
+            new StubChallengeGenerator());
 
     private VerifyEmailOtpCommand defaultCommand;
     private VerifyEmailOtpUseCase defaultUseCase;
@@ -49,7 +52,7 @@ public class VerifyEmailOtpUseCaseLoginFlowTest {
         VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
-        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_AUTH_MODE, DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, passkeyOptionsService);
 
         //persist defaultUser pre useCase handling
         User user = new User(DEFAULT_EMAIL);
