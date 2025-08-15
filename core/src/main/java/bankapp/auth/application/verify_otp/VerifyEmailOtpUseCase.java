@@ -56,7 +56,7 @@ public class VerifyEmailOtpUseCase {
         if (userOpt.isEmpty()) {
             User user = userService.createUser(email);
             userRepository.save(user);
-            return getRegistrationResponse(user.getId());
+            return getRegistrationResponse(user);
         } else {
             return getLoginResponse();
         }
@@ -67,10 +67,15 @@ public class VerifyEmailOtpUseCase {
         return new LoginResponse(new PublicKeyCredentialRequestOptions(challenge, null, null, null, null, null));
     }
 
-    private RegistrationResponse getRegistrationResponse(UUID userId) {
+    private RegistrationResponse getRegistrationResponse(User user) {
+        String name = user.getEmail().getValue();
+        UUID userId = user.getId();
+
         byte[] challenge = challengeGenerator.generate();
         byte[] userHandle = ByteArrayUtil.uuidToBytes(userId);
-        var userEntity = new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(userHandle, null, null);
+
+        var userEntity = new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(userHandle, name, name);
+
         return new RegistrationResponse(new PublicKeyCredentialCreationOptions(null, userEntity, challenge, null, null, null, null, null, null, null, null));
     }
 

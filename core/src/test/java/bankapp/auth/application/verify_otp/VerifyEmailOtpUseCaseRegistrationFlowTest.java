@@ -118,4 +118,17 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         byte[] challenge2 = registrationRes2.options().challenge();
         assertNotEquals(challenge2, challenge, "Challenges should be unique");
     }
+
+    @Test
+    void should_return_RegistrationResponse_with_email_as_userEntity_name_and_displayName_when_user_does_not_exists_yet() {
+        var res = defaultUseCase.handle(defaultCommand);
+        assertThat(res).isInstanceOf(RegistrationResponse.class);
+        RegistrationResponse registrationRes = (RegistrationResponse) res;
+
+        String name = registrationRes.options().user().name();
+        String displayName = registrationRes.options().user().displayName();
+
+        assertEquals(DEFAULT_EMAIL.getValue(), name);
+        assertEquals(DEFAULT_EMAIL.getValue(), displayName);
+    }
 }
