@@ -32,79 +32,79 @@ class PasskeyOptionsServiceRegistrationFlowTest {
     }
 
     @Test
-    void should_return_RegistrationResponse_with_userId_as_userHandle() {
+    void should_return_response_with_userId_as_userHandle() {
 
         // When
-        var res = passkeyOptionsService.getRegistrationResponse(TEST_USER);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(TEST_USER);
 
-        assertArrayEquals(ByteArrayUtil.uuidToBytes(TEST_USER.getId()), res.options().user().id());
+        assertArrayEquals(ByteArrayUtil.uuidToBytes(TEST_USER.getId()), res.user().id());
     }
 
     @Test
-    void should_return_RegistrationResponse_with_at_least_16bytes_long_challenge() {
+    void should_return_response_with_at_least_16bytes_long_challenge() {
 
-        var res = passkeyOptionsService.getRegistrationResponse(TEST_USER);
-        byte[] challenge = res.options().challenge();
+        var res = passkeyOptionsService.getPasskeyCreationOptions(TEST_USER);
+        byte[] challenge = res.challenge();
         assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
     }
 
     @Test
-    void should_return_RegistrationResponse_with_unique_Challenge() {
+    void should_return_response_with_unique_Challenge() {
         // Given
         User testUser1 = new User(DEFAULT_EMAIL);
         User testUser2 = new User(new EmailAddress("test2@bankapp.online"));
 
         // When
-        var res1 = passkeyOptionsService.getRegistrationResponse(testUser1);
-        var res2 = passkeyOptionsService.getRegistrationResponse(testUser2);
+        var res1 = passkeyOptionsService.getPasskeyCreationOptions(testUser1);
+        var res2 = passkeyOptionsService.getPasskeyCreationOptions(testUser2);
 
         // Then
-        byte[] challenge1 = res1.options().challenge();
-        byte[] challenge2 = res2.options().challenge();
+        byte[] challenge1 = res1.challenge();
+        byte[] challenge2 = res2.challenge();
         assertFalse(java.util.Arrays.equals(challenge1, challenge2), "Challenges should be unique");
     }
 
 
     @Test
-    void should_return_RegistrationResponse_with_email_as_userEntity_name_and_displayName() {
+    void should_return_response_with_email_as_userEntity_name_and_displayName() {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getRegistrationResponse(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
 
         // Then
-        String name = res.options().user().name();
-        String displayName = res.options().user().displayName();
+        String name = res.user().name();
+        String displayName = res.user().displayName();
 
         assertEquals(DEFAULT_EMAIL.getValue(), name);
         assertEquals(DEFAULT_EMAIL.getValue(), displayName);
     }
 
     @Test
-    void should_return_RegistrationResponse_with_valid_rpId() {
+    void should_return_response_with_valid_rpId() {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getRegistrationResponse(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
 
         // Then
-        String rpId = res.options().rp().id();
+        String rpId = res.rp().id();
 
         assertEquals(DEFAULT_RPID, rpId);
     }
 
     @Test
-    void should_return_RegistrationResponse_with_valid_PublicKeyCredentialParameters() {
+    void should_return_response_with_valid_PublicKeyCredentialParameters() {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getRegistrationResponse(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
 
         // Then
-        var pubKeyCredParams = res.options().pubKeyCredParams();
+        var pubKeyCredParams = res.pubKeyCredParams();
 
         //check for "public-key" type
         assertTrue(pubKeyCredParams.stream()
@@ -120,30 +120,30 @@ class PasskeyOptionsServiceRegistrationFlowTest {
     }
 
     @Test
-    void should_return_RegistrationResponse_with_valid_timeout() {
+    void should_return_response_with_valid_timeout() {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getRegistrationResponse(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
 
         // Then
-        var timeout = res.options().timeout();
+        var timeout = res.timeout();
 
         assertNotNull(timeout);
         assertEquals(DEFAULT_TIMEOUT, timeout);
     }
 
     @Test
-    void should_return_RegistrationResponse_with_valid_and_secure_AuthenticatorSelectionCriteria() {
+    void should_return_response_with_valid_and_secure_AuthenticatorSelectionCriteria() {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getRegistrationResponse(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
 
         // Then
-        var authSelCriteria = res.options().authenticatorSelection();
+        var authSelCriteria = res.authenticatorSelection();
 
         assertNotNull(authSelCriteria);
         assertTrue(authSelCriteria.requireResidentKey());
@@ -151,17 +151,16 @@ class PasskeyOptionsServiceRegistrationFlowTest {
     }
 
     @Test
-    void should_return_RegistrationResponse_with_correct_settings_based_on_authViaSmartphone_flag() {
+    void should_return_response_with_correct_settings_based_on_authViaSmartphone_flag() {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getRegistrationResponse(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
 
         // Then
-        var options = res.options();
-        var authAttach = options.authenticatorSelection().authenticatorAttachment();
-        var hints = options.hints();
+        var authAttach = res.authenticatorSelection().authenticatorAttachment();
+        var hints = res.hints();
 
         assertEquals("hybrid", hints.getFirst());
         assertEquals("cross-platform", authAttach);

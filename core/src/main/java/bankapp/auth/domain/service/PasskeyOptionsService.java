@@ -1,10 +1,10 @@
 package bankapp.auth.domain.service;
 
-import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
-import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.User;
+import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
+import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
 
 public interface PasskeyOptionsService {
-    RegistrationResponse getRegistrationResponse(User user);
-    LoginResponse getLoginResponse();
+    PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user);
+    PublicKeyCredentialRequestOptions getPasskeyRequestOptions();
 }

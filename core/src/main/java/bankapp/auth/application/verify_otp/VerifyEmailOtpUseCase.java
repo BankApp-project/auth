@@ -4,6 +4,8 @@ import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
+import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
+import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
@@ -51,11 +53,11 @@ public class VerifyEmailOtpUseCase {
         Optional<User> userOpt = userRepository.findByEmail(command.key());
 
         if (userOpt.isPresent() && userOpt.get().isEnabled()) {
-            return passkeyOptionsService.getLoginResponse();
+            return new LoginResponse(passkeyOptionsService.getPasskeyRequestOptions());
         } else {
             User user = userService.createUser(email);
             userRepository.save(user);
-            return passkeyOptionsService.getRegistrationResponse(user);
+            return new RegistrationResponse(passkeyOptionsService.getPasskeyCreationOptions(user));
         }
     }
 

@@ -27,27 +27,27 @@ public class PasskeyOptionsServiceLoginFlowTest {
     }
 
     @Test
-    void should_return_LoginResponse_with_at_least_16bytes_long_challenge() {
+    void should_return_response_with_at_least_16bytes_long_challenge() {
         // Given
 
         // When
-        var res = passkeyOptionsService.getLoginResponse();
+        var res = passkeyOptionsService.getPasskeyRequestOptions();
 
         // Then
-        byte[] challenge = res.options().challenge();
+        byte[] challenge = res.challenge();
         assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
     }
 
     @Test
-    void should_return_unique_LoginResponse() {
+    void should_return_unique_response() {
 
         // When
-        var res1 = passkeyOptionsService.getLoginResponse();
-        var res2 = passkeyOptionsService.getLoginResponse();
+        var res1 = passkeyOptionsService.getPasskeyRequestOptions();
+        var res2 = passkeyOptionsService.getPasskeyRequestOptions();
 
         // Then
-        byte[] challenge1 = res1.options().challenge();
-        byte[] challenge2 = res2.options().challenge();
+        byte[] challenge1 = res1.challenge();
+        byte[] challenge2 = res2.challenge();
 
         assertFalse(java.util.Arrays.equals(challenge1, challenge2), "Challenges should be unique");
     }

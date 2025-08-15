@@ -1,8 +1,6 @@
 package bankapp.auth.domain.service;
 
 import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
-import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
@@ -29,12 +27,12 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
         this.challengeGenerator = challengeGenerator;
     }
 
-    public LoginResponse getLoginResponse() {
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions() {
         byte[] challenge = challengeGenerator.generate();
-        return new LoginResponse(new PublicKeyCredentialRequestOptions(challenge, null, null, null, null, null));
+        return new PublicKeyCredentialRequestOptions(challenge, null, null, null, null, null);
     }
 
-    public RegistrationResponse getRegistrationResponse(User user) {
+    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user) {
         String name = user.getEmail().getValue();
         UUID userId = user.getId();
 
@@ -62,8 +60,7 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
                 "required"
         );
 
-        return new RegistrationResponse(
-                new PublicKeyCredentialCreationOptions(
+                return new PublicKeyCredentialCreationOptions(
                         rp,
                         userEntity,
                         challenge,
@@ -75,7 +72,7 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
                         null,
                         null,
                         null
-                ));
+                );
     }
 
 
