@@ -67,10 +67,7 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         when(userService.createUser(DEFAULT_EMAIL)).thenReturn(testUser);
         // When
         var res = useCase.handle(defaultCommand);
-
-        //Then
-        assertThat(res).isInstanceOf(RegistrationResponse.class);
-        RegistrationResponse registrationRes = (RegistrationResponse) res;
+        RegistrationResponse registrationRes = getRegistrationResponse(res);
         byte[] userHandle = registrationRes.options().user().id();
         assertArrayEquals(userHandle, uuidToBytes(testUser.getId()));
     }
@@ -79,10 +76,8 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
     void should_return_RegistrationResponse_with_at_least_16bytes_long_challenge_if_user_does_not_exists_yet() {
         // Given & When
         VerifyEmailOtpResponse res = defaultUseCase.handle(defaultCommand);
+        RegistrationResponse registrationRes = getRegistrationResponse(res);
 
-        // Then
-        assertThat(res).isInstanceOf(RegistrationResponse.class);
-        RegistrationResponse registrationRes = (RegistrationResponse) res;
         byte[] challenge = registrationRes.options().challenge();
         assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
     }
@@ -109,11 +104,8 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         // Second attempt
         var res2 = defaultUseCase.handle(command2);
 
-        assertThat(res).isInstanceOf(RegistrationResponse.class);
-        assertThat(res2).isInstanceOf(RegistrationResponse.class);
-
-        RegistrationResponse registrationRes = (RegistrationResponse) res;
-        RegistrationResponse registrationRes2 = (RegistrationResponse) res2; // Fixed: was assigning res instead of res2
+        RegistrationResponse registrationRes = getRegistrationResponse(res);
+        RegistrationResponse registrationRes2 = getRegistrationResponse(res2);
 
         byte[] challenge = registrationRes.options().challenge();
         byte[] challenge2 = registrationRes2.options().challenge();
@@ -123,8 +115,7 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
     @Test
     void should_return_RegistrationResponse_with_email_as_userEntity_name_and_displayName_when_user_does_not_exists_yet() {
         var res = defaultUseCase.handle(defaultCommand);
-        assertThat(res).isInstanceOf(RegistrationResponse.class);
-        RegistrationResponse registrationRes = (RegistrationResponse) res;
+        RegistrationResponse registrationRes = getRegistrationResponse(res);
 
         String name = registrationRes.options().user().name();
         String displayName = registrationRes.options().user().displayName();
@@ -136,11 +127,36 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
     @Test
     void should_return_RegistrationResponse_with_valid_rpId_when_user_does_not_exists_yet() {
         var res = defaultUseCase.handle(defaultCommand);
-        assertThat(res).isInstanceOf(RegistrationResponse.class);
-        RegistrationResponse registrationResponse = (RegistrationResponse) res;
+        RegistrationResponse registrationResponse = getRegistrationResponse(res);
 
         String rpId = registrationResponse.options().rp().id();
 
         assertEquals(DEFAULT_RPID, rpId);
+    }
+
+    @Test
+    void should_return_RegistrationResponse_with_valid_PublicKeyCredentialParameters_when_user_does_not_exists_yet() {
+        var res = defaultUseCase.handle(defaultCommand);
+        RegistrationResponse registrationResponse = getRegistrationResponse(res);
+
+        var pubKeyCredParams = registrationResponse.options().pubKeyCredParams();
+
+        //check for "public-key" type
+        assertTrue(pubKeyCredParams.stream()
+                .allMatch(param -> param.type().equals("public-key")));
+
+        //check for ES256 alg
+        assertTrue(pubKeyCredParams.stream()
+                .anyMatch(param -> param.alg() == -7));
+
+        //check for RS256 alg
+        assertTrue(pubKeyCredParams.stream()
+                .anyMatch(param -> param.alg() == -257));
+        //its all in the official documentation of webauthn: https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters
+    }
+
+    private RegistrationResponse getRegistrationResponse(VerifyEmailOtpResponse res) {
+        assertThat(res).isInstanceOf(RegistrationResponse.class);
+        return (RegistrationResponse) res;
     }
 }

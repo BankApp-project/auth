@@ -16,6 +16,7 @@ import bankapp.auth.domain.service.ByteArrayUtil;
 import bankapp.auth.domain.service.UserService;
 
 import java.time.Clock;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -80,7 +81,12 @@ public class VerifyEmailOtpUseCase {
         var userEntity = new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(userHandle, name, name);
         var rp = new PublicKeyCredentialCreationOptions.PublicKeyCredentialRpEntity(rpId, rpId);
 
-        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(rp, userEntity, challenge, null, null, null, null, null, null, null, null));
+        var pubKeyCredParamES256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key", -7);
+        var pubKeyCredParamRS256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key",-257);
+
+        var pubKeyCredParamList = List.of(pubKeyCredParamES256, pubKeyCredParamRS256);
+
+        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(rp, userEntity, challenge, pubKeyCredParamList, null, null, null, null, null, null, null));
     }
 
     private void verifyOtp(Otp persistedOtp, String value) {
