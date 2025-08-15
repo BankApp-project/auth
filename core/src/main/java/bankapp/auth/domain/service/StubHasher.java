@@ -1,6 +1,6 @@
 package bankapp.auth.domain.service;
 
-import bankapp.auth.application.initiate_verification.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.HashingPort;
 
 public class StubHasher implements HashingPort {
     @Override

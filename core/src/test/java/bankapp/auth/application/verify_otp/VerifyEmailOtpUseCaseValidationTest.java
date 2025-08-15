@@ -1,6 +1,6 @@
 package bankapp.auth.application.verify_otp;
 
-import bankapp.auth.application.initiate_verification.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;

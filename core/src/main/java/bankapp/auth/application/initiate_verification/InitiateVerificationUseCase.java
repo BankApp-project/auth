@@ -2,7 +2,7 @@ package bankapp.auth.application.initiate_verification;
 
 import bankapp.auth.application.initiate_verification.exception.InitiateVerificationException;
 import bankapp.auth.application.initiate_verification.port.in.commands.InitiateVerificationCommand;
-import bankapp.auth.application.initiate_verification.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.initiate_verification.port.out.OtpGenerationPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.initiate_verification.port.out.events.EmailVerificationOtpGeneratedEvent;
