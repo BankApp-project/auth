@@ -195,6 +195,20 @@ public class VerifyEmailOtpUseCaseTest {
     }
 
     @Test
+    void should_return_LoginResponse_with_at_least_16bytes_long_challenge_if_user_already_exists() {
+        //persist defaultUser pre useCase handling
+        User user = new User(DEFAULT_EMAIL);
+        userRepository.save(user);
+
+        var res = defaultUseCase.handle(defaultCommand);
+
+        assertThat(res).isInstanceOf(LoginResponse.class);
+        LoginResponse loginRes = (LoginResponse) res;
+        byte[] challenge = loginRes.options().challenge();
+        assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
+    }
+
+    @Test
     void should_return_RegistrationResponse_with_unique_Challenge_if_user_does_not_exists_yet() {
         // First attempt
         var res = defaultUseCase.handle(defaultCommand);
