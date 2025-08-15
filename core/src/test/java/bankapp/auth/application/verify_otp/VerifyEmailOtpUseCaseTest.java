@@ -3,20 +3,17 @@ package bankapp.auth.application.verify_otp;
 import bankapp.auth.application.initiate_verification.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
+import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
 import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.domain.service.StubHasher;
-import bankapp.auth.domain.service.StubOtpRepository;
-import bankapp.auth.domain.service.StubUserRepository;
-import bankapp.auth.domain.service.UserService;
+import bankapp.auth.domain.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.nio.ByteBuffer;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -54,6 +51,7 @@ public class VerifyEmailOtpUseCaseTest {
     private final HashingPort hasher = new StubHasher();
     private final UserRepository userRepository = new StubUserRepository();
     private final UserService userService = new UserService();
+    private final ChallengeGenerationPort challengeGenerator = new StubChallengeGenerator();
 
     private VerifyEmailOtpCommand defaultCommand;
     private VerifyEmailOtpUseCase defaultUseCase;
@@ -65,7 +63,7 @@ public class VerifyEmailOtpUseCaseTest {
         VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
-        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
     }
 
     @Test
@@ -93,7 +91,7 @@ public class VerifyEmailOtpUseCaseTest {
     void should_throw_exception_when_otp_expired() {
         // Given
         Clock clock = Clock.fixed(Instant.now().plusSeconds(DEFAULT_TTL + 1), ZoneId.of("Z"));
-        defaultUseCase = new VerifyEmailOtpUseCase(clock, otpRepository, hasher, userRepository, userService);
+        defaultUseCase = new VerifyEmailOtpUseCase(clock, otpRepository, hasher, userRepository, userService, challengeGenerator);
 
         // When / Then
         var exception = assertThrows(VerifyEmailOtpException.class, () -> defaultUseCase.handle(defaultCommand));
@@ -120,7 +118,7 @@ public class VerifyEmailOtpUseCaseTest {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService, challengeGenerator);
 
         // When
         useCase.handle(defaultCommand);
@@ -129,25 +127,25 @@ public class VerifyEmailOtpUseCaseTest {
         verify(userRepositoryMock).findByEmail(DEFAULT_EMAIL);
     }
 
-   @Test
-   void should_return_same_user_as_original_when_user_does_not_exists() {
-       // Given
-       assertEquals(Optional.empty(), userRepository.findByEmail(DEFAULT_EMAIL));
+    @Test
+    void should_return_same_user_as_original_when_user_does_not_exists() {
+        // Given
+        assertEquals(Optional.empty(), userRepository.findByEmail(DEFAULT_EMAIL));
 
-       // When
-       defaultUseCase.handle(defaultCommand);
+        // When
+        defaultUseCase.handle(defaultCommand);
 
-       // Then
-       Optional<User> userOpt = userRepository.findByEmail(DEFAULT_EMAIL);
-       assertTrue(userOpt.isPresent());
-       assertEquals(DEFAULT_EMAIL, userOpt.get().getEmail());
-   }
+        // Then
+        Optional<User> userOpt = userRepository.findByEmail(DEFAULT_EMAIL);
+        assertTrue(userOpt.isPresent());
+        assertEquals(DEFAULT_EMAIL, userOpt.get().getEmail());
+    }
 
     @Test
     void should_return_Response_with_PublicKeyCredentialRequestOptions_if_user_already_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService, challengeGenerator);
         User defaultUser = new User(DEFAULT_EMAIL);
         when(userRepositoryMock.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.of(defaultUser));
 
@@ -172,7 +170,7 @@ public class VerifyEmailOtpUseCaseTest {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
         UserService userService = mock(UserService.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
         when(userService.createUser(DEFAULT_EMAIL)).thenReturn(testUser);
         // When
         var res = useCase.handle(defaultCommand);
@@ -214,14 +212,24 @@ public class VerifyEmailOtpUseCaseTest {
 
         byte[] challenge = registrationRes.options().challenge();
         byte[] challenge2 = registrationRes2.options().challenge();
-        assertNotEquals(challenge2,challenge, "Challenges should be unique");
+        assertNotEquals(challenge2, challenge, "Challenges should be unique");
+    }
+
+
+    @Test
+    void should_return_RegistrationResponse_with_at_least_16bytes_long_challenge_if_user_does_not_exists_yet() {
+        // Given & When
+        VerifyEmailOtpResponse res = defaultUseCase.handle(defaultCommand);
+
+        // Then
+        assertThat(res).isInstanceOf(RegistrationResponse.class);
+        RegistrationResponse registrationRes = (RegistrationResponse) res;
+        byte[] challenge = registrationRes.options().challenge();
+        assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
     }
 
     private static byte[] uuidToBytes(UUID uuid) {
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        return bb.array();
+        return ByteArrayUtil.uuidToBytes(uuid);
     }
 
    /*
