@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 public class VerifyEmailOtpUseCaseRegistrationFlowTest {
 
     private static final String DEFAULT_RPID = "bankapp.online";
+    private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
     private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
     private static final int DEFAULT_TTL = 98;
     private final static String DEFAULT_OTP_KEY = "test@bankapp.online";
@@ -46,7 +47,7 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
-        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
     }
 
     @Test
@@ -63,7 +64,7 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
         UserService userService = mock(UserService.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
         when(userService.createUser(DEFAULT_EMAIL)).thenReturn(testUser);
         // When
         var res = useCase.handle(defaultCommand);
@@ -154,6 +155,17 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
                 .anyMatch(param -> param.alg() == -257));
 
         //its all in the official documentation of webauthn: https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters
+    }
+    
+    @Test
+    void should_return_RegistrationResponse_with_valid_timeout_when_user_does_not_exists_yet() {
+        var res = defaultUseCase.handle(defaultCommand);
+        RegistrationResponse registrationResponse = getRegistrationResponse(res);
+        
+        var timeout = registrationResponse.options().timeout();
+        
+        assertNotNull(timeout);
+        assertEquals(DEFAULT_TIMEOUT, timeout);
     }
 
     private RegistrationResponse getRegistrationResponse(VerifyEmailOtpResponse res) {

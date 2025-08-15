@@ -23,6 +23,7 @@ import java.util.UUID;
 public class VerifyEmailOtpUseCase {
 
     private final String rpId;
+    private final long timeout;
     private final Clock clock;
 
     private final OtpRepository otpRepository;
@@ -32,14 +33,18 @@ public class VerifyEmailOtpUseCase {
     private final ChallengeGenerationPort challengeGenerator;
 
     public VerifyEmailOtpUseCase(
-            String rpId, Clock clock,
+            String rpId,
+            long timeout,
+            Clock clock,
             OtpRepository otpRepository,
             HashingPort hasher,
             UserRepository userRepository,
             UserService userService,
-            ChallengeGenerationPort challengeGenerator) {
+            ChallengeGenerationPort challengeGenerator
+    ) {
 
         this.rpId = rpId;
+        this.timeout = timeout;
         this.otpRepository = otpRepository;
         this.clock = clock;
         this.hasher = hasher;
@@ -83,7 +88,7 @@ public class VerifyEmailOtpUseCase {
 
         var pubKeyCredParamList = getPublicKeyCredentialParametersList();
 
-        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(rp, userEntity, challenge, pubKeyCredParamList, null, null, null, null, null, null, null));
+        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(rp, userEntity, challenge, pubKeyCredParamList, timeout, null, null, null, null, null, null));
     }
 
     private List<PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters> getPublicKeyCredentialParametersList() {
