@@ -25,18 +25,18 @@ import static org.mockito.Mockito.*;
 
 public class InitiateVerificationUseCaseTest {
 
-    private EventPublisherPort eventPublisher;
-    private HashingPort hasher;
-    private OtpGenerationPort otpGenerator;
-    private OtpRepository otpSaver;
-    private NotificationPort notificationPort;
-
     private final static EmailAddress VALID_EMAIL = new EmailAddress("test@bankapp.online");
     private final static String DEFAULT_VALUE = "123456";
     private final static String DEFAULT_HASHED_VALUE = DEFAULT_VALUE + "-hashed";
     private final static int DEFAULT_OTP_LEN = 6;
     private final static int DEFAULT_TTL = 10;
     private final static Clock DEFAULT_CLOCK = Clock.systemUTC();
+
+    private EventPublisherPort eventPublisher;
+    private HashingPort hasher;
+    private OtpGenerationPort otpGenerator;
+    private OtpRepository otpSaver;
+    private NotificationPort notificationPort;
 
     private InitiateVerificationCommand command;
     private InitiateVerificationUseCase useCase;
