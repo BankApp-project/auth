@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 public class VerifyEmailOtpUseCaseLoginFlowTest {
 
 
+    private static final String DEFAULT_RPID = "bankapp.online";
     private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
     private static final int DEFAULT_TTL = 98;
     private final static String DEFAULT_OTP_KEY = "test@bankapp.online";
@@ -46,14 +47,14 @@ public class VerifyEmailOtpUseCaseLoginFlowTest {
         VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
-        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
     }
 
     @Test
     void should_return_Response_with_PublicKeyCredentialRequestOptions_if_user_already_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService, challengeGenerator);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService, challengeGenerator);
         User defaultUser = new User(DEFAULT_EMAIL);
         when(userRepositoryMock.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.of(defaultUser));
 

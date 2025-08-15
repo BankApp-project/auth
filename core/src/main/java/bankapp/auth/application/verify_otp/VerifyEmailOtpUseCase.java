@@ -21,6 +21,7 @@ import java.util.UUID;
 
 public class VerifyEmailOtpUseCase {
 
+    private final String rpId;
     private final Clock clock;
 
     private final OtpRepository otpRepository;
@@ -30,12 +31,14 @@ public class VerifyEmailOtpUseCase {
     private final ChallengeGenerationPort challengeGenerator;
 
     public VerifyEmailOtpUseCase(
-            Clock clock,
+            String rpId, Clock clock,
             OtpRepository otpRepository,
             HashingPort hasher,
             UserRepository userRepository,
             UserService userService,
             ChallengeGenerationPort challengeGenerator) {
+
+        this.rpId = rpId;
         this.otpRepository = otpRepository;
         this.clock = clock;
         this.hasher = hasher;
@@ -75,8 +78,9 @@ public class VerifyEmailOtpUseCase {
         byte[] userHandle = ByteArrayUtil.uuidToBytes(userId);
 
         var userEntity = new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(userHandle, name, name);
+        var rp = new PublicKeyCredentialCreationOptions.PublicKeyCredentialRpEntity(rpId, rpId);
 
-        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(null, userEntity, challenge, null, null, null, null, null, null, null, null));
+        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(rp, userEntity, challenge, null, null, null, null, null, null, null, null));
     }
 
     private void verifyOtp(Otp persistedOtp, String value) {
