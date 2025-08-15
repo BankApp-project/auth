@@ -62,12 +62,12 @@ public class VerifyEmailOtpUseCase {
         verifyOtp(persistedOtp, value);
 
         Optional<User> userOpt = userRepository.findByEmail(command.key());
-        if (userOpt.isEmpty()) {
+        if (userOpt.isPresent() && userOpt.get().isEnabled()) {
+            return getLoginResponse();
+        } else {
             User user = userService.createUser(email);
             userRepository.save(user);
             return getRegistrationResponse(user);
-        } else {
-            return getLoginResponse();
         }
     }
 

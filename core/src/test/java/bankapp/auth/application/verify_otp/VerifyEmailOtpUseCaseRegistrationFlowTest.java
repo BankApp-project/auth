@@ -60,6 +60,16 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
     }
 
     @Test
+    void should_return_Response_with_PublicKeyCredentialCreationOptions_if_users_account_is_not_enabled() {
+        User user = new User(DEFAULT_EMAIL);
+        userRepository.save(user);
+
+        var res = defaultUseCase.handle(defaultCommand);
+
+        assertInstanceOf(RegistrationResponse.class, res);
+    }
+
+    @Test
     void should_return_RegistrationResponse_with_userId_as_userHandle_if_user_does_not_exists() {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
@@ -173,3 +183,5 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         return (RegistrationResponse) res;
     }
 }
+//we should also check if givenUser has any passkeys registered, not only if he has an account (perhaps)
+// another options is to enable user account only after successful registration of first passkey and check that flag

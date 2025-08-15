@@ -49,18 +49,17 @@ public class VerifyEmailOtpUseCaseLoginFlowTest {
         otpRepository.save(VALID_OTP);
         defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
         defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
+
+        //persist defaultUser pre useCase handling
+        User user = new User(DEFAULT_EMAIL);
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 
     @Test
     void should_return_Response_with_PublicKeyCredentialRequestOptions_if_user_already_exists() {
-        // Given
-        UserRepository userRepositoryMock = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService, challengeGenerator);
-        User defaultUser = new User(DEFAULT_EMAIL);
-        when(userRepositoryMock.findByEmail(DEFAULT_EMAIL)).thenReturn(Optional.of(defaultUser));
-
         // When
-        VerifyEmailOtpResponse res = useCase.handle(defaultCommand);
+        VerifyEmailOtpResponse res = defaultUseCase.handle(defaultCommand);
 
         // Then
         assertInstanceOf(LoginResponse.class, res);
@@ -68,10 +67,6 @@ public class VerifyEmailOtpUseCaseLoginFlowTest {
 
     @Test
     void should_return_LoginResponse_with_at_least_16bytes_long_challenge_if_user_already_exists() {
-        //persist defaultUser pre useCase handling
-        User user = new User(DEFAULT_EMAIL);
-        userRepository.save(user);
-
         var res = defaultUseCase.handle(defaultCommand);
 
         assertThat(res).isInstanceOf(LoginResponse.class);
@@ -82,10 +77,6 @@ public class VerifyEmailOtpUseCaseLoginFlowTest {
 
     @Test
     void should_return_unique_LoginResponse_if_user_already_exists() {
-        // Given - Create and save two existing users using stub
-        User firstUser = new User(DEFAULT_EMAIL);
-        userRepository.save(firstUser);
-
         // Prepare data for second user - create another OTP entry
         String secondEmail = "test2@bankapp.online";
         String secondOtpValue = "654321";
@@ -98,6 +89,7 @@ public class VerifyEmailOtpUseCaseLoginFlowTest {
         otpRepository.save(secondValidOtp);
 
         User secondUser = new User(secondEmailAddress);
+        secondUser.setEnabled(true);
         userRepository.save(secondUser);
 
         // Create second command
