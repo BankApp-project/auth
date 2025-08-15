@@ -35,6 +35,7 @@ import static org.mockito.Mockito.*;
 
 public class VerifyEmailOtpUseCaseValidationTest {
 
+    private static final String DEFAULT_AUTH_MODE = "smartphone";
     private static final String DEFAULT_RPID = "bankapp.online";
     private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
     private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
@@ -61,7 +62,7 @@ public class VerifyEmailOtpUseCaseValidationTest {
         VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
-        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_AUTH_MODE, DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
     }
 
     @Test
@@ -89,7 +90,7 @@ public class VerifyEmailOtpUseCaseValidationTest {
     void should_throw_exception_when_otp_expired() {
         // Given
         Clock clock = Clock.fixed(Instant.now().plusSeconds(DEFAULT_TTL + 1), ZoneId.of("Z"));
-        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_TIMEOUT, clock, otpRepository, hasher, userRepository, userService, challengeGenerator);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_RPID, DEFAULT_TIMEOUT, clock, otpRepository, hasher, userRepository, userService, challengeGenerator);
 
         // When / Then
         var exception = assertThrows(VerifyEmailOtpException.class, () -> defaultUseCase.handle(defaultCommand));
@@ -116,7 +117,7 @@ public class VerifyEmailOtpUseCaseValidationTest {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService, challengeGenerator);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService, challengeGenerator);
 
         // When
         useCase.handle(defaultCommand);

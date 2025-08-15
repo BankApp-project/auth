@@ -16,12 +16,14 @@ import bankapp.auth.domain.service.ByteArrayUtil;
 import bankapp.auth.domain.service.UserService;
 
 import java.time.Clock;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class VerifyEmailOtpUseCase {
 
+    //"smartphone" for smartphone-first userflow
+    //anything else / "default" for default userflow
+    //it can be enum later on
+    private final String authMode;
     private final String rpId;
     private final long timeout;
     private final Clock clock;
@@ -33,6 +35,7 @@ public class VerifyEmailOtpUseCase {
     private final ChallengeGenerationPort challengeGenerator;
 
     public VerifyEmailOtpUseCase(
+            String authMode,
             String rpId,
             long timeout,
             Clock clock,
@@ -42,7 +45,7 @@ public class VerifyEmailOtpUseCase {
             UserService userService,
             ChallengeGenerationPort challengeGenerator
     ) {
-
+        this.authMode = authMode;
         this.rpId = rpId;
         this.timeout = timeout;
         this.otpRepository = otpRepository;
@@ -62,6 +65,7 @@ public class VerifyEmailOtpUseCase {
         verifyOtp(persistedOtp, value);
 
         Optional<User> userOpt = userRepository.findByEmail(command.key());
+
         if (userOpt.isPresent() && userOpt.get().isEnabled()) {
             return getLoginResponse();
         } else {
@@ -88,9 +92,43 @@ public class VerifyEmailOtpUseCase {
 
         var pubKeyCredParamList = getPublicKeyCredentialParametersList();
 
-        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(rp, userEntity, challenge, pubKeyCredParamList, timeout, null, null, null, null, null, null));
+         /*
+         *    this criteria is to make sure that user will be verificated at new credential registration
+         *    according to: https://www.w3.org/TR/webauthn-3/#dom-authenticatorselectioncriteria-residentkey
+         */
+        String authAttach = "";
+        List<String> hints = new ArrayList<>();
+        if (authMode.equals("smartphone")) {
+            authAttach = "cross-platform";
+            hints.add("hybrid");
+        }
+            var authSelectionCrit = new PublicKeyCredentialCreationOptions.AuthenticatorSelectionCriteria(
+                    authAttach,
+                    true,
+                    "required"
+            );
+
+        return new RegistrationResponse(
+                new PublicKeyCredentialCreationOptions(
+                        rp,
+                        userEntity,
+                        challenge,
+                        pubKeyCredParamList,
+                        timeout,
+                        null,
+                        authSelectionCrit,
+                        hints,
+                        null,
+                        null,
+                        null
+                ));
     }
 
+
+    /**
+     * these parameters are default according to official documentation of webauthn:
+     * <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters">...</a>
+     **/
     private List<PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters> getPublicKeyCredentialParametersList() {
         var pubKeyCredParamES256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key", -7);
         var pubKeyCredParamRS256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key",-257);

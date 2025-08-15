@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class VerifyEmailOtpUseCaseLoginFlowTest {
 
-
+    private static final String DEFAULT_AUTH_MODE = "smartphone";
     private static final String DEFAULT_RPID = "bankapp.online";
     private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
     private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
@@ -45,7 +45,7 @@ public class VerifyEmailOtpUseCaseLoginFlowTest {
         VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
-        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_AUTH_MODE, DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
 
         //persist defaultUser pre useCase handling
         User user = new User(DEFAULT_EMAIL);

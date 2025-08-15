@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 public class VerifyEmailOtpUseCaseRegistrationFlowTest {
 
+    private static final String DEFAULT_AUTH_MODE = "smartphone";
     private static final String DEFAULT_RPID = "bankapp.online";
     private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
     private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
@@ -47,7 +48,7 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
-        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_AUTH_MODE, DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
     }
 
     @Test
@@ -74,7 +75,7 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
         UserService userService = mock(UserService.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_RPID, DEFAULT_RPID, DEFAULT_TIMEOUT, DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, challengeGenerator);
         when(userService.createUser(DEFAULT_EMAIL)).thenReturn(testUser);
         // When
         var res = useCase.handle(defaultCommand);
@@ -164,7 +165,6 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         assertTrue(pubKeyCredParams.stream()
                 .anyMatch(param -> param.alg() == -257));
 
-        //its all in the official documentation of webauthn: https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters
     }
     
     @Test
@@ -178,10 +178,34 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         assertEquals(DEFAULT_TIMEOUT, timeout);
     }
 
+    @Test
+    void should_return_RegistrationResponse_with_valid_and_secure_AuthenticatorSelectionCriteria_when_user_does_not_exists_yet() {
+        var res = defaultUseCase.handle(defaultCommand);
+        RegistrationResponse registrationResponse = getRegistrationResponse(res);
+
+        var authSelCriteria = registrationResponse.options().authenticatorSelection();
+
+        assertNotNull(authSelCriteria);
+        assertTrue(authSelCriteria.requireResidentKey());
+        assertEquals("required", authSelCriteria.userVerification());
+
+    }
+
+    @Test
+    void should_return_RegistrationResponse_with_correct_settings_based_on_authViaSmartphone_flag_when_user_does_not_exists_yet() {
+        var res = defaultUseCase.handle(defaultCommand);
+        RegistrationResponse registrationResponse = getRegistrationResponse(res);
+
+        var options = registrationResponse.options();
+        var authAttach = options.authenticatorSelection().authenticatorAttachment();
+        var hints = options.hints();
+
+        assertEquals("hybrid", hints.getFirst());
+        assertEquals("cross-platform", authAttach);
+    }
+
     private RegistrationResponse getRegistrationResponse(VerifyEmailOtpResponse res) {
         assertThat(res).isInstanceOf(RegistrationResponse.class);
         return (RegistrationResponse) res;
     }
 }
-//we should also check if givenUser has any passkeys registered, not only if he has an account (perhaps)
-// another options is to enable user account only after successful registration of first passkey and check that flag
