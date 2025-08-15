@@ -4,6 +4,8 @@ import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
+import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
+import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
@@ -36,7 +38,7 @@ import static org.mockito.Mockito.*;
     Then: handler should return true. so FE can send passkey creation form.
     */
 
-public class VerifyEmailOtpUseCaseValidationTest {
+public class VerifyEmailOtpUseCaseTest {
 
     private static final String DEFAULT_AUTH_MODE = "smartphone";
     private static final String DEFAULT_RPID = "bankapp.online";
@@ -148,6 +150,38 @@ public class VerifyEmailOtpUseCaseValidationTest {
         assertEquals(DEFAULT_EMAIL, userOpt.get().getEmail());
     }
 
+    @Test
+    void should_return_Response_with_PublicKeyCredentialCreationOptions_if_user_does_not_exists() {
+        // Given & When
+        VerifyEmailOtpResponse res = defaultUseCase.handle(defaultCommand);
+
+        // Then
+        assertInstanceOf(RegistrationResponse.class, res);
+    }
+
+    @Test
+    void should_return_Response_with_PublicKeyCredentialCreationOptions_if_users_account_is_not_enabled() {
+        User user = new User(DEFAULT_EMAIL);
+        userRepository.save(user);
+
+        var res = defaultUseCase.handle(defaultCommand);
+
+        assertInstanceOf(RegistrationResponse.class, res);
+    }
+
+    @Test
+    void should_return_Response_with_PublicKeyCredentialRequestOptions_if_user_already_exists() {
+        // Given
+        User user = new User(DEFAULT_EMAIL);
+        user.setEnabled(true);
+        userRepository.save(user);
+        // When
+        VerifyEmailOtpResponse res = defaultUseCase.handle(defaultCommand);
+
+        // Then
+        assertInstanceOf(LoginResponse.class, res);
+    }
+}
 
    /*
 1.  A request hits your **Controller**.
@@ -160,4 +194,3 @@ public class VerifyEmailOtpUseCaseValidationTest {
 4.  The Application Service returns this DTO.
 5.  The Controller serializes the DTO to JSON and sends it to the client.
     */
-}
