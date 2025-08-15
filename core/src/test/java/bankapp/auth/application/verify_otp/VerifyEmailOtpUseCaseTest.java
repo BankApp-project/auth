@@ -183,6 +183,18 @@ public class VerifyEmailOtpUseCaseTest {
     }
 
     @Test
+    void should_return_RegistrationResponse_with_at_least_16bytes_long_challenge_if_user_does_not_exists_yet() {
+        // Given & When
+        VerifyEmailOtpResponse res = defaultUseCase.handle(defaultCommand);
+
+        // Then
+        assertThat(res).isInstanceOf(RegistrationResponse.class);
+        RegistrationResponse registrationRes = (RegistrationResponse) res;
+        byte[] challenge = registrationRes.options().challenge();
+        assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
+    }
+
+    @Test
     void should_return_RegistrationResponse_with_unique_Challenge_if_user_does_not_exists_yet() {
         // First attempt
         var res = defaultUseCase.handle(defaultCommand);
@@ -213,19 +225,6 @@ public class VerifyEmailOtpUseCaseTest {
         byte[] challenge = registrationRes.options().challenge();
         byte[] challenge2 = registrationRes2.options().challenge();
         assertNotEquals(challenge2, challenge, "Challenges should be unique");
-    }
-
-
-    @Test
-    void should_return_RegistrationResponse_with_at_least_16bytes_long_challenge_if_user_does_not_exists_yet() {
-        // Given & When
-        VerifyEmailOtpResponse res = defaultUseCase.handle(defaultCommand);
-
-        // Then
-        assertThat(res).isInstanceOf(RegistrationResponse.class);
-        RegistrationResponse registrationRes = (RegistrationResponse) res;
-        byte[] challenge = registrationRes.options().challenge();
-        assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
     }
 
     @Test
@@ -267,7 +266,6 @@ public class VerifyEmailOtpUseCaseTest {
 
         assertThat(challenge1).isNotEqualTo(challenge2);
     }
-
 
     private static byte[] uuidToBytes(UUID uuid) {
         return ByteArrayUtil.uuidToBytes(uuid);
