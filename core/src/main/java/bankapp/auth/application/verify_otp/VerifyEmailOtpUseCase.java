@@ -81,12 +81,16 @@ public class VerifyEmailOtpUseCase {
         var userEntity = new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(userHandle, name, name);
         var rp = new PublicKeyCredentialCreationOptions.PublicKeyCredentialRpEntity(rpId, rpId);
 
+        var pubKeyCredParamList = getPublicKeyCredentialParametersList();
+
+        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(rp, userEntity, challenge, pubKeyCredParamList, null, null, null, null, null, null, null));
+    }
+
+    private List<PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters> getPublicKeyCredentialParametersList() {
         var pubKeyCredParamES256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key", -7);
         var pubKeyCredParamRS256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key",-257);
 
-        var pubKeyCredParamList = List.of(pubKeyCredParamES256, pubKeyCredParamRS256);
-
-        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(rp, userEntity, challenge, pubKeyCredParamList, null, null, null, null, null, null, null));
+        return List.of(pubKeyCredParamES256, pubKeyCredParamRS256);
     }
 
     private void verifyOtp(Otp persistedOtp, String value) {

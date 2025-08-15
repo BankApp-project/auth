@@ -152,6 +152,7 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         //check for RS256 alg
         assertTrue(pubKeyCredParams.stream()
                 .anyMatch(param -> param.alg() == -257));
+
         //its all in the official documentation of webauthn: https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters
     }
 
