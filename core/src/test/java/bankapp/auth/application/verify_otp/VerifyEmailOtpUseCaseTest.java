@@ -183,11 +183,39 @@ public class VerifyEmailOtpUseCaseTest {
         byte[] userHandle = registrationRes.options().user().id();
         assertArrayEquals(userHandle, uuidToBytes(testUser.getId()));
     }
-//
-//    @Test
-//    void should_return_RegistrationResponse_with_Challenge_if_user_does_not_exists_yet() {
-//
-//    }
+
+    @Test
+    void should_return_RegistrationResponse_with_unique_Challenge_if_user_does_not_exists_yet() {
+        // First attempt
+        var res = defaultUseCase.handle(defaultCommand);
+
+        // Prepare data for second attempt - create another OTP entry
+        String secondEmail = "test2@bankapp.online";
+        String secondOtpValue = "654321";
+        EmailAddress secondEmailAddress = new EmailAddress(secondEmail);
+        String hashedSecondOtpValue = hasher.hashSecurely(secondOtpValue);
+
+        // Save second OTP in database
+        Otp secondValidOtp = new Otp(hashedSecondOtpValue, secondEmail);
+        secondValidOtp.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
+        otpRepository.save(secondValidOtp);
+
+        // Create second command
+        VerifyEmailOtpCommand command2 = new VerifyEmailOtpCommand(secondEmailAddress, secondOtpValue);
+
+        // Second attempt
+        var res2 = defaultUseCase.handle(command2);
+
+        assertThat(res).isInstanceOf(RegistrationResponse.class);
+        assertThat(res2).isInstanceOf(RegistrationResponse.class);
+
+        RegistrationResponse registrationRes = (RegistrationResponse) res;
+        RegistrationResponse registrationRes2 = (RegistrationResponse) res2; // Fixed: was assigning res instead of res2
+
+        byte[] challenge = registrationRes.options().challenge();
+        byte[] challenge2 = registrationRes2.options().challenge();
+        assertNotEquals(challenge2,challenge, "Challenges should be unique");
+    }
 
     private static byte[] uuidToBytes(UUID uuid) {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);

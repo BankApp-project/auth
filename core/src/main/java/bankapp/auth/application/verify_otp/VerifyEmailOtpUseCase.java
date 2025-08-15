@@ -58,9 +58,10 @@ public class VerifyEmailOtpUseCase {
     }
 
     private RegistrationResponse getRegistrationResponse(UUID userId) {
+        byte[] challenge = uuidToBytes(UUID.randomUUID());
         byte[] userHandle = uuidToBytes(userId);
         var user = new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(userHandle,null,null);
-        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(null, user, null, null, null, null, null, null, null, null, null));
+        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(null, user, challenge, null, null, null, null, null, null, null, null));
     }
 
 
