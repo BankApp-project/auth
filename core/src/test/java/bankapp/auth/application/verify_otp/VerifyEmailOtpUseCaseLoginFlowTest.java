@@ -10,6 +10,10 @@ import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.service.*;
+import bankapp.auth.domain.service.stubs.StubChallengeGenerator;
+import bankapp.auth.domain.service.stubs.StubHasher;
+import bankapp.auth.domain.service.stubs.StubOtpRepository;
+import bankapp.auth.domain.service.stubs.StubUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
