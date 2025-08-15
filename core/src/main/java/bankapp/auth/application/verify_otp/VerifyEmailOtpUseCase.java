@@ -70,8 +70,8 @@ public class VerifyEmailOtpUseCase {
     private RegistrationResponse getRegistrationResponse(UUID userId) {
         byte[] challenge = challengeGenerator.generate();
         byte[] userHandle = ByteArrayUtil.uuidToBytes(userId);
-        var user = new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(userHandle, null, null);
-        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(null, user, challenge, null, null, null, null, null, null, null, null));
+        var userEntity = new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(userHandle, null, null);
+        return new RegistrationResponse(new PublicKeyCredentialCreationOptions(null, userEntity, challenge, null, null, null, null, null, null, null, null));
     }
 
     private void verifyOtp(Otp persistedOtp, String value) {

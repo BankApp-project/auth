@@ -57,7 +57,6 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         assertInstanceOf(RegistrationResponse.class, res);
     }
 
-
     @Test
     void should_return_RegistrationResponse_with_userId_as_userHandle_if_user_does_not_exists() {
         // Given
@@ -75,7 +74,6 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         assertArrayEquals(userHandle, uuidToBytes(testUser.getId()));
     }
 
-
     @Test
     void should_return_RegistrationResponse_with_at_least_16bytes_long_challenge_if_user_does_not_exists_yet() {
         // Given & When
@@ -87,7 +85,6 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         byte[] challenge = registrationRes.options().challenge();
         assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
     }
-
 
     @Test
     void should_return_RegistrationResponse_with_unique_Challenge_if_user_does_not_exists_yet() {
@@ -121,5 +118,4 @@ public class VerifyEmailOtpUseCaseRegistrationFlowTest {
         byte[] challenge2 = registrationRes2.options().challenge();
         assertNotEquals(challenge2, challenge, "Challenges should be unique");
     }
-
 }
