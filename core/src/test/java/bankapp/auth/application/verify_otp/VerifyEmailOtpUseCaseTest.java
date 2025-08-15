@@ -168,7 +168,7 @@ public class VerifyEmailOtpUseCaseTest {
     }
 
     @Test
-    void should_return_Response_with_userId_as_userHandle_if_user_does_not_exists() {
+    void should_return_RegistrationResponse_with_userId_as_userHandle_if_user_does_not_exists() {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
         UserService userService = mock(UserService.class);
@@ -183,11 +183,28 @@ public class VerifyEmailOtpUseCaseTest {
         byte[] userHandle = registrationRes.options().user().id();
         assertArrayEquals(userHandle, uuidToBytes(testUser.getId()));
     }
+//
+//    @Test
+//    void should_return_RegistrationResponse_with_Challenge_if_user_does_not_exists_yet() {
+//
+//    }
 
-    public static byte[] uuidToBytes(UUID uuid) {
+    private static byte[] uuidToBytes(UUID uuid) {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(uuid.getMostSignificantBits());
         bb.putLong(uuid.getLeastSignificantBits());
         return bb.array();
     }
+
+   /*
+1.  A request hits your **Controller**.
+2.  The Controller calls an **Application Service** in your core domain (e.g., `AuthenticationService`).
+3.  The **Application Service** performs the business logic:
+    *   It fetches the `User` from a `UserRepository`.
+    *   It calls a `ChallengeGenerator` port to get a new, secure challenge.
+    *   It maps the user's registered keys into a list of `PublicKeyCredentialDescriptor` DTOs.
+    *   It assembles all of this into your `domain.dto.PublicKeyCredentialRequestOptions` object.
+4.  The Application Service returns this DTO.
+5.  The Controller serializes the DTO to JSON and sends it to the client.
+    */
 }
