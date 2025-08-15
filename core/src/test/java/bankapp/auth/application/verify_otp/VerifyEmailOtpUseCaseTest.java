@@ -228,6 +228,47 @@ public class VerifyEmailOtpUseCaseTest {
         assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
     }
 
+    @Test
+    void should_return_unique_LoginResponse_if_user_already_exists() {
+        // Given - Create and save two existing users using stub
+        User firstUser = new User(DEFAULT_EMAIL);
+        userRepository.save(firstUser);
+
+        // Prepare data for second user - create another OTP entry
+        String secondEmail = "test2@bankapp.online";
+        String secondOtpValue = "654321";
+        EmailAddress secondEmailAddress = new EmailAddress(secondEmail);
+        String hashedSecondOtpValue = hasher.hashSecurely(secondOtpValue);
+
+        // Save second OTP in database
+        Otp secondValidOtp = new Otp(hashedSecondOtpValue, secondEmail);
+        secondValidOtp.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
+        otpRepository.save(secondValidOtp);
+
+        User secondUser = new User(secondEmailAddress);
+        userRepository.save(secondUser);
+
+        // Create second command
+        VerifyEmailOtpCommand command2 = new VerifyEmailOtpCommand(secondEmailAddress, secondOtpValue);
+
+        // When - Handle both commands
+        VerifyEmailOtpResponse res1 = defaultUseCase.handle(defaultCommand);
+        VerifyEmailOtpResponse res2 = defaultUseCase.handle(command2);
+
+        // Then - Both should be LoginResponse instances with unique challenges
+        assertThat(res1).isInstanceOf(LoginResponse.class);
+        assertThat(res2).isInstanceOf(LoginResponse.class);
+
+        LoginResponse loginRes1 = (LoginResponse) res1;
+        LoginResponse loginRes2 = (LoginResponse) res2;
+
+        byte[] challenge1 = loginRes1.options().challenge();
+        byte[] challenge2 = loginRes2.options().challenge();
+
+        assertThat(challenge1).isNotEqualTo(challenge2);
+    }
+
+
     private static byte[] uuidToBytes(UUID uuid) {
         return ByteArrayUtil.uuidToBytes(uuid);
     }

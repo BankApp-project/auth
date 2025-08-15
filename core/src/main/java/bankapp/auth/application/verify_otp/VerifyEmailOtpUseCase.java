@@ -63,7 +63,8 @@ public class VerifyEmailOtpUseCase {
     }
 
     private LoginResponse getLoginResponse() {
-        return new LoginResponse(new PublicKeyCredentialRequestOptions(null, null, null, null, null, null));
+        byte[] challenge = challengeGenerator.generate();
+        return new LoginResponse(new PublicKeyCredentialRequestOptions(challenge, null, null, null, null, null));
     }
 
     private RegistrationResponse getRegistrationResponse(UUID userId) {
