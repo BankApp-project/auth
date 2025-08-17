@@ -20,7 +20,11 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
 
     private final ChallengeGenerationPort challengeGenerator;
 
-    public PasskeyOptionsServiceImpl(String authMode, String rpId, long timeout, ChallengeGenerationPort challengeGenerator) {
+    public PasskeyOptionsServiceImpl(
+            String authMode,
+            String rpId,
+            long timeout,
+            ChallengeGenerationPort challengeGenerator) {
         this.authMode = authMode;
         this.rpId = rpId;
         this.timeout = timeout;
@@ -28,19 +32,24 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
     }
 
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions() {
-        byte[] challenge = getChallenge();
-        return new PublicKeyCredentialRequestOptions(challenge, null, null, null, null, null);
+        return new PublicKeyCredentialRequestOptions(
+                getChallenge(),
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user) {
-        String name = user.getEmail().getValue();
+        String userDisplayName = user.getEmail().getValue();
 
-        UUID userId = user.getId();
-        byte[] userHandle = getUserHandle(userId);
+        byte[] userHandle = getUserHandle(user.getId());
 
         return new PublicKeyCredentialCreationOptions(
                         getRpEntity(),
-                        getUserEntity(userHandle, name),
+                        getUserEntity(userHandle, userDisplayName),
                         getChallenge(),
                         getPublicKeyCredentialParametersList(),
                         timeout,
@@ -50,46 +59,20 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
                         null,
                         null,
                         null
-                );
+                        );
     }
 
     private PublicKeyCredentialCreationOptions.PublicKeyCredentialRpEntity getRpEntity() {
         return new PublicKeyCredentialCreationOptions.PublicKeyCredentialRpEntity(rpId, rpId);
     }
 
-    private byte[] getUserHandle(UUID userId) {
-        return ByteArrayUtil.uuidToBytes(userId);
-    }
-
-    private List<String> getHints() {
-        List<String> hints = new ArrayList<>();
-        if (authMode.equals("smartphone")) {
-            hints.add("hybrid");
-        }
-        return hints;
-    }
-
-    /**
-     *    this criteria is to make sure that user will be verificated at new credential registration
-     *    according to: <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorselectioncriteria-residentkey">W3 Docs</a>
-     **/
-    private PublicKeyCredentialCreationOptions.AuthenticatorSelectionCriteria getAuthenticatorSelectionCriteria() {
-        String authAttach = "";
-        if (authMode.equals("smartphone")) {
-            authAttach = "cross-platform";
-        }
-
-        return new PublicKeyCredentialCreationOptions.AuthenticatorSelectionCriteria(
-                authAttach,
-                true,
-                "required"
-        );
-    }
-
     private PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity getUserEntity(byte[] userHandle, String name) {
         return new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(userHandle, name, name);
     }
 
+    private byte[] getUserHandle(UUID userId) {
+        return ByteArrayUtil.uuidToBytes(userId);
+    }
 
     private byte[] getChallenge() {
         return challengeGenerator.generate();
@@ -104,5 +87,23 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
         var pubKeyCredParamRS256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key",-257);
 
         return List.of(pubKeyCredParamES256, pubKeyCredParamRS256);
+    }
+
+    /**
+     *    this criteria is to make sure that user will be verificated at new credential registration
+     *    according to: <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorselectioncriteria-residentkey">W3 Docs</a>
+     **/
+    private PublicKeyCredentialCreationOptions.AuthenticatorSelectionCriteria getAuthenticatorSelectionCriteria() {
+        String authAttach = authMode.equals("smartphone") ? "cross-platform" : "";
+
+        return new PublicKeyCredentialCreationOptions.AuthenticatorSelectionCriteria(
+                authAttach,
+                true,
+                "required"
+        );
+    }
+
+    private List<String> getHints() {
+        return authMode.equals("smartphone") ? List.of("hybrid") : new ArrayList<>();
     }
 }
