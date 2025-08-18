@@ -151,7 +151,7 @@ class PasskeyOptionsServiceRegistrationFlowTest {
     }
 
     @Test
-    void should_return_response_with_correct_settings_based_on_authViaSmartphone_flag() {
+    void should_return_response_with_correct_settings_when_DEFAULT_AUTH_MODE_flag_is_smartphone() {
         // Given
         User testUser = new User(DEFAULT_EMAIL);
 
@@ -164,5 +164,26 @@ class PasskeyOptionsServiceRegistrationFlowTest {
 
         assertEquals("hybrid", hints.getFirst());
         assertEquals("cross-platform", authAttach);
+    }
+
+    @Test
+    void should_return_response_with_default_settings_when_DEFAULT_AUTH_MODE_flag_is_default() {
+        //Given
+        User testUser = new User(DEFAULT_EMAIL);
+        var passkeyOptionsService = new PasskeyOptionsServiceImpl(
+                "default",
+                DEFAULT_RPID,
+                DEFAULT_TIMEOUT,
+                new StubChallengeGenerator());
+
+        // When
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
+
+        // Then
+        var authAttach = res.authenticatorSelection().authenticatorAttachment();
+        var hints = res.hints();
+
+        assertEquals("", hints.getFirst());
+        assertEquals("", authAttach);
     }
 }
