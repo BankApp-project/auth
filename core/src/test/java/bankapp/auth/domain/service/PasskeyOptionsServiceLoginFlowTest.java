@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PasskeyOptionsServiceLoginFlowTest {
 
@@ -50,5 +50,13 @@ public class PasskeyOptionsServiceLoginFlowTest {
         byte[] challenge2 = res2.challenge();
 
         assertFalse(java.util.Arrays.equals(challenge1, challenge2), "Challenges should be unique");
+    }
+
+    @Test
+    void should_return_response_with_default_timeout() {
+        var timeout = passkeyOptionsService.getPasskeyRequestOptions().timeout();
+
+        assertNotNull(timeout);
+        assertEquals(DEFAULT_TIMEOUT, timeout);
     }
 }

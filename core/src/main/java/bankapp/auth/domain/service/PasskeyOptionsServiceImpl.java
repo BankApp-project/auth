@@ -34,7 +34,7 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions() {
         return new PublicKeyCredentialRequestOptions(
                 getChallenge(),
-                null,
+                timeout,
                 null,
                 null,
                 null,
