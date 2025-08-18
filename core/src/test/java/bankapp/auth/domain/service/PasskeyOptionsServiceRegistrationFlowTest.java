@@ -186,4 +186,25 @@ class PasskeyOptionsServiceRegistrationFlowTest {
         assertEquals("", hints.getFirst());
         assertEquals("", authAttach);
     }
+
+    /**
+     * Default values according to official DOCS: <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialcreationoptions">...</a>
+     */
+    @Test
+    void should_return_default_values_for_every_not_set_parameter() {
+        User testUser = new User(DEFAULT_EMAIL);
+
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
+
+        // Then
+        var exclCred = res.excludeCredentials();
+        var attestation = res.attestation();
+        var attestationFormats = res.attestationFormats();
+        var extensions = res.extensions();
+
+        assertThat(exclCred).as("Excluded credentials should be empty by default").isEmpty();
+        assertThat(attestation).as("Attestation should be 'none' by default").isEqualTo("none");
+        assertThat(attestationFormats).as("Attestation formats should be empty by default").isEmpty();
+        assertThat(extensions).as("Extensions should be null or empty by default").isNullOrEmpty();
+    }
 }

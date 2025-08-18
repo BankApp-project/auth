@@ -5,6 +5,7 @@ import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,14 +53,16 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
                         getChallenge(),
                         getPublicKeyCredentialParametersList(),
                         timeout,
-                        null,
+                        new ArrayList<>(),
                         getAuthenticatorSelectionCriteria(),
                         getHints(),
-                        null,
-                        null,
+                        "null",
+                        new ArrayList<>(),
                         null
                         );
     }
+
+
 
     private PublicKeyCredentialCreationOptions.PublicKeyCredentialRpEntity getRpEntity() {
         return new PublicKeyCredentialCreationOptions.PublicKeyCredentialRpEntity(rpId, rpId);
