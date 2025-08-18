@@ -3,6 +3,7 @@ package bankapp.auth.application.verify_otp;
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
+import bankapp.auth.application.verify_otp.port.out.CredentialRepository;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
 import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
@@ -25,6 +26,7 @@ public class VerifyEmailOtpUseCase {
     private final UserRepository userRepository;
     private final UserService userService;
     private final PasskeyOptionsService passkeyOptionsService;
+    private final CredentialRepository credentialRepository;
 
     public VerifyEmailOtpUseCase(
             Clock clock,
@@ -32,14 +34,15 @@ public class VerifyEmailOtpUseCase {
             HashingPort hasher,
             UserRepository userRepository,
             UserService userService,
-            PasskeyOptionsService passkeyOptionsService
-    ) {
+            PasskeyOptionsService passkeyOptionsService,
+            CredentialRepository credentialRepository) {
         this.otpRepository = otpRepository;
         this.clock = clock;
         this.hasher = hasher;
         this.userRepository = userRepository;
         this.userService = userService;
         this.passkeyOptionsService = passkeyOptionsService;
+        this.credentialRepository = credentialRepository;
     }
 
     public VerifyEmailOtpResponse handle(VerifyEmailOtpCommand command) {
@@ -53,7 +56,8 @@ public class VerifyEmailOtpUseCase {
         Optional<User> userOpt = userRepository.findByEmail(command.key());
 
         if (userOpt.isPresent() && userOpt.get().isEnabled()) {
-            return new LoginResponse(passkeyOptionsService.getPasskeyRequestOptions());
+            var userCredentials = credentialRepository.load(userOpt.get().getId());
+            return new LoginResponse(passkeyOptionsService.getPasskeyRequestOptions(userOpt.get(), userCredentials));
         } else {
             User user = userService.createUser(email);
             userRepository.save(user);

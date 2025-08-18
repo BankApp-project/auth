@@ -25,6 +25,11 @@ public record CredentialRecord(
         byte[] id,
 
         /*
+         * Corresponding User ID as a byte array
+         */
+        byte[] userHandle,
+
+        /*
          * The credential type. For WebAuthn, this MUST be the string "public-key".
          */
         String type,

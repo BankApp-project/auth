@@ -1,6 +1,7 @@
 package bankapp.auth.domain.service;
 
 import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
+import bankapp.auth.domain.model.CredentialRecord;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
@@ -31,12 +32,12 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
         this.challengeGenerator = challengeGenerator;
     }
 
-    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions() {
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(User user, List<CredentialRecord> userCredentials) {
         return new PublicKeyCredentialRequestOptions(
                 getChallenge(),
                 timeout,
                 rpId,
-                null,
+                new ArrayList<>(),
                 null,
                 null
         );
@@ -56,7 +57,7 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
                         new ArrayList<>(),
                         getAuthenticatorSelectionCriteria(),
                         getHints(),
-                        "null",
+                        "none",
                         new ArrayList<>(),
                         null
                         );
