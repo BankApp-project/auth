@@ -59,4 +59,12 @@ public class PasskeyOptionsServiceLoginFlowTest {
         assertNotNull(timeout);
         assertEquals(DEFAULT_TIMEOUT, timeout);
     }
+
+    @Test
+    void should_return_response_with_default_rpid() {
+        var rpId = passkeyOptionsService.getPasskeyRequestOptions().rpId();
+
+        assertNotNull(rpId);
+        assertEquals(DEFAULT_RPID,rpId);
+    }
 }
