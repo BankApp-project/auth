@@ -20,6 +20,7 @@ public class CredentialOptionsServiceImpl implements CredentialOptionsService {
     private final String rpId;
     private final long timeout;
 
+    //it shouldnt be there. It's part of application layer.
     private final ChallengeGenerationPort challengeGenerator;
 
     public CredentialOptionsServiceImpl(
@@ -33,7 +34,7 @@ public class CredentialOptionsServiceImpl implements CredentialOptionsService {
         this.challengeGenerator = challengeGenerator;
     }
 
-    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(User user, List<CredentialRecord> userCredentials) {
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(User user, List<CredentialRecord> userCredentials, byte[] challenge) {
         return new PublicKeyCredentialRequestOptions(
                 getChallenge(),
                 timeout,

@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface CredentialOptionsService {
     PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user);
-    PublicKeyCredentialRequestOptions getPasskeyRequestOptions(User user, List<CredentialRecord> userCredentials);
+    PublicKeyCredentialRequestOptions getPasskeyRequestOptions(User user, List<CredentialRecord> userCredentials, byte[] challenge);
 }

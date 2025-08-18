@@ -3,6 +3,7 @@ package bankapp.auth.application.verify_otp;
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
+import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verify_otp.port.out.CredentialRepository;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
@@ -27,6 +28,7 @@ public class VerifyEmailOtpUseCase {
     private final UserService userService;
     private final CredentialOptionsService credentialOptionsService;
     private final CredentialRepository credentialRepository;
+    private final ChallengeGenerationPort challengeGenerator;
 
     public VerifyEmailOtpUseCase(
             Clock clock,
@@ -35,7 +37,7 @@ public class VerifyEmailOtpUseCase {
             UserRepository userRepository,
             UserService userService,
             CredentialOptionsService credentialOptionsService,
-            CredentialRepository credentialRepository) {
+            CredentialRepository credentialRepository, ChallengeGenerationPort challengeGenerator) {
         this.otpRepository = otpRepository;
         this.clock = clock;
         this.hasher = hasher;
@@ -43,6 +45,7 @@ public class VerifyEmailOtpUseCase {
         this.userService = userService;
         this.credentialOptionsService = credentialOptionsService;
         this.credentialRepository = credentialRepository;
+        this.challengeGenerator = challengeGenerator;
     }
 
     public VerifyEmailOtpResponse handle(VerifyEmailOtpCommand command) {
@@ -55,9 +58,11 @@ public class VerifyEmailOtpUseCase {
 
         Optional<User> userOpt = userRepository.findByEmail(command.key());
 
+        var challenge = challengeGenerator.generate();
+
         if (userOpt.isPresent() && userOpt.get().isEnabled()) {
             var userCredentials = credentialRepository.load(userOpt.get().getId());
-            return new LoginResponse(credentialOptionsService.getPasskeyRequestOptions(userOpt.get(), userCredentials));
+            return new LoginResponse(credentialOptionsService.getPasskeyRequestOptions(userOpt.get(), userCredentials, challenge));
         } else {
             User user = userService.createUser(email);
             userRepository.save(user);

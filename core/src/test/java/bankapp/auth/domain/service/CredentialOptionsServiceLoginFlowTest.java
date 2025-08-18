@@ -35,6 +35,7 @@ public class CredentialOptionsServiceLoginFlowTest {
                 null,
             null
         ));
+    private static final byte[] DEFAULT_CHALLENGE = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
 
     CredentialOptionsServiceImpl passkeyOptionsService;
 
@@ -53,7 +54,7 @@ public class CredentialOptionsServiceLoginFlowTest {
         // Given
 
         // When
-        var res = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS);
+        var res = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE);
 
         // Then
         byte[] challenge = res.challenge();
@@ -64,8 +65,8 @@ public class CredentialOptionsServiceLoginFlowTest {
     void should_return_unique_response() {
 
         // When
-        var res1 = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS);
-        var res2 = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS);
+        var res1 = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE);
+        var res2 = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE);
 
         // Then
         byte[] challenge1 = res1.challenge();
@@ -76,7 +77,7 @@ public class CredentialOptionsServiceLoginFlowTest {
 
     @Test
     void should_return_response_with_default_timeout() {
-        var timeout = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS).timeout();
+        var timeout = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE).timeout();
 
         assertNotNull(timeout);
         assertEquals(DEFAULT_TIMEOUT, timeout);
@@ -84,7 +85,7 @@ public class CredentialOptionsServiceLoginFlowTest {
 
     @Test
     void should_return_response_with_default_rpid() {
-        var rpId = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS).rpId();
+        var rpId = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE).rpId();
 
         assertNotNull(rpId);
         assertEquals(DEFAULT_RPID,rpId);
@@ -93,7 +94,7 @@ public class CredentialOptionsServiceLoginFlowTest {
     @Test
     void should_return_response_with_allowedCredentials_list_corresponding_to_given_user() {
 
-        var allowedCredentials = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS).allowCredentials();
+        var allowedCredentials = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE).allowCredentials();
 
         assertNotNull(allowedCredentials);
         assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().id() ,allowedCredentials.getFirst().id());
@@ -103,7 +104,7 @@ public class CredentialOptionsServiceLoginFlowTest {
 
     @Test
     void should_return_response_with_userVerification_set_to_required() {
-        var uv = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS).userVerification();
+        var uv = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE).userVerification();
 
         assertNotNull(uv);
         assertEquals("required", uv);
