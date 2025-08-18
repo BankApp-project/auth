@@ -51,17 +51,23 @@ public class VerifyEmailOtpUseCase {
         String key = email.getValue();
         String value = command.value();
 
-        Otp persistedOtp = otpRepository.load(key);
+        Optional<Otp> persistedOtpOptional = otpRepository.load(key);
+        if (persistedOtpOptional.isEmpty()) {
+            throw new VerifyEmailOtpException("No such OTP in the system");
+        }
+        var persistedOtp = persistedOtpOptional.get();
         verifyOtp(persistedOtp, value);
+        otpRepository.delete(persistedOtp.getKey());
 
-        Optional<User> userOpt = userRepository.findByEmail(command.key());
+        Optional<User> userOptional = userRepository.findByEmail(command.key());
 
         var challenge = challengeGenerator.generate();
 
-        if (userOpt.isPresent() && userOpt.get().isEnabled()) {
-            var userCredentials = credentialRepository.load(userOpt.get().getId());
+        //CHALLENGE SHOULD BE PERSISTED HERE
+        if (userOptional.isPresent() && userOptional.get().isEnabled()) {
+            var userCredentials = credentialRepository.load(userOptional.get().getId());
 
-            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userOpt.get(), userCredentials, challenge));
+            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userOptional.get(), userCredentials, challenge));
         } else {
             User user = new User(email);
             userRepository.save(user);
@@ -72,9 +78,7 @@ public class VerifyEmailOtpUseCase {
 
 
     private void verifyOtp(Otp persistedOtp, String value) {
-        if (persistedOtp == null) {
-            throw new VerifyEmailOtpException("No such OTP in the system");
-        }
+
         if (!persistedOtp.isValid(clock)) {
             throw new VerifyEmailOtpException("Otp has expired");
         }

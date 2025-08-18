@@ -4,6 +4,7 @@ import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.domain.model.Otp;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StubOtpRepository implements OtpRepository {
@@ -16,7 +17,12 @@ public class StubOtpRepository implements OtpRepository {
     }
 
     @Override
-    public Otp load(String key) {
-        return inMemoryOtpRepo.get(key);
+    public Optional<Otp> load(String key) {
+        return Optional.ofNullable(inMemoryOtpRepo.get(key));
+    }
+
+    @Override
+    public void delete(String key) {
+        inMemoryOtpRepo.remove(key);
     }
 }

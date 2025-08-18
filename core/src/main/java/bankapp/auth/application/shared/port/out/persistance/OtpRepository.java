@@ -2,9 +2,13 @@ package bankapp.auth.application.shared.port.out.persistance;
 
 import bankapp.auth.domain.model.Otp;
 
+import java.util.Optional;
+
 public interface OtpRepository {
 
     void save(Otp otp);
 
-    Otp load(String key);
+    Optional<Otp> load(String key);
+
+    void delete(String key);
 }

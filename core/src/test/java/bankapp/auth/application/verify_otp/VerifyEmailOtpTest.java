@@ -2,7 +2,6 @@ package bankapp.auth.application.verify_otp;
 
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
-import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.Test;
@@ -22,12 +21,12 @@ public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
     @Test
     void should_load_correct_otp_from_repository() {
         // When
-        Otp otp = otpRepository.load(DEFAULT_OTP_KEY);
+        var otpOptional = otpRepository.load(DEFAULT_OTP_KEY);
 
         // Then
-        assertThat(otp).isNotNull();
-        assertThat(otp.getKey()).isEqualTo(DEFAULT_OTP_KEY);
-        assertThat(otp.getValue()).isEqualTo(hashedOtpValue);
+        assertThat(otpOptional).isPresent();
+        assertThat(otpOptional.get().getKey()).isEqualTo(DEFAULT_OTP_KEY);
+        assertThat(otpOptional.get().getValue()).isEqualTo(hashedOtpValue);
     }
 
     @Test
@@ -93,5 +92,12 @@ public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
         Optional<User> userOpt = userRepository.findByEmail(DEFAULT_EMAIL);
         assertThat(userOpt).isPresent();
         assertThat(userOpt.get().getEmail()).isEqualTo(DEFAULT_EMAIL);
+    }
+
+    @Test
+    void should_delete_otp_after_validation() {
+        defaultUseCase.handle(defaultCommand);
+
+        assertThat(otpRepository.load(DEFAULT_OTP_KEY)).isEmpty();
     }
 }
