@@ -1,4 +1,4 @@
-package bankapp.auth.adapters;
+package bankapp.auth.adapters.out;
 
 import bankapp.auth.domain.model.enums.AuthMode;
 import bankapp.auth.domain.model.CredentialRecord;
