@@ -6,7 +6,7 @@ import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
 import bankapp.auth.domain.model.CredentialRecord;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.service.ByteArrayUtil;
-import bankapp.auth.domain.service.CredentialOptionsService;
+import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;
@@ -64,7 +64,7 @@ public class VerifyEmailOtpLoginFlowTest extends VerifyEmailOtpTestBase {
         var credentials = List.of(credential);
 
         var mockCredentialRepository = mock(CredentialRepository.class);
-        var mockCredentialOptionsService = mock(CredentialOptionsService.class);
+        var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
         when(mockCredentialRepository.load(defaultUser.getId())).thenReturn(credentials);
 
         var useCase = new VerifyEmailOtpUseCase(
@@ -82,7 +82,7 @@ public class VerifyEmailOtpLoginFlowTest extends VerifyEmailOtpTestBase {
     @Test
     void should_generate_and_pass_challenge_to_service_when_user_exists() {
         // Given
-        var mockCredentialOptionsService = mock(CredentialOptionsService.class);
+        var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
         var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
         var challenge = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
         when(mockChallengeGenerator.generate()).thenReturn(challenge);

@@ -1,8 +1,9 @@
-package bankapp.auth.domain.service;
+package bankapp.auth.adapters;
 
 import bankapp.auth.domain.model.enums.AuthMode;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
+import bankapp.auth.domain.service.ByteArrayUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,12 +22,12 @@ class CredentialOptionsServiceRegistrationFlowTest {
     public static final User TEST_USER = new User(DEFAULT_EMAIL);
     private static final byte[] DEFAULT_CHALLENGE = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
 
-    CredentialOptionsServiceImpl passkeyOptionsService;
+    CredentialOptionsService passkeyOptionsService;
 
 
     @BeforeEach
     void setup() {
-        passkeyOptionsService = new CredentialOptionsServiceImpl(
+        passkeyOptionsService = new CredentialOptionsService(
                 DEFAULT_AUTH_MODE,
                 DEFAULT_RPID,
                 DEFAULT_TIMEOUT
@@ -141,7 +142,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        passkeyOptionsService = new CredentialOptionsServiceImpl(
+        passkeyOptionsService = new CredentialOptionsService(
                 AuthMode.SMARTPHONE,
                 DEFAULT_RPID,
                 DEFAULT_TIMEOUT);
@@ -159,7 +160,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     void should_return_response_with_default_settings_when_DEFAULT_AUTH_MODE_flag_is_default() {
         //Given
         User testUser = new User(DEFAULT_EMAIL);
-        var passkeyOptionsService = new CredentialOptionsServiceImpl(
+        var passkeyOptionsService = new CredentialOptionsService(
                 AuthMode.STANDARD,
                 DEFAULT_RPID,
                 DEFAULT_TIMEOUT

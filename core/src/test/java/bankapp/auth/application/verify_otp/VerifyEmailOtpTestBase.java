@@ -9,8 +9,7 @@ import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.enums.AuthMode;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.domain.service.CredentialOptionsService;
-import bankapp.auth.domain.service.CredentialOptionsServiceImpl;
+import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
 import bankapp.auth.domain.service.UserService;
 import bankapp.auth.domain.service.stubs.StubChallengeGenerator;
 import bankapp.auth.domain.service.stubs.StubHasher;
@@ -44,7 +43,7 @@ import static org.mockito.Mockito.mock;
         protected HashingPort hasher;
         protected UserRepository userRepository;
         protected UserService userService;
-        protected CredentialOptionsService credentialOptionsService;
+        protected CredentialOptionsPort credentialOptionsPort;
         protected CredentialRepository credentialRepository;
         protected ChallengeGenerationPort challengeGenerator;
 
@@ -60,11 +59,7 @@ import static org.mockito.Mockito.mock;
             hasher = new StubHasher();
             userRepository = new StubUserRepository();
             userService = new UserService();
-            credentialOptionsService = new CredentialOptionsServiceImpl(
-                    DEFAULT_AUTH_MODE,
-                    DEFAULT_RPID,
-                    DEFAULT_TIMEOUT
-            );
+            credentialOptionsPort = mock(CredentialOptionsPort.class);
             credentialRepository = mock(CredentialRepository.class);
             challengeGenerator = new StubChallengeGenerator();
 
@@ -82,7 +77,7 @@ import static org.mockito.Mockito.mock;
                     hasher,
                     userRepository,
                     userService,
-                    credentialOptionsService,
+                    credentialOptionsPort,
                     credentialRepository,
                     challengeGenerator
             );

@@ -1,4 +1,4 @@
-package bankapp.auth.domain.service;
+package bankapp.auth.adapters;
 
 import bankapp.auth.domain.model.enums.AuthMode;
 import bankapp.auth.domain.model.CredentialRecord;
@@ -7,18 +7,20 @@ import bankapp.auth.domain.model.enums.UserVerificationRequirement;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialDescriptor;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
+import bankapp.auth.domain.service.ByteArrayUtil;
+import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CredentialOptionsServiceImpl implements CredentialOptionsService {
+public class CredentialOptionsService implements CredentialOptionsPort {
 
     private final AuthMode authMode;
     private final String rpId;
     private final long timeout;
 
-    public CredentialOptionsServiceImpl(
+    public CredentialOptionsService(
             AuthMode authMode,
             String rpId,
             long timeout

@@ -1,9 +1,10 @@
-package bankapp.auth.domain.service;
+package bankapp.auth.adapters;
 
 import bankapp.auth.domain.model.enums.AuthMode;
 import bankapp.auth.domain.model.CredentialRecord;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
+import bankapp.auth.domain.service.ByteArrayUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,11 +38,11 @@ public class CredentialOptionsServiceLoginFlowTest {
         ));
     private static final byte[] DEFAULT_CHALLENGE = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
 
-    CredentialOptionsServiceImpl passkeyOptionsService;
+    CredentialOptionsService passkeyOptionsService;
 
     @BeforeEach
     void setup() {
-        passkeyOptionsService = new CredentialOptionsServiceImpl(
+        passkeyOptionsService = new CredentialOptionsService(
                 DEFAULT_AUTH_MODE,
                 DEFAULT_RPID,
                 DEFAULT_TIMEOUT

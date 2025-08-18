@@ -4,7 +4,7 @@ import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.service.ByteArrayUtil;
-import bankapp.auth.domain.service.CredentialOptionsService;
+import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -42,7 +42,7 @@ public class VerifyEmailOtpRegistrationFlowTest extends VerifyEmailOtpTestBase {
     @Test
     void should_pass_generated_challenge_to_CredentialOptionsService_for_new_user() {
         // Given
-        var mockCredentialOptionsService = mock(CredentialOptionsService.class);
+        var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
         var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
         var challenge = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
         when(mockChallengeGenerator.generate()).thenReturn(challenge);
