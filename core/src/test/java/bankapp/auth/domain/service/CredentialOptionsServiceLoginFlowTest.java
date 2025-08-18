@@ -1,5 +1,6 @@
 package bankapp.auth.domain.service;
 
+import bankapp.auth.domain.model.enums.AuthMode;
 import bankapp.auth.domain.model.CredentialRecord;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CredentialOptionsServiceLoginFlowTest {
 
 
-    private static final String DEFAULT_AUTH_MODE = "smartphone";
+    private static final AuthMode DEFAULT_AUTH_MODE = AuthMode.SMARTPHONE;
     private static final String DEFAULT_RPID = "bankapp.online";
     private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
     private static final EmailAddress DEFAULT_EMAIL_ADDRESS = new EmailAddress("test@bankapp.online");
@@ -91,6 +92,6 @@ public class CredentialOptionsServiceLoginFlowTest {
         var uv = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE).userVerification();
 
         assertNotNull(uv);
-        assertEquals("required", uv);
+        assertEquals("required", uv.getValue());
     }
 }

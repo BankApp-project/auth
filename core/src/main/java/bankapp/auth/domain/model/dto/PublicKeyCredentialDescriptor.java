@@ -1,7 +1,7 @@
 package bankapp.auth.domain.model.dto;
 
 
-import bankapp.auth.domain.model.AuthenticatorTransport;
+import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 
 import java.util.List;
 

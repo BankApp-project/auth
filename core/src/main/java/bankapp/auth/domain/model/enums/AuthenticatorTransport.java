@@ -1,4 +1,4 @@
-package bankapp.auth.domain.model   ;
+package bankapp.auth.domain.model.enums;
 
 /**
  * Represents the authenticator transport methods as defined by the W3C WebAuthn

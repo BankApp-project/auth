@@ -10,12 +10,13 @@ import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
 import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
+import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.service.CredentialOptionsService;
 import bankapp.auth.domain.service.UserService;
 
 import java.time.Clock;
-import java.util.*;
+import java.util.Optional;
 
 public class VerifyEmailOtpUseCase {
 
@@ -31,13 +32,14 @@ public class VerifyEmailOtpUseCase {
     private final ChallengeGenerationPort challengeGenerator;
 
     public VerifyEmailOtpUseCase(
-            Clock clock,
-            OtpRepository otpRepository,
-            HashingPort hasher,
-            UserRepository userRepository,
-            UserService userService,
-            CredentialOptionsService credentialOptionsService,
-            CredentialRepository credentialRepository, ChallengeGenerationPort challengeGenerator) {
+            @NotNull Clock clock,
+            @NotNull OtpRepository otpRepository,
+            @NotNull HashingPort hasher,
+            @NotNull UserRepository userRepository,
+            @NotNull UserService userService,
+            @NotNull CredentialOptionsService credentialOptionsService,
+            @NotNull CredentialRepository credentialRepository,
+            @NotNull ChallengeGenerationPort challengeGenerator) {
         this.otpRepository = otpRepository;
         this.clock = clock;
         this.hasher = hasher;
@@ -62,14 +64,15 @@ public class VerifyEmailOtpUseCase {
 
         if (userOpt.isPresent() && userOpt.get().isEnabled()) {
             var userCredentials = credentialRepository.load(userOpt.get().getId());
+
             return new LoginResponse(credentialOptionsService.getPasskeyRequestOptions(userOpt.get(), userCredentials, challenge));
         } else {
             User user = userService.createUser(email);
             userRepository.save(user);
+
             return new RegistrationResponse(credentialOptionsService.getPasskeyCreationOptions(user, challenge));
         }
     }
-
 
 
     private void verifyOtp(Otp persistedOtp, String value) {

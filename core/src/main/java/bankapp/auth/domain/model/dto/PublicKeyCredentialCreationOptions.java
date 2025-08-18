@@ -1,5 +1,7 @@
 package bankapp.auth.domain.model.dto;
 
+import bankapp.auth.domain.model.enums.UserVerificationRequirement;
+
 import java.util.List;
 import java.util.Map;
 
@@ -111,6 +113,6 @@ public record PublicKeyCredentialCreationOptions(
     public record AuthenticatorSelectionCriteria(
             String authenticatorAttachment,
             boolean requireResidentKey,
-            String userVerification
+            UserVerificationRequirement userVerification
     ) {}
 }

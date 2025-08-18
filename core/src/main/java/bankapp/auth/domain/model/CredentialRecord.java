@@ -1,5 +1,7 @@
 package bankapp.auth.domain.model;
 
+import bankapp.auth.domain.model.enums.AuthenticatorTransport;
+
 import java.util.List;
 import java.util.Map;
 

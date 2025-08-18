@@ -26,7 +26,6 @@ public class InitiateVerificationUseCase {
     private final OtpRepository otpRepository;
     private final NotificationPort notificator;
 
-
     public InitiateVerificationUseCase(
             @NotNull EventPublisherPort eventPublisher,
             @NotNull OtpGenerationPort otpGenerator,

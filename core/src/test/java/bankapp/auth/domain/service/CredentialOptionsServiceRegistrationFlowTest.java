@@ -1,5 +1,6 @@
 package bankapp.auth.domain.service;
 
+import bankapp.auth.domain.model.enums.AuthMode;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CredentialOptionsServiceRegistrationFlowTest {
 
-    private static final String DEFAULT_AUTH_MODE = "smartphone";
+    private static final AuthMode DEFAULT_AUTH_MODE = AuthMode.SMARTPHONE;
     private static final String DEFAULT_RPID = "bankapp.online";
     private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
 
@@ -131,7 +132,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
 
         assertNotNull(authSelCriteria);
         assertTrue(authSelCriteria.requireResidentKey());
-        assertEquals("required", authSelCriteria.userVerification());
+        assertEquals("required", authSelCriteria.userVerification().getValue());
     }
 
     @Test
@@ -140,6 +141,10 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
+        passkeyOptionsService = new CredentialOptionsServiceImpl(
+                AuthMode.SMARTPHONE,
+                DEFAULT_RPID,
+                DEFAULT_TIMEOUT);
         var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 
         // Then
@@ -155,7 +160,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         //Given
         User testUser = new User(DEFAULT_EMAIL);
         var passkeyOptionsService = new CredentialOptionsServiceImpl(
-                "default",
+                AuthMode.STANDARD,
                 DEFAULT_RPID,
                 DEFAULT_TIMEOUT
         );

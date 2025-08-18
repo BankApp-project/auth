@@ -1,6 +1,8 @@
 package bankapp.auth.domain.model.dto;
 
 
+import bankapp.auth.domain.model.enums.UserVerificationRequirement;
+
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +53,7 @@ public record PublicKeyCredentialRequestOptions(
          * for this authentication ceremony.
          * (Optional, defaults to "preferred")
          */
-        String userVerification,
+        UserVerificationRequirement userVerification,
 
         /*
          * Client-side extensions to be used during the authentication ceremony.

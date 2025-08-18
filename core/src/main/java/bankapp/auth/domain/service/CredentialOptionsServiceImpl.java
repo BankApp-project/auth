@@ -1,7 +1,9 @@
 package bankapp.auth.domain.service;
 
+import bankapp.auth.domain.model.enums.AuthMode;
 import bankapp.auth.domain.model.CredentialRecord;
 import bankapp.auth.domain.model.User;
+import bankapp.auth.domain.model.enums.UserVerificationRequirement;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialDescriptor;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
@@ -12,15 +14,12 @@ import java.util.UUID;
 
 public class CredentialOptionsServiceImpl implements CredentialOptionsService {
 
-    //"smartphone" for smartphone-first userflow
-    //"default" for default userflow
-    //it can be enum later on
-    private final String authMode;
+    private final AuthMode authMode;
     private final String rpId;
     private final long timeout;
 
     public CredentialOptionsServiceImpl(
-            String authMode,
+            AuthMode authMode,
             String rpId,
             long timeout
     ) {
@@ -35,7 +34,7 @@ public class CredentialOptionsServiceImpl implements CredentialOptionsService {
                 timeout,
                 rpId,
                 getAllowedCredentials(userCredentials),
-                "required",
+                UserVerificationRequirement.REQUIRED,
                 null
         );
     }
@@ -103,16 +102,16 @@ public class CredentialOptionsServiceImpl implements CredentialOptionsService {
      *    according to: <a href="https://www.w3.org/TR/webauthn-3/#dom-authenticatorselectioncriteria-residentkey">W3 Docs</a>
      **/
     private PublicKeyCredentialCreationOptions.AuthenticatorSelectionCriteria getAuthenticatorSelectionCriteria() {
-        String authAttach = authMode.equals("smartphone") ? "cross-platform" : "";
+        String authAttach = authMode.equals(AuthMode.SMARTPHONE) ? "cross-platform" : "";
 
         return new PublicKeyCredentialCreationOptions.AuthenticatorSelectionCriteria(
                 authAttach,
                 true,
-                "required"
+                UserVerificationRequirement.REQUIRED
         );
     }
 
     private List<String> getHints() {
-        return authMode.equals("smartphone") ? List.of("hybrid") : List.of("");
+        return authMode.equals(AuthMode.SMARTPHONE) ? List.of("hybrid") : List.of("");
     }
 }
