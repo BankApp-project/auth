@@ -4,6 +4,7 @@ import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
 import bankapp.auth.domain.model.CredentialRecord;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
+import bankapp.auth.domain.model.dto.PublicKeyCredentialDescriptor;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
 
 import java.util.ArrayList;
@@ -37,10 +38,23 @@ public class CredentialOptionsServiceImpl implements CredentialOptionsService {
                 getChallenge(),
                 timeout,
                 rpId,
-                new ArrayList<>(),
+                getAllowedCredentials(userCredentials),
                 null,
                 null
         );
+    }
+
+    private List<PublicKeyCredentialDescriptor> getAllowedCredentials(List<CredentialRecord> userCredentials) {
+        List<PublicKeyCredentialDescriptor> res = new ArrayList<>();
+        for (var credential : userCredentials) {
+            var credentialDescriptor = new PublicKeyCredentialDescriptor(
+                    credential.type(),
+                    credential.id(),
+                    credential.transports()
+            );
+            res.add(credentialDescriptor);
+        }
+        return res;
     }
 
     public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user) {

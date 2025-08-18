@@ -16,62 +16,62 @@ public record PublicKeyCredentialCreationOptions(
         // NOTE: For JSON serialization, any field of type byte[] (like 'challenge'
         // and 'user.id') MUST be Base64URL encoded.
 
-        /**
+        /*
          * Information about the Relying Party.
          * (Required)
          */
         PublicKeyCredentialRpEntity rp,
 
-        /**
+        /*
          * Information about the user account.
          * (Required)
          */
         PublicKeyCredentialUserEntity user,
 
-        /**
+        /*
          * A cryptographically random buffer to prevent replay attacks.
          * (Required)
          */
         byte[] challenge,
 
-        /**
+        /*
          * A list of desired credential properties (type and algorithm).
          * (Required)
          */
         List<PublicKeyCredentialParameters> pubKeyCredParams,
 
-        /**
+        /*
          * The time, in milliseconds, that the user has to complete the ceremony.
          * (Optional)
          */
         Long timeout,
 
-        /**
+        /*
          * A list of existing credentials to prevent duplicate registrations on this device.
          * (Optional, defaults to empty list)
          */
         List<PublicKeyCredentialDescriptor> excludeCredentials,
 
-        /**
+        /*
          * Specifies requirements for the authenticator.
          * (Optional)
          */
         AuthenticatorSelectionCriteria authenticatorSelection,
 
-        /**
+        /*
          * A list of public key credential types, ordered from most to least preferred.
          * (Optional, defaults to empty list)
          * @see <a href="https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialcreationoptions-hints">hints member</a>
          */
         List<String> hints,
 
-        /**
+        /*
          * The server's preference for attestation conveyance.
          * (Optional, defaults to "none")
          */
         String attestation,
 
-        /**
+        /*
          * A list of attestation statement format identifiers that the Relying Party is
          * willing to accept.
          * (Optional, defaults to empty list)
@@ -79,7 +79,7 @@ public record PublicKeyCredentialCreationOptions(
          */
         List<String> attestationFormats,
 
-        /**
+        /*
          * Client-side extensions to be used during the creation ceremony.
          * (Optional)
          */
@@ -103,12 +103,6 @@ public record PublicKeyCredentialCreationOptions(
      * @see <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters">W3C: PublicKeyCredentialParameters</a>
      */
     public record PublicKeyCredentialParameters(String type, long alg) {}
-
-    /**
-     * Describes an existing public key credential to be excluded.
-     * @see <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialdescriptor">W3C: PublicKeyCredentialDescriptor</a>
-     */
-    public record PublicKeyCredentialDescriptor(String type, byte[] id, List<String> transports) {}
 
     /**
      * Specifies the Relying Party's requirements for the desired authenticator.

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,10 +20,10 @@ public class CredentialOptionsServiceLoginFlowTest {
     private static final String DEFAULT_RPID = "bankapp.online";
     private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
     private static final EmailAddress DEFAULT_EMAIL_ADDRESS = new EmailAddress("test@bankapp.online");
-    private static final User testUser = new User(DEFAULT_EMAIL_ADDRESS);
-    private static final List<CredentialRecord> testUserCredentials = List.of(new CredentialRecord(
-                null,
-                null,
+    private static final User DEFAULT_USER = new User(DEFAULT_EMAIL_ADDRESS);
+    private static final List<CredentialRecord> DEFAULT_USER_CREDENTIALS = List.of(new CredentialRecord(
+                ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
+                ByteArrayUtil.uuidToBytes(DEFAULT_USER.getId()),
                 null,
                 null,
                 0L,
@@ -52,7 +53,7 @@ public class CredentialOptionsServiceLoginFlowTest {
         // Given
 
         // When
-        var res = passkeyOptionsService.getPasskeyRequestOptions(testUser, testUserCredentials);
+        var res = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS);
 
         // Then
         byte[] challenge = res.challenge();
@@ -63,8 +64,8 @@ public class CredentialOptionsServiceLoginFlowTest {
     void should_return_unique_response() {
 
         // When
-        var res1 = passkeyOptionsService.getPasskeyRequestOptions(testUser, testUserCredentials);
-        var res2 = passkeyOptionsService.getPasskeyRequestOptions(testUser, testUserCredentials);
+        var res1 = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS);
+        var res2 = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS);
 
         // Then
         byte[] challenge1 = res1.challenge();
@@ -75,7 +76,7 @@ public class CredentialOptionsServiceLoginFlowTest {
 
     @Test
     void should_return_response_with_default_timeout() {
-        var timeout = passkeyOptionsService.getPasskeyRequestOptions(testUser, testUserCredentials).timeout();
+        var timeout = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS).timeout();
 
         assertNotNull(timeout);
         assertEquals(DEFAULT_TIMEOUT, timeout);
@@ -83,7 +84,7 @@ public class CredentialOptionsServiceLoginFlowTest {
 
     @Test
     void should_return_response_with_default_rpid() {
-        var rpId = passkeyOptionsService.getPasskeyRequestOptions(testUser, testUserCredentials).rpId();
+        var rpId = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS).rpId();
 
         assertNotNull(rpId);
         assertEquals(DEFAULT_RPID,rpId);
@@ -92,8 +93,11 @@ public class CredentialOptionsServiceLoginFlowTest {
     @Test
     void should_return_response_with_allowedCredentials_list_corresponding_to_given_user() {
 
-        var allowedCredentials = passkeyOptionsService.getPasskeyRequestOptions(testUser, testUserCredentials).allowCredentials();
+        var allowedCredentials = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS).allowCredentials();
 
         assertNotNull(allowedCredentials);
+        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().id() ,allowedCredentials.getFirst().id());
+        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().type(), allowedCredentials.getFirst().type());
+        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().transports(),allowedCredentials.getFirst().transports());
     }
 }
