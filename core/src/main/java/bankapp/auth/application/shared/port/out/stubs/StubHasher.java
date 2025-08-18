@@ -1,4 +1,4 @@
-package bankapp.auth.domain.service.stubs;
+package bankapp.auth.application.shared.port.out.stubs;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
 

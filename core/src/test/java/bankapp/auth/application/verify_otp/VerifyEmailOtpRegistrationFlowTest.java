@@ -48,7 +48,7 @@ public class VerifyEmailOtpRegistrationFlowTest extends VerifyEmailOtpTestBase {
         when(mockChallengeGenerator.generate()).thenReturn(challenge);
 
         var useCase = new VerifyEmailOtpUseCase(
-                DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService,
+                DEFAULT_CLOCK, otpRepository, hasher, userRepository,
                 mockCredentialOptionsService, credentialRepository, mockChallengeGenerator
         );
 

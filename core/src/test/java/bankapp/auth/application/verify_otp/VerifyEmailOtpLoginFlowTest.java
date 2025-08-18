@@ -68,7 +68,7 @@ public class VerifyEmailOtpLoginFlowTest extends VerifyEmailOtpTestBase {
         when(mockCredentialRepository.load(defaultUser.getId())).thenReturn(credentials);
 
         var useCase = new VerifyEmailOtpUseCase(
-                DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService,
+                DEFAULT_CLOCK, otpRepository, hasher, userRepository,
                 mockCredentialOptionsService, mockCredentialRepository, challengeGenerator
         );
 
@@ -88,7 +88,7 @@ public class VerifyEmailOtpLoginFlowTest extends VerifyEmailOtpTestBase {
         when(mockChallengeGenerator.generate()).thenReturn(challenge);
 
         var useCase = new VerifyEmailOtpUseCase(
-                DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService,
+                DEFAULT_CLOCK, otpRepository, hasher, userRepository,
                 mockCredentialOptionsService, credentialRepository, mockChallengeGenerator
         );
 

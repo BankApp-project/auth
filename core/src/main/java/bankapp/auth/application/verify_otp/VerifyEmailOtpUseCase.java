@@ -13,7 +13,6 @@ import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
-import bankapp.auth.domain.service.UserService;
 
 import java.time.Clock;
 import java.util.Optional;
@@ -26,7 +25,6 @@ public class VerifyEmailOtpUseCase {
     private final OtpRepository otpRepository;
     private final HashingPort hasher;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final CredentialOptionsPort credentialOptionsPort;
     private final CredentialRepository credentialRepository;
     private final ChallengeGenerationPort challengeGenerator;
@@ -36,7 +34,6 @@ public class VerifyEmailOtpUseCase {
             @NotNull OtpRepository otpRepository,
             @NotNull HashingPort hasher,
             @NotNull UserRepository userRepository,
-            @NotNull UserService userService,
             @NotNull CredentialOptionsPort credentialOptionsPort,
             @NotNull CredentialRepository credentialRepository,
             @NotNull ChallengeGenerationPort challengeGenerator) {
@@ -44,7 +41,6 @@ public class VerifyEmailOtpUseCase {
         this.clock = clock;
         this.hasher = hasher;
         this.userRepository = userRepository;
-        this.userService = userService;
         this.credentialOptionsPort = credentialOptionsPort;
         this.credentialRepository = credentialRepository;
         this.challengeGenerator = challengeGenerator;
@@ -67,7 +63,7 @@ public class VerifyEmailOtpUseCase {
 
             return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userOpt.get(), userCredentials, challenge));
         } else {
-            User user = userService.createUser(email);
+            User user = new User(email);
             userRepository.save(user);
 
             return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge));

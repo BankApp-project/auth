@@ -45,7 +45,7 @@ public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
         // Given
         Clock fixedClock = Clock.fixed(Instant.now().plusSeconds(DEFAULT_TTL + 1), ZoneId.of("Z"));
         // Re-create use case with the clock that is in the future
-        var useCaseWithFutureClock = new VerifyEmailOtpUseCase(fixedClock, otpRepository, hasher, userRepository, userService, credentialOptionsPort, credentialRepository, challengeGenerator);
+        var useCaseWithFutureClock = new VerifyEmailOtpUseCase(fixedClock, otpRepository, hasher, userRepository, credentialOptionsPort, credentialRepository, challengeGenerator);
 
         // When / Then
         var exception = assertThrows(VerifyEmailOtpException.class, () -> useCaseWithFutureClock.handle(defaultCommand));
@@ -72,7 +72,7 @@ public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        var useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService, credentialOptionsPort, credentialRepository, challengeGenerator);
+        var useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, credentialOptionsPort, credentialRepository, challengeGenerator);
 
         // When
         useCase.handle(defaultCommand);

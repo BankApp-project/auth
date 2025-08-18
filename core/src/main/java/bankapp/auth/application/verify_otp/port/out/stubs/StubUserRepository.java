@@ -1,4 +1,4 @@
-package bankapp.auth.domain.service.stubs;
+package bankapp.auth.application.verify_otp.port.out.stubs;
 
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.User;

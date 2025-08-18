@@ -7,14 +7,12 @@ import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verify_otp.port.out.CredentialRepository;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.Otp;
-import bankapp.auth.domain.model.enums.AuthMode;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
-import bankapp.auth.domain.service.UserService;
-import bankapp.auth.domain.service.stubs.StubChallengeGenerator;
-import bankapp.auth.domain.service.stubs.StubHasher;
-import bankapp.auth.domain.service.stubs.StubOtpRepository;
-import bankapp.auth.domain.service.stubs.StubUserRepository;
+import bankapp.auth.application.verify_otp.port.out.stubs.StubChallengeGenerator;
+import bankapp.auth.application.shared.port.out.stubs.StubHasher;
+import bankapp.auth.application.shared.port.out.stubs.StubOtpRepository;
+import bankapp.auth.application.verify_otp.port.out.stubs.StubUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.time.Clock;
@@ -28,9 +26,6 @@ import static org.mockito.Mockito.mock;
     public abstract class VerifyEmailOtpTestBase {
 
         // --- SHARED CONSTANTS ---
-        protected static final AuthMode DEFAULT_AUTH_MODE = AuthMode.SMARTPHONE;
-        protected static final String DEFAULT_RPID = "bankapp.online";
-        protected static final long DEFAULT_TIMEOUT = 30000; // 30s in ms
         protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
         protected static final int DEFAULT_TTL = 98; // in seconds
         protected static final String DEFAULT_OTP_KEY = "test@bankapp.online";
@@ -42,7 +37,6 @@ import static org.mockito.Mockito.mock;
         protected OtpRepository otpRepository;
         protected HashingPort hasher;
         protected UserRepository userRepository;
-        protected UserService userService;
         protected CredentialOptionsPort credentialOptionsPort;
         protected CredentialRepository credentialRepository;
         protected ChallengeGenerationPort challengeGenerator;
@@ -58,7 +52,6 @@ import static org.mockito.Mockito.mock;
             otpRepository = new StubOtpRepository();
             hasher = new StubHasher();
             userRepository = new StubUserRepository();
-            userService = new UserService();
             credentialOptionsPort = mock(CredentialOptionsPort.class);
             credentialRepository = mock(CredentialRepository.class);
             challengeGenerator = new StubChallengeGenerator();
@@ -76,7 +69,6 @@ import static org.mockito.Mockito.mock;
                     otpRepository,
                     hasher,
                     userRepository,
-                    userService,
                     credentialOptionsPort,
                     credentialRepository,
                     challengeGenerator
