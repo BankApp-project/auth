@@ -39,7 +39,7 @@ public class CredentialOptionsServiceImpl implements CredentialOptionsService {
                 timeout,
                 rpId,
                 getAllowedCredentials(userCredentials),
-                null,
+                "required",
                 null
         );
     }

@@ -100,4 +100,12 @@ public class CredentialOptionsServiceLoginFlowTest {
         assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().type(), allowedCredentials.getFirst().type());
         assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().transports(),allowedCredentials.getFirst().transports());
     }
+
+    @Test
+    void should_return_response_with_userVerification_set_to_required() {
+        var uv = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS).userVerification();
+
+        assertNotNull(uv);
+        assertEquals("required", uv);
+    }
 }
