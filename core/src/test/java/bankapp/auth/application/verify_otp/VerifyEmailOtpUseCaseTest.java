@@ -58,7 +58,7 @@ public class VerifyEmailOtpUseCaseTest {
     private final HashingPort hasher = new StubHasher();
     private final UserRepository userRepository = new StubUserRepository();
     private final UserService userService = new UserService();
-    private final PasskeyOptionsService passkeyOptionsService = new PasskeyOptionsServiceImpl(
+    private final CredentialOptionsService credentialOptionsService = new CredentialOptionsServiceImpl(
             DEFAULT_AUTH_MODE,
             DEFAULT_RPID,
             DEFAULT_TIMEOUT,
@@ -76,7 +76,7 @@ public class VerifyEmailOtpUseCaseTest {
         VALID_OTP.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(VALID_OTP);
         defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
-        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, passkeyOptionsService, credentialRepository);
+        defaultUseCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepository, userService, credentialOptionsService, credentialRepository);
     }
 
     @Test
@@ -104,7 +104,7 @@ public class VerifyEmailOtpUseCaseTest {
     void should_throw_exception_when_otp_expired() {
         // Given
         Clock clock = Clock.fixed(Instant.now().plusSeconds(DEFAULT_TTL + 1), ZoneId.of("Z"));
-        defaultUseCase = new VerifyEmailOtpUseCase(clock, otpRepository, hasher, userRepository, userService, passkeyOptionsService, credentialRepository);
+        defaultUseCase = new VerifyEmailOtpUseCase(clock, otpRepository, hasher, userRepository, userService, credentialOptionsService, credentialRepository);
 
         // When / Then
         var exception = assertThrows(VerifyEmailOtpException.class, () -> defaultUseCase.handle(defaultCommand));
@@ -131,7 +131,7 @@ public class VerifyEmailOtpUseCaseTest {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService, passkeyOptionsService, credentialRepository);
+        VerifyEmailOtpUseCase useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, userService, credentialOptionsService, credentialRepository);
 
         // When
         useCase.handle(defaultCommand);
@@ -209,7 +209,7 @@ public class VerifyEmailOtpUseCaseTest {
         var credentials = List.of(credential);
 
         CredentialRepository mockCredentialRepository = mock(CredentialRepository.class);
-        PasskeyOptionsService mockPasskeyOptionsService = mock(PasskeyOptionsService.class);
+        CredentialOptionsService mockCredentialOptionsService = mock(CredentialOptionsService.class);
 
         var useCase = new VerifyEmailOtpUseCase(
                 DEFAULT_CLOCK,
@@ -217,7 +217,7 @@ public class VerifyEmailOtpUseCaseTest {
                 hasher,
                 userRepository,
                 userService,
-                mockPasskeyOptionsService,
+                mockCredentialOptionsService,
                 mockCredentialRepository
 
         );
@@ -225,7 +225,7 @@ public class VerifyEmailOtpUseCaseTest {
 
         useCase.handle(defaultCommand);
 
-        verify(mockPasskeyOptionsService).getPasskeyRequestOptions(user,credentials);
+        verify(mockCredentialOptionsService).getPasskeyRequestOptions(user,credentials);
     }
 }
 

@@ -12,7 +12,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PasskeyOptionsServiceLoginFlowTest {
+public class CredentialOptionsServiceLoginFlowTest {
 
 
     private static final String DEFAULT_AUTH_MODE = "smartphone";
@@ -35,11 +35,11 @@ public class PasskeyOptionsServiceLoginFlowTest {
             null
         ));
 
-    PasskeyOptionsServiceImpl passkeyOptionsService;
+    CredentialOptionsServiceImpl passkeyOptionsService;
 
     @BeforeEach
     void setup() {
-        passkeyOptionsService = new PasskeyOptionsServiceImpl(
+        passkeyOptionsService = new CredentialOptionsServiceImpl(
                 DEFAULT_AUTH_MODE,
                 DEFAULT_RPID,
                 DEFAULT_TIMEOUT,

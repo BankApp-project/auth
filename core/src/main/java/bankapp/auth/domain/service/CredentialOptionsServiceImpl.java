@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
+public class CredentialOptionsServiceImpl implements CredentialOptionsService {
 
     //"smartphone" for smartphone-first userflow
     //"default" for default userflow
@@ -21,7 +21,7 @@ public class PasskeyOptionsServiceImpl implements PasskeyOptionsService{
 
     private final ChallengeGenerationPort challengeGenerator;
 
-    public PasskeyOptionsServiceImpl(
+    public CredentialOptionsServiceImpl(
             String authMode,
             String rpId,
             long timeout,

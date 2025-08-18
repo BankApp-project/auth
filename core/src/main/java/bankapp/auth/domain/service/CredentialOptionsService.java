@@ -7,7 +7,7 @@ import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
 
 import java.util.List;
 
-public interface PasskeyOptionsService {
+public interface CredentialOptionsService {
     PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user);
     PublicKeyCredentialRequestOptions getPasskeyRequestOptions(User user, List<CredentialRecord> userCredentials);
 }

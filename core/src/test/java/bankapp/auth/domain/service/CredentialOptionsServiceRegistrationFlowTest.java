@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class PasskeyOptionsServiceRegistrationFlowTest {
+class CredentialOptionsServiceRegistrationFlowTest {
 
     private static final String DEFAULT_AUTH_MODE = "smartphone";
     private static final String DEFAULT_RPID = "bankapp.online";
@@ -18,12 +18,12 @@ class PasskeyOptionsServiceRegistrationFlowTest {
     private static final EmailAddress DEFAULT_EMAIL = new EmailAddress("test@bankapp.online");
     public static final User TEST_USER = new User(DEFAULT_EMAIL);
 
-    PasskeyOptionsServiceImpl passkeyOptionsService;
+    CredentialOptionsServiceImpl passkeyOptionsService;
 
 
     @BeforeEach
     void setup() {
-        passkeyOptionsService = new PasskeyOptionsServiceImpl(
+        passkeyOptionsService = new CredentialOptionsServiceImpl(
                 DEFAULT_AUTH_MODE,
                 DEFAULT_RPID,
                 DEFAULT_TIMEOUT,
@@ -170,7 +170,7 @@ class PasskeyOptionsServiceRegistrationFlowTest {
     void should_return_response_with_default_settings_when_DEFAULT_AUTH_MODE_flag_is_default() {
         //Given
         User testUser = new User(DEFAULT_EMAIL);
-        var passkeyOptionsService = new PasskeyOptionsServiceImpl(
+        var passkeyOptionsService = new CredentialOptionsServiceImpl(
                 "default",
                 DEFAULT_RPID,
                 DEFAULT_TIMEOUT,
