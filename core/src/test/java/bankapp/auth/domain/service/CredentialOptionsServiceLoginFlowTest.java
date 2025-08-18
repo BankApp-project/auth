@@ -3,7 +3,6 @@ package bankapp.auth.domain.service;
 import bankapp.auth.domain.model.CredentialRecord;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.domain.service.stubs.StubChallengeGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,8 +43,7 @@ public class CredentialOptionsServiceLoginFlowTest {
         passkeyOptionsService = new CredentialOptionsServiceImpl(
                 DEFAULT_AUTH_MODE,
                 DEFAULT_RPID,
-                DEFAULT_TIMEOUT,
-                new StubChallengeGenerator()
+                DEFAULT_TIMEOUT
         );
     }
 
@@ -59,20 +57,6 @@ public class CredentialOptionsServiceLoginFlowTest {
         // Then
         byte[] challenge = res.challenge();
         assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
-    }
-
-    @Test
-    void should_return_unique_response() {
-
-        // When
-        var res1 = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE);
-        var res2 = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER, DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE);
-
-        // Then
-        byte[] challenge1 = res1.challenge();
-        byte[] challenge2 = res2.challenge();
-
-        assertFalse(java.util.Arrays.equals(challenge1, challenge2), "Challenges should be unique");
     }
 
     @Test

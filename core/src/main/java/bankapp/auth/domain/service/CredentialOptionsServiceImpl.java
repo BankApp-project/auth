@@ -1,6 +1,5 @@
 package bankapp.auth.domain.service;
 
-import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
 import bankapp.auth.domain.model.CredentialRecord;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
@@ -20,23 +19,19 @@ public class CredentialOptionsServiceImpl implements CredentialOptionsService {
     private final String rpId;
     private final long timeout;
 
-    //it shouldnt be there. It's part of application layer.
-    private final ChallengeGenerationPort challengeGenerator;
-
     public CredentialOptionsServiceImpl(
             String authMode,
             String rpId,
-            long timeout,
-            ChallengeGenerationPort challengeGenerator) {
+            long timeout
+    ) {
         this.authMode = authMode;
         this.rpId = rpId;
         this.timeout = timeout;
-        this.challengeGenerator = challengeGenerator;
     }
 
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(User user, List<CredentialRecord> userCredentials, byte[] challenge) {
         return new PublicKeyCredentialRequestOptions(
-                getChallenge(),
+                challenge,
                 timeout,
                 rpId,
                 getAllowedCredentials(userCredentials),
@@ -58,7 +53,7 @@ public class CredentialOptionsServiceImpl implements CredentialOptionsService {
         return res;
     }
 
-    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user) {
+    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, byte[] challenge) {
         String userDisplayName = user.getEmail().getValue();
 
         byte[] userHandle = getUserHandle(user.getId());
@@ -66,7 +61,7 @@ public class CredentialOptionsServiceImpl implements CredentialOptionsService {
         return new PublicKeyCredentialCreationOptions(
                         getRpEntity(),
                         getUserEntity(userHandle, userDisplayName),
-                        getChallenge(),
+                        challenge,
                         getPublicKeyCredentialParametersList(),
                         timeout,
                         new ArrayList<>(),
@@ -90,10 +85,6 @@ public class CredentialOptionsServiceImpl implements CredentialOptionsService {
 
     private byte[] getUserHandle(UUID userId) {
         return ByteArrayUtil.uuidToBytes(userId);
-    }
-
-    private byte[] getChallenge() {
-        return challengeGenerator.generate();
     }
 
     /**

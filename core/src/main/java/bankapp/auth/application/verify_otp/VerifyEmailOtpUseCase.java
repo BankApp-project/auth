@@ -66,7 +66,7 @@ public class VerifyEmailOtpUseCase {
         } else {
             User user = userService.createUser(email);
             userRepository.save(user);
-            return new RegistrationResponse(credentialOptionsService.getPasskeyCreationOptions(user));
+            return new RegistrationResponse(credentialOptionsService.getPasskeyCreationOptions(user, challenge));
         }
     }
 

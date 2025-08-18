@@ -41,6 +41,7 @@ public class VerifyEmailOtpLoginFlowTest {
     private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
     private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
     private static final int DEFAULT_TTL = 98;
+
     private final static String DEFAULT_OTP_KEY = "test@bankapp.online";
     private static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
     private final static String DEFAULT_OTP_VALUE = "123456";
@@ -52,8 +53,7 @@ public class VerifyEmailOtpLoginFlowTest {
     private final CredentialOptionsService credentialOptionsService = new CredentialOptionsServiceImpl(
             DEFAULT_AUTH_MODE,
             DEFAULT_RPID,
-            DEFAULT_TIMEOUT,
-            new StubChallengeGenerator()
+            DEFAULT_TIMEOUT
     );
     private final CredentialRepository credentialRepository = mock(CredentialRepository.class);
     private final ChallengeGenerationPort challengeGenerator = new StubChallengeGenerator();

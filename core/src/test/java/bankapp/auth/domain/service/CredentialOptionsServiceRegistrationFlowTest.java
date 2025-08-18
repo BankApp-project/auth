@@ -2,9 +2,10 @@ package bankapp.auth.domain.service;
 
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.domain.service.stubs.StubChallengeGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,6 +18,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
 
     private static final EmailAddress DEFAULT_EMAIL = new EmailAddress("test@bankapp.online");
     public static final User TEST_USER = new User(DEFAULT_EMAIL);
+    private static final byte[] DEFAULT_CHALLENGE = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
 
     CredentialOptionsServiceImpl passkeyOptionsService;
 
@@ -26,8 +28,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         passkeyOptionsService = new CredentialOptionsServiceImpl(
                 DEFAULT_AUTH_MODE,
                 DEFAULT_RPID,
-                DEFAULT_TIMEOUT,
-                new StubChallengeGenerator()
+                DEFAULT_TIMEOUT
         );
     }
 
@@ -35,7 +36,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     void should_return_response_with_userId_as_userHandle() {
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(TEST_USER);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(TEST_USER, DEFAULT_CHALLENGE);
 
         assertArrayEquals(ByteArrayUtil.uuidToBytes(TEST_USER.getId()), res.user().id());
     }
@@ -43,27 +44,10 @@ class CredentialOptionsServiceRegistrationFlowTest {
     @Test
     void should_return_response_with_at_least_16bytes_long_challenge() {
 
-        var res = passkeyOptionsService.getPasskeyCreationOptions(TEST_USER);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(TEST_USER, DEFAULT_CHALLENGE);
         byte[] challenge = res.challenge();
         assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
     }
-
-    @Test
-    void should_return_response_with_unique_Challenge() {
-        // Given
-        User testUser1 = new User(DEFAULT_EMAIL);
-        User testUser2 = new User(new EmailAddress("test2@bankapp.online"));
-
-        // When
-        var res1 = passkeyOptionsService.getPasskeyCreationOptions(testUser1);
-        var res2 = passkeyOptionsService.getPasskeyCreationOptions(testUser2);
-
-        // Then
-        byte[] challenge1 = res1.challenge();
-        byte[] challenge2 = res2.challenge();
-        assertFalse(java.util.Arrays.equals(challenge1, challenge2), "Challenges should be unique");
-    }
-
 
     @Test
     void should_return_response_with_email_as_userEntity_name_and_displayName() {
@@ -71,7 +55,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 
         // Then
         String name = res.user().name();
@@ -87,7 +71,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 
         // Then
         String rpId = res.rp().id();
@@ -101,7 +85,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 
         // Then
         var pubKeyCredParams = res.pubKeyCredParams();
@@ -125,7 +109,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 
         // Then
         var timeout = res.timeout();
@@ -140,7 +124,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 
         // Then
         var authSelCriteria = res.authenticatorSelection();
@@ -156,7 +140,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 
         // Then
         var authAttach = res.authenticatorSelection().authenticatorAttachment();
@@ -173,11 +157,11 @@ class CredentialOptionsServiceRegistrationFlowTest {
         var passkeyOptionsService = new CredentialOptionsServiceImpl(
                 "default",
                 DEFAULT_RPID,
-                DEFAULT_TIMEOUT,
-                new StubChallengeGenerator());
+                DEFAULT_TIMEOUT
+        );
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 
         // Then
         var authAttach = res.authenticatorSelection().authenticatorAttachment();
@@ -194,7 +178,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     void should_return_default_values_for_every_not_set_parameter() {
         User testUser = new User(DEFAULT_EMAIL);
 
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 
         // Then
         var exclCred = res.excludeCredentials();

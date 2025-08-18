@@ -22,6 +22,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,8 +56,7 @@ public class VerifyEmailOtpTest {
     private final CredentialOptionsService credentialOptionsService = new CredentialOptionsServiceImpl(
             DEFAULT_AUTH_MODE,
             DEFAULT_RPID,
-            DEFAULT_TIMEOUT,
-            new StubChallengeGenerator()
+            DEFAULT_TIMEOUT
     );
     private final CredentialRepository credentialRepository = mock(CredentialRepository.class);
     private final ChallengeGenerationPort challengeGenerator = new StubChallengeGenerator();
@@ -166,5 +166,29 @@ public class VerifyEmailOtpTest {
         var res = defaultUseCase.handle(defaultCommand);
 
         assertInstanceOf(RegistrationResponse.class, res);
+    }
+
+    @Test
+    void should_pass_generated_challenge_to_CredentialOptionsService_when_user_does_not_exists_yet() {
+
+        CredentialOptionsService mockCredentialOptionsService = mock(CredentialOptionsService.class);
+        ChallengeGenerationPort mockChallengeGenerator = mock(ChallengeGenerationPort.class);
+        var challenge = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
+        when(mockChallengeGenerator.generate()).thenReturn(challenge);
+
+        var useCase = new VerifyEmailOtpUseCase(
+                DEFAULT_CLOCK,
+                otpRepository,
+                hasher,
+                userRepository,
+                userService,
+                mockCredentialOptionsService,
+                credentialRepository,
+                mockChallengeGenerator);
+
+        useCase.handle(defaultCommand);
+
+
+        verify(mockCredentialOptionsService).getPasskeyCreationOptions(any(), eq(challenge));
     }
 }
