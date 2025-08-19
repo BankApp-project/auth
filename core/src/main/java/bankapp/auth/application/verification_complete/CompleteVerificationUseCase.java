@@ -1,6 +1,7 @@
 package bankapp.auth.application.verification_complete;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 public class CompleteVerificationUseCase {
 
+    private final LoggerPort log;
 
     private final Clock clock;
     private final long sessionTtl;
@@ -35,6 +37,7 @@ public class CompleteVerificationUseCase {
     private final SessionRepository sessionRepository;
 
     public CompleteVerificationUseCase(
+            @NotNull LoggerPort log,
             @NotNull Clock clock,
             @NotNull OtpRepository otpRepository,
             @NotNull HashingPort hasher,
@@ -43,7 +46,9 @@ public class CompleteVerificationUseCase {
             @NotNull CredentialRepository credentialRepository,
             @NotNull ChallengeGenerationPort challengeGenerator,
             @NotNull SessionRepository sessionRepository,
-            long sessionTtl) {
+            long sessionTtl
+    ) {
+        this.log = log;
         this.otpRepository = otpRepository;
         this.clock = clock;
         this.hasher = hasher;
@@ -56,16 +61,28 @@ public class CompleteVerificationUseCase {
     }
 
     public CompleteVerificationResponse handle(CompleteVerificationCommand command) {
+        log.info("Starting verification completion for email: {}", command.key().getValue());
+
         verifyAndConsumeOtp(command.key(), command.value());
+        log.debug("OTP verified and consumed successfully");
 
         User user = findOrCreateUser(command.key());
+        log.debug("User found/created with ID: {}", user.getId());
 
         byte[] challenge = challengeGenerator.generate();
         UUID sessionId = UUID.randomUUID();
-        saveSession(sessionId, challenge, user.getId(), sessionTtl);
+        log.debug("Generated challenge and session ID: {}", sessionId);
 
-        return prepareResponse(user, challenge, sessionId);
+        saveSession(sessionId, challenge, user.getId(), sessionTtl);
+        log.debug("Session saved successfully");
+
+        CompleteVerificationResponse response = prepareResponse(user, challenge, sessionId);
+        log.info("Verification completion successful for user: {}, response type: {}",
+                user.getId(), response.getClass().getSimpleName());
+
+        return response;
     }
+
 
     private void verifyAndConsumeOtp(EmailAddress email, String otpValue) {
         Optional<Otp> persistedOtpOptional = otpRepository.load(email.getValue());

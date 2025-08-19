@@ -1,5 +1,6 @@
 package bankapp.auth.application.verification_complete;
 
+import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
@@ -45,6 +46,7 @@ public abstract class CompleteVerificationBaseTest {
     protected CredentialRepository credentialRepository;
     protected ChallengeGenerationPort challengeGenerator;
     protected SessionRepository sessionRepository;
+    protected LoggerPort log;
 
     // --- SHARED TEST DATA ---
     protected String hashedOtpValue;
@@ -61,6 +63,7 @@ public abstract class CompleteVerificationBaseTest {
         credentialRepository = mock(CredentialRepository.class);
         challengeGenerator = new StubChallengeGenerator();
         sessionRepository = new StubSessionRepository();
+        log = mock(LoggerPort.class);
 
         // Create and save a valid OTP
         hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);
@@ -71,6 +74,7 @@ public abstract class CompleteVerificationBaseTest {
         // Prepare the default command and use case instance
         defaultCommand = new CompleteVerificationCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
         defaultUseCase = new CompleteVerificationUseCase(
+                log,
                 DEFAULT_CLOCK,
                 otpRepository,
                 hasher,

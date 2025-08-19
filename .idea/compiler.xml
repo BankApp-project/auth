@@ -20,6 +20,7 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
         </processorPath>
         <module name="bankapp-auth-infrastructure" />
+        <module name="bankapp-auth-core" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
