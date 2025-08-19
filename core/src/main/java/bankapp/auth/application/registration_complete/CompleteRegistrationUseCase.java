@@ -2,17 +2,21 @@ package bankapp.auth.application.registration_complete;
 
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 
-import java.util.UUID;
-
 public class CompleteRegistrationUseCase {
 
     private final SessionRepository sessionRepository;
+    private final WebAuthnPort webAuthnPort;
 
-    public CompleteRegistrationUseCase(SessionRepository sessionRepository) {
+    public CompleteRegistrationUseCase(
+            SessionRepository sessionRepository,
+            WebAuthnPort webAuthnPort
+    ) {
         this.sessionRepository = sessionRepository;
+        this.webAuthnPort = webAuthnPort;
     }
 
-    public void handle(UUID sessionId) {
-        sessionRepository.load(sessionId);
+    public void handle(CompleteRegistrationCommand command) {
+        var session = sessionRepository.load(command.sessionId());
+        webAuthnPort.verify(command.publicKeyCredentialJson(), session.get());
     }
 }
