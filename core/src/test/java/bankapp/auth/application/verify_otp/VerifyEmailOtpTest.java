@@ -5,10 +5,12 @@ import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.Test;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -44,7 +46,7 @@ public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
         // Given
         Clock fixedClock = Clock.fixed(Instant.now().plusSeconds(DEFAULT_TTL + 1), ZoneId.of("Z"));
         // Re-create use case with the clock that is in the future
-        var useCaseWithFutureClock = new VerifyEmailOtpUseCase(fixedClock, otpRepository, hasher, userRepository, credentialOptionsPort, credentialRepository, challengeGenerator);
+        var useCaseWithFutureClock = new VerifyEmailOtpUseCase(fixedClock, otpRepository, hasher, userRepository, credentialOptionsPort, credentialRepository, challengeGenerator, sessionRepository);
 
         // When / Then
         var exception = assertThrows(VerifyEmailOtpException.class, () -> useCaseWithFutureClock.handle(defaultCommand));
@@ -71,7 +73,7 @@ public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        var useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, credentialOptionsPort, credentialRepository, challengeGenerator);
+        var useCase = new VerifyEmailOtpUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, credentialOptionsPort, credentialRepository, challengeGenerator, sessionRepository);
 
         // When
         useCase.handle(defaultCommand);
@@ -99,5 +101,12 @@ public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
         defaultUseCase.handle(defaultCommand);
 
         assertThat(otpRepository.load(DEFAULT_OTP_KEY)).isEmpty();
+    }
+
+    @Test
+    void should_persist_challenge_after_generation() {
+        var res = defaultUseCase.handle(defaultCommand);
+        var sessionId = res.sessionId();
+        assertThat(sessionRepository.load(sessionId)).isPresent();
     }
 }

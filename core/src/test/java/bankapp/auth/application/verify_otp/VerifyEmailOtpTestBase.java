@@ -1,18 +1,20 @@
 package bankapp.auth.application.verify_otp;
 
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
-import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
-import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verify_otp.port.out.CredentialRepository;
-import bankapp.auth.application.verify_otp.port.out.UserRepository;
-import bankapp.auth.domain.model.Otp;
-import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
-import bankapp.auth.application.verify_otp.port.out.stubs.StubChallengeGenerator;
+import bankapp.auth.application.shared.port.out.stubs.StubSessionRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubHasher;
 import bankapp.auth.application.shared.port.out.stubs.StubOtpRepository;
+import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
+import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
+import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
+import bankapp.auth.application.verify_otp.port.out.CredentialRepository;
+import bankapp.auth.application.verify_otp.port.out.UserRepository;
+import bankapp.auth.application.verify_otp.port.out.stubs.StubChallengeGenerator;
 import bankapp.auth.application.verify_otp.port.out.stubs.StubUserRepository;
+import bankapp.auth.domain.model.Otp;
+import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.time.Clock;
@@ -20,58 +22,61 @@ import java.time.Clock;
 import static org.mockito.Mockito.mock;
 
 /**
-     * An abstract base class for tests related to the VerifyEmailOtpUseCase.
-     * It handles the common setup of constants, dependencies, and test data.
-     */
-    public abstract class VerifyEmailOtpTestBase {
+ * An abstract base class for tests related to the VerifyEmailOtpUseCase.
+ * It handles the common setup of constants, dependencies, and test data.
+ */
+public abstract class VerifyEmailOtpTestBase {
 
-        // --- SHARED CONSTANTS ---
-        protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
-        protected static final int DEFAULT_TTL = 98; // in seconds
-        protected static final String DEFAULT_OTP_KEY = "test@bankapp.online";
-        protected static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
-        protected static final String DEFAULT_OTP_VALUE = "123456";
+    // --- SHARED CONSTANTS ---
+    protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
+    protected static final int DEFAULT_TTL = 98; // in seconds
+    protected static final String DEFAULT_OTP_KEY = "test@bankapp.online";
+    protected static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
+    protected static final String DEFAULT_OTP_VALUE = "123456";
 
-        // --- SHARED DEPENDENCIES & MOCKS ---
-        // Use stubs for predictable behavior and mocks for verification
-        protected OtpRepository otpRepository;
-        protected HashingPort hasher;
-        protected UserRepository userRepository;
-        protected CredentialOptionsPort credentialOptionsPort;
-        protected CredentialRepository credentialRepository;
-        protected ChallengeGenerationPort challengeGenerator;
+    // --- SHARED DEPENDENCIES & MOCKS ---
+    // Use stubs for predictable behavior and mocks for verification
+    protected OtpRepository otpRepository;
+    protected HashingPort hasher;
+    protected UserRepository userRepository;
+    protected CredentialOptionsPort credentialOptionsPort;
+    protected CredentialRepository credentialRepository;
+    protected ChallengeGenerationPort challengeGenerator;
+    protected SessionRepository sessionRepository;
 
-        // --- SHARED TEST DATA ---
-        protected String hashedOtpValue;
-        protected VerifyEmailOtpCommand defaultCommand;
-        protected VerifyEmailOtpUseCase defaultUseCase;
+    // --- SHARED TEST DATA ---
+    protected String hashedOtpValue;
+    protected VerifyEmailOtpCommand defaultCommand;
+    protected VerifyEmailOtpUseCase defaultUseCase;
 
-        @BeforeEach
-        void setUp() {
-            // Initialize dependencies for each test to ensure isolation
-            otpRepository = new StubOtpRepository();
-            hasher = new StubHasher();
-            userRepository = new StubUserRepository();
-            credentialOptionsPort = mock(CredentialOptionsPort.class);
-            credentialRepository = mock(CredentialRepository.class);
-            challengeGenerator = new StubChallengeGenerator();
+    @BeforeEach
+    void setUp() {
+        // Initialize dependencies for each test to ensure isolation
+        otpRepository = new StubOtpRepository();
+        hasher = new StubHasher();
+        userRepository = new StubUserRepository();
+        credentialOptionsPort = mock(CredentialOptionsPort.class);
+        credentialRepository = mock(CredentialRepository.class);
+        challengeGenerator = new StubChallengeGenerator();
+        sessionRepository = new StubSessionRepository();
 
-            // Create and save a valid OTP
-            hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);
-            Otp validOtp = new Otp(hashedOtpValue, DEFAULT_OTP_KEY);
-            validOtp.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
-            otpRepository.save(validOtp);
+        // Create and save a valid OTP
+        hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);
+        Otp validOtp = new Otp(hashedOtpValue, DEFAULT_OTP_KEY);
+        validOtp.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
+        otpRepository.save(validOtp);
 
-            // Prepare the default command and use case instance
-            defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
-            defaultUseCase = new VerifyEmailOtpUseCase(
-                    DEFAULT_CLOCK,
-                    otpRepository,
-                    hasher,
-                    userRepository,
-                    credentialOptionsPort,
-                    credentialRepository,
-                    challengeGenerator
-            );
-        }
+        // Prepare the default command and use case instance
+        defaultCommand = new VerifyEmailOtpCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
+        defaultUseCase = new VerifyEmailOtpUseCase(
+                DEFAULT_CLOCK,
+                otpRepository,
+                hasher,
+                userRepository,
+                credentialOptionsPort,
+                credentialRepository,
+                challengeGenerator,
+                sessionRepository
+        );
     }
+}

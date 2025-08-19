@@ -1,6 +1,7 @@
 package bankapp.auth.application.verify_otp;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
@@ -8,6 +9,7 @@ import bankapp.auth.application.verify_otp.port.out.CredentialRepository;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
 import bankapp.auth.application.verify_otp.port.out.dto.RegistrationResponse;
+import bankapp.auth.domain.model.AuthSession;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.NotNull;
@@ -15,7 +17,9 @@ import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 public class VerifyEmailOtpUseCase {
 
@@ -28,6 +32,7 @@ public class VerifyEmailOtpUseCase {
     private final CredentialOptionsPort credentialOptionsPort;
     private final CredentialRepository credentialRepository;
     private final ChallengeGenerationPort challengeGenerator;
+    private final SessionRepository sessionRepository;
 
     public VerifyEmailOtpUseCase(
             @NotNull Clock clock,
@@ -36,7 +41,9 @@ public class VerifyEmailOtpUseCase {
             @NotNull UserRepository userRepository,
             @NotNull CredentialOptionsPort credentialOptionsPort,
             @NotNull CredentialRepository credentialRepository,
-            @NotNull ChallengeGenerationPort challengeGenerator) {
+            @NotNull ChallengeGenerationPort challengeGenerator,
+            @NotNull SessionRepository sessionRepository
+    ) {
         this.otpRepository = otpRepository;
         this.clock = clock;
         this.hasher = hasher;
@@ -44,6 +51,7 @@ public class VerifyEmailOtpUseCase {
         this.credentialOptionsPort = credentialOptionsPort;
         this.credentialRepository = credentialRepository;
         this.challengeGenerator = challengeGenerator;
+        this.sessionRepository = sessionRepository;
     }
 
     public VerifyEmailOtpResponse handle(VerifyEmailOtpCommand command) {
@@ -62,18 +70,29 @@ public class VerifyEmailOtpUseCase {
         Optional<User> userOptional = userRepository.findByEmail(command.key());
 
         var challenge = challengeGenerator.generate();
+        UUID sessionId = UUID.randomUUID();
+  
 
-        //CHALLENGE SHOULD BE PERSISTED HERE
         if (userOptional.isPresent() && userOptional.get().isEnabled()) {
             var userCredentials = credentialRepository.load(userOptional.get().getId());
-
-            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userOptional.get(), userCredentials, challenge));
+            saveSession(sessionId, challenge, userOptional.get());
+            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userOptional.get(), userCredentials, challenge), sessionId.toString());
         } else {
             User user = new User(email);
             userRepository.save(user);
-
-            return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge));
+            saveSession(sessionId, challenge, user);
+            return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId.toString());
         }
+    }
+
+    private void saveSession(UUID ceremonyId, byte[] challenge, User user) {
+        AuthSession authSession = new AuthSession(
+                ceremonyId.toString(),
+                challenge,
+                user.getId(),
+                Instant.now(clock)
+                );
+        sessionRepository.save(authSession, ceremonyId.toString());
     }
 
 
