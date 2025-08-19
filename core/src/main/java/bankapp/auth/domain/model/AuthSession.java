@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record AuthSession(
-        String sessionId,       // The key for the cache
+        UUID sessionId,       // The key for the cache
         byte[] challenge,        // The cryptographic challenge
         UUID userId,             // The user's stable ID (can be null for new registrations)
         Instant expirationTime   // When this context becomes invalid

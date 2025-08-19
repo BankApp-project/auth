@@ -71,18 +71,18 @@ public class VerifyEmailOtpUseCase {
             user = new User(email);
             userRepository.save(user);
             saveSession(sessionId, challenge, user.getId());
-            return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId.toString());
+            return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId);
         }
 
         user = userOptional.get();
         saveSession(sessionId, challenge, user.getId());
 
         if (user.isEnabled()) {
-            //if user enabled then has credential, so can be logged in
+            //if user enabled then has credential, so can log in
             var userCredentials = credentialRepository.load(user.getId());
-            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge), sessionId.toString());
+            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge), sessionId);
         } else {
-            return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId.toString());
+            return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId);
         }
     }
 
@@ -96,12 +96,12 @@ public class VerifyEmailOtpUseCase {
 
     private void saveSession(UUID ceremonyId, byte[] challenge, UUID userId) {
         AuthSession authSession = new AuthSession(
-                ceremonyId.toString(),
+                ceremonyId,
                 challenge,
                 userId,
                 Instant.now(clock)
         );
-        sessionRepository.save(authSession, ceremonyId.toString());
+        sessionRepository.save(authSession, ceremonyId);
     }
 
     private void verifyOtp(Otp persistedOtp, String value) {

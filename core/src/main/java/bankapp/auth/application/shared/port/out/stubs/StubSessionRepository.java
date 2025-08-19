@@ -5,18 +5,19 @@ import bankapp.auth.domain.model.AuthSession;
 
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.UUID;
 
 public class StubSessionRepository implements SessionRepository {
 
-    private final HashMap<String, AuthSession> sessionCache = new HashMap<>();
+    private final HashMap<UUID, AuthSession> sessionCache = new HashMap<>();
 
     @Override
-    public void save(AuthSession authSession, String key) {
+    public void save(AuthSession authSession, UUID key) {
         sessionCache.put(key, authSession);
     }
 
     @Override
-    public Optional<AuthSession> load(String key) {
+    public Optional<AuthSession> load(UUID key) {
         return Optional.ofNullable(sessionCache.get(key));
     }
 }

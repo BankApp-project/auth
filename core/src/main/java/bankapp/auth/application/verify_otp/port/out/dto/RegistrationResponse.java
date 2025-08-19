@@ -5,6 +5,6 @@ import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
 
 public record RegistrationResponse(
         PublicKeyCredentialCreationOptions options,
-        String sessionId
+        java.util.UUID sessionId
 ) implements VerifyEmailOtpResponse {
 }
