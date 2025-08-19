@@ -11,7 +11,7 @@ import java.util.List;
 
 public class StubCredentialOptionsService implements CredentialOptionsPort {
     @Override
-    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, byte[] defaultChallenge) {
+    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, byte[] challenge) {
         return new PublicKeyCredentialCreationOptions(
                 null,
                 new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(
@@ -19,7 +19,7 @@ public class StubCredentialOptionsService implements CredentialOptionsPort {
                        user.getEmail().getValue(),
                        user.getEmail().getValue()
                 ),
-                defaultChallenge,
+                challenge,
                 null,
                 null,
                 null,

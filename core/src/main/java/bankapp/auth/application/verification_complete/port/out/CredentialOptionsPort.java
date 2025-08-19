@@ -8,6 +8,6 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOp
 import java.util.List;
 
 public interface CredentialOptionsPort {
-    PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, byte[] defaultChallenge);
+    PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, byte[] challenge);
     PublicKeyCredentialRequestOptions getPasskeyRequestOptions(List<CredentialRecord> userCredentials, byte[] challenge);
 }

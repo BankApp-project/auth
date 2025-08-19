@@ -1,6 +1,7 @@
 package bankapp.auth.application.verification_complete;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
@@ -10,7 +11,6 @@ import bankapp.auth.application.verification_complete.port.out.CredentialReposit
 import bankapp.auth.application.verification_complete.port.out.UserRepository;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
 import bankapp.auth.application.verification_complete.port.out.dto.RegistrationResponse;
-import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.NotNull;
@@ -56,43 +56,45 @@ public class CompleteVerificationUseCase {
     }
 
     public CompleteVerificationResponse handle(CompleteVerificationCommand command) {
-        EmailAddress email = command.key();
+        verifyAndConsumeOtp(command.key(), command.value());
 
-        var persistedOtp = fetchPersistedOtp(email.getValue());
-        verifyOtp(persistedOtp, command.value());
-        otpRepository.delete(persistedOtp.getKey());
+        User user = findOrCreateUser(command.key());
 
-        var challenge = challengeGenerator.generate();
+        byte[] challenge = challengeGenerator.generate();
         UUID sessionId = UUID.randomUUID();
-
-        Optional<User> userOptional = userRepository.findByEmail(command.key());
-        User user;
-
-        if (userOptional.isEmpty()) {
-            user = new User(email);
-            userRepository.save(user);
-            saveSession(sessionId, challenge, user.getId(), sessionTtl);
-            return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId);
-        }
-
-        user = userOptional.get();
         saveSession(sessionId, challenge, user.getId(), sessionTtl);
 
-        if (user.isEnabled()) {
-            //if user enabled then has credential, so can log in
-            var userCredentials = credentialRepository.load(user.getId());
-            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge), sessionId);
-        } else {
-            return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId);
-        }
+        return prepareResponse(user, challenge, sessionId);
     }
 
-    private Otp fetchPersistedOtp(String key) {
-        Optional<Otp> persistedOtpOptional = otpRepository.load(key);
+    private void verifyAndConsumeOtp(EmailAddress email, String otpValue) {
+        Optional<Otp> persistedOtpOptional = otpRepository.load(email.getValue());
         if (persistedOtpOptional.isEmpty()) {
             throw new CompleteVerificationException("No such OTP in the system");
         }
-        return persistedOtpOptional.get();
+        var persistedOtp = persistedOtpOptional.get();
+        verifyOtp(persistedOtp, otpValue);
+        otpRepository.delete(persistedOtp.getKey());
+    }
+
+    private void verifyOtp(Otp persistedOtp, String value) {
+        if (!persistedOtp.isValid(clock)) {
+            throw new CompleteVerificationException("Otp has expired");
+        }
+        if (!hasher.verify(persistedOtp.getValue(), value)) {
+            throw new CompleteVerificationException("Otp does not match");
+        }
+    }
+
+    private User findOrCreateUser(EmailAddress email) {
+        var userOptional = userRepository.findByEmail(email);
+        User user;
+        if (userOptional.isEmpty()) {
+            user = new User(email);
+            userRepository.save(user);
+            return user;
+        }
+        return userOptional.get();
     }
 
     private void saveSession(UUID sessionId, byte[] challenge, UUID userId, long ttl) {
@@ -106,13 +108,13 @@ public class CompleteVerificationUseCase {
         sessionRepository.save(authSession, sessionId);
     }
 
-    private void verifyOtp(Otp persistedOtp, String value) {
-
-        if (!persistedOtp.isValid(clock)) {
-            throw new CompleteVerificationException("Otp has expired");
+    private CompleteVerificationResponse prepareResponse(User user, byte[] challenge, UUID sessionId) {
+        if (user.isEnabled()) {
+            var userCredentials = credentialRepository.load(user.getId());
+            var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge);
+            return new LoginResponse(passkeyOptions, sessionId);
         }
-        if (!hasher.verify(persistedOtp.getValue(), value)) {
-            throw new CompleteVerificationException("Otp does not match");
-        }
+        var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user,challenge);
+        return new RegistrationResponse(passkeyOptions, sessionId);
     }
 }
