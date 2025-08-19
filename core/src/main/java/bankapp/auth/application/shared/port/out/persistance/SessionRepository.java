@@ -1,7 +1,7 @@
 package bankapp.auth.application.shared.port.out.persistance;
 
 
-import bankapp.auth.domain.model.AuthSession;
+import bankapp.auth.application.shared.port.out.dto.AuthSession;
 
 import java.util.Optional;
 import java.util.UUID;

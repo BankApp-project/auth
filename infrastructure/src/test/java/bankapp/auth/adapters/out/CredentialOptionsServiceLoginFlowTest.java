@@ -1,10 +1,10 @@
 package bankapp.auth.adapters.out;
 
-import bankapp.auth.domain.model.enums.AuthMode;
-import bankapp.auth.domain.model.CredentialRecord;
+import bankapp.auth.application.shared.enums.AuthMode;
+import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.domain.service.ByteArrayUtil;
+import bankapp.auth.application.shared.service.ByteArrayUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

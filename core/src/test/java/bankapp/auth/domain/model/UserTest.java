@@ -1,9 +1,9 @@
 package bankapp.auth.domain.model;
 
 
-import bankapp.auth.application.verify_otp.port.out.UserRepository;
+import bankapp.auth.application.verification_complete.port.out.UserRepository;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.application.verify_otp.port.out.stubs.StubUserRepository;
+import bankapp.auth.application.verification_complete.port.out.stubs.StubUserRepository;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

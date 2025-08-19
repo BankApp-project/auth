@@ -1,14 +1,14 @@
 package bankapp.auth.adapters.out;
 
-import bankapp.auth.domain.model.enums.AuthMode;
-import bankapp.auth.domain.model.CredentialRecord;
+import bankapp.auth.application.shared.enums.AuthMode;
+import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.domain.model.User;
-import bankapp.auth.domain.model.enums.UserVerificationRequirement;
-import bankapp.auth.domain.model.dto.PublicKeyCredentialCreationOptions;
-import bankapp.auth.domain.model.dto.PublicKeyCredentialDescriptor;
-import bankapp.auth.domain.model.dto.PublicKeyCredentialRequestOptions;
-import bankapp.auth.domain.service.ByteArrayUtil;
-import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
+import bankapp.auth.application.shared.enums.UserVerificationRequirement;
+import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
+import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialDescriptor;
+import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
+import bankapp.auth.application.shared.service.ByteArrayUtil;
+import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package bankapp.auth.application.shared.port.out.stubs;
 
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
-import bankapp.auth.domain.model.AuthSession;
+import bankapp.auth.application.shared.port.out.dto.AuthSession;
 
 import java.util.HashMap;
 import java.util.Optional;
