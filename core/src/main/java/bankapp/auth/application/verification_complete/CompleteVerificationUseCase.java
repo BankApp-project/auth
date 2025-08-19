@@ -89,18 +89,17 @@ public class CompleteVerificationUseCase {
         if (persistedOtpOptional.isEmpty()) {
             throw new CompleteVerificationException("No such OTP in the system");
         }
-        var persistedOtp = persistedOtpOptional.get();
-        verifyOtp(persistedOtp, otpValue);
-        otpRepository.delete(persistedOtp.getKey());
-    }
 
-    private void verifyOtp(Otp persistedOtp, String value) {
+        var persistedOtp = persistedOtpOptional.get();
+
         if (!persistedOtp.isValid(clock)) {
             throw new CompleteVerificationException("Otp has expired");
         }
-        if (!hasher.verify(persistedOtp.getValue(), value)) {
+        if (!hasher.verify(persistedOtp.getValue(), otpValue)) {
             throw new CompleteVerificationException("Otp does not match");
         }
+
+        otpRepository.delete(persistedOtp.getKey());
     }
 
     private User findOrCreateUser(EmailAddress email) {
