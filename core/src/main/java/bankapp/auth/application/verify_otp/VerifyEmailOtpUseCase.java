@@ -56,45 +56,46 @@ public class VerifyEmailOtpUseCase {
 
     public VerifyEmailOtpResponse handle(VerifyEmailOtpCommand command) {
         EmailAddress email = command.key();
-        String key = email.getValue();
-        String value = command.value();
 
-        Optional<Otp> persistedOtpOptional = otpRepository.load(key);
-        if (persistedOtpOptional.isEmpty()) {
-            throw new VerifyEmailOtpException("No such OTP in the system");
-        }
-        var persistedOtp = persistedOtpOptional.get();
-        verifyOtp(persistedOtp, value);
+        var persistedOtp = fetchPersistedOtp(email.getValue());
+        verifyOtp(persistedOtp, command.value());
         otpRepository.delete(persistedOtp.getKey());
-
-        Optional<User> userOptional = userRepository.findByEmail(command.key());
 
         var challenge = challengeGenerator.generate();
         UUID sessionId = UUID.randomUUID();
-  
+
+        Optional<User> userOptional = userRepository.findByEmail(command.key());
 
         if (userOptional.isPresent() && userOptional.get().isEnabled()) {
-            var userCredentials = credentialRepository.load(userOptional.get().getId());
-            saveSession(sessionId, challenge, userOptional.get());
-            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userOptional.get(), userCredentials, challenge), sessionId.toString());
+            User user = userOptional.get();
+            var userCredentials = credentialRepository.load(user.getId());
+            saveSession(sessionId, challenge, user.getId());
+            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge), sessionId.toString());
         } else {
             User user = new User(email);
             userRepository.save(user);
-            saveSession(sessionId, challenge, user);
+            saveSession(sessionId, challenge, user.getId());
             return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId.toString());
         }
     }
 
-    private void saveSession(UUID ceremonyId, byte[] challenge, User user) {
+    private Otp fetchPersistedOtp(String key) {
+        Optional<Otp> persistedOtpOptional = otpRepository.load(key);
+        if (persistedOtpOptional.isEmpty()) {
+            throw new VerifyEmailOtpException("No such OTP in the system");
+        }
+        return persistedOtpOptional.get();
+    }
+
+    private void saveSession(UUID ceremonyId, byte[] challenge, UUID userId) {
         AuthSession authSession = new AuthSession(
                 ceremonyId.toString(),
                 challenge,
-                user.getId(),
+                userId,
                 Instant.now(clock)
                 );
         sessionRepository.save(authSession, ceremonyId.toString());
     }
-
 
     private void verifyOtp(Otp persistedOtp, String value) {
 

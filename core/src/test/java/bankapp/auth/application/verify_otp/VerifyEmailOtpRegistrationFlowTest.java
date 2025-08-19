@@ -7,6 +7,8 @@ import bankapp.auth.domain.service.ByteArrayUtil;
 import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -38,6 +40,7 @@ public class VerifyEmailOtpRegistrationFlowTest extends VerifyEmailOtpTestBase {
         // Then
         assertInstanceOf(RegistrationResponse.class, response);
     }
+
 
     @Test
     void should_pass_generated_challenge_to_CredentialOptionsService_for_new_user() {

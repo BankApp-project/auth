@@ -76,7 +76,7 @@ public class VerifyEmailOtpLoginFlowTest extends VerifyEmailOtpTestBase {
         useCase.handle(defaultCommand);
 
         // Then
-        verify(mockCredentialOptionsService).getPasskeyRequestOptions(eq(defaultUser), eq(credentials), any());
+        verify(mockCredentialOptionsService).getPasskeyRequestOptions(eq(credentials), any());
     }
 
     @Test
@@ -96,6 +96,6 @@ public class VerifyEmailOtpLoginFlowTest extends VerifyEmailOtpTestBase {
         useCase.handle(defaultCommand);
 
         // Then
-        verify(mockCredentialOptionsService).getPasskeyRequestOptions(eq(defaultUser), any(), eq(challenge));
+        verify(mockCredentialOptionsService).getPasskeyRequestOptions(any(), eq(challenge));
     }
 }

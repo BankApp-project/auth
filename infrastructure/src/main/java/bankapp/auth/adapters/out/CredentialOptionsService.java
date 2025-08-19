@@ -30,7 +30,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         this.timeout = timeout;
     }
 
-    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(User user, List<CredentialRecord> userCredentials, byte[] challenge) {
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(List<CredentialRecord> userCredentials, byte[] challenge) {
         return new PublicKeyCredentialRequestOptions(
                 challenge,
                 timeout,
