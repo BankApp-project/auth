@@ -70,7 +70,7 @@ public class VerifyEmailOtpLoginFlowTest extends VerifyEmailOtpTestBase {
         var useCase = new CompleteVerificationUseCase(
                 DEFAULT_CLOCK, otpRepository, hasher, userRepository,
                 mockCredentialOptionsService, mockCredentialRepository, challengeGenerator,
-                sessionRepository);
+                sessionRepository, sessionTtl);
 
         // When
         useCase.handle(defaultCommand);
@@ -90,7 +90,7 @@ public class VerifyEmailOtpLoginFlowTest extends VerifyEmailOtpTestBase {
         var useCase = new CompleteVerificationUseCase(
                 DEFAULT_CLOCK, otpRepository, hasher, userRepository,
                 mockCredentialOptionsService, credentialRepository, mockChallengeGenerator,
-                sessionRepository);
+                sessionRepository, sessionTtl);
 
         // When
         useCase.handle(defaultCommand);

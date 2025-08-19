@@ -34,6 +34,7 @@ public abstract class VerifyEmailOtpTestBase {
     protected static final String DEFAULT_OTP_KEY = "test@bankapp.online";
     protected static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
     protected static final String DEFAULT_OTP_VALUE = "123456";
+    protected static final int sessionTtl = 66; // in seconds
 
     // --- SHARED DEPENDENCIES & MOCKS ---
     // Use stubs for predictable behavior and mocks for verification
@@ -77,7 +78,7 @@ public abstract class VerifyEmailOtpTestBase {
                 credentialOptionsPort,
                 credentialRepository,
                 challengeGenerator,
-                sessionRepository
-        );
+                sessionRepository,
+                sessionTtl);
     }
 }

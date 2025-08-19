@@ -46,7 +46,7 @@ public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
         // Given
         Clock fixedClock = Clock.fixed(Instant.now().plusSeconds(DEFAULT_TTL + 1), ZoneId.of("Z"));
         // Re-create use case with the clock that is in the future
-        var useCaseWithFutureClock = new CompleteVerificationUseCase(fixedClock, otpRepository, hasher, userRepository, credentialOptionsPort, credentialRepository, challengeGenerator, sessionRepository);
+        var useCaseWithFutureClock = new CompleteVerificationUseCase(fixedClock, otpRepository, hasher, userRepository, credentialOptionsPort, credentialRepository, challengeGenerator, sessionRepository, sessionTtl);
 
         // When / Then
         var exception = assertThrows(CompleteVerificationException.class, () -> useCaseWithFutureClock.handle(defaultCommand));
@@ -73,7 +73,7 @@ public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        var useCase = new CompleteVerificationUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, credentialOptionsPort, credentialRepository, challengeGenerator, sessionRepository);
+        var useCase = new CompleteVerificationUseCase(DEFAULT_CLOCK, otpRepository, hasher, userRepositoryMock, credentialOptionsPort, credentialRepository, challengeGenerator, sessionRepository, sessionTtl);
 
         // When
         useCase.handle(defaultCommand);
@@ -98,15 +98,49 @@ public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
 
     @Test
     void should_delete_otp_after_validation() {
+        // Given / When
         defaultUseCase.handle(defaultCommand);
 
+        // Then
         assertThat(otpRepository.load(DEFAULT_OTP_KEY)).isEmpty();
     }
 
     @Test
-    void should_persist_challenge_after_generation() {
+    void should_persist_session_after_generation() {
+        // Given / When
         var res = defaultUseCase.handle(defaultCommand);
         var sessionId = res.sessionId();
+
+        // Then
         assertThat(sessionRepository.load(sessionId)).isPresent();
+    }
+
+    @Test
+    void should_make_session_valid_for_defaultTtl_value_in_seconds() {
+        // Given
+        long sessionTtl = 66L;
+        var useCase = new CompleteVerificationUseCase(
+                DEFAULT_CLOCK,
+                otpRepository,
+                hasher,
+                userRepository,
+                credentialOptionsPort,
+                credentialRepository,
+                challengeGenerator,
+                sessionRepository,
+                sessionTtl
+        );
+        // When
+        var res = useCase.handle(defaultCommand);
+
+        var sessionId = res.sessionId();
+        var sessionOptional = sessionRepository.load(sessionId);
+        assertTrue(sessionOptional.isPresent());
+        Clock fixedClockBeforeExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(sessionTtl-1),DEFAULT_CLOCK.getZone());
+        Clock fixedClockAfterExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(sessionTtl+1), DEFAULT_CLOCK.getZone());
+
+        // Then
+        assertTrue(sessionOptional.get().isValid(fixedClockBeforeExpiration));
+        assertFalse(sessionOptional.get().isValid(fixedClockAfterExpiration));
     }
 }

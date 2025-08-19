@@ -25,6 +25,7 @@ public class CompleteVerificationUseCase {
 
 
     private final Clock clock;
+    private final long sessionTtl;
 
     private final OtpRepository otpRepository;
     private final HashingPort hasher;
@@ -42,8 +43,8 @@ public class CompleteVerificationUseCase {
             @NotNull CredentialOptionsPort credentialOptionsPort,
             @NotNull CredentialRepository credentialRepository,
             @NotNull ChallengeGenerationPort challengeGenerator,
-            @NotNull SessionRepository sessionRepository
-    ) {
+            @NotNull SessionRepository sessionRepository,
+            long sessionTtl) {
         this.otpRepository = otpRepository;
         this.clock = clock;
         this.hasher = hasher;
@@ -52,6 +53,7 @@ public class CompleteVerificationUseCase {
         this.credentialRepository = credentialRepository;
         this.challengeGenerator = challengeGenerator;
         this.sessionRepository = sessionRepository;
+        this.sessionTtl = sessionTtl;
     }
 
     public CompleteVerificationResponse handle(CompleteVerificationCommand command) {
@@ -70,12 +72,12 @@ public class CompleteVerificationUseCase {
         if (userOptional.isEmpty()) {
             user = new User(email);
             userRepository.save(user);
-            saveSession(sessionId, challenge, user.getId());
+            saveSession(sessionId, challenge, user.getId(), sessionTtl);
             return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId);
         }
 
         user = userOptional.get();
-        saveSession(sessionId, challenge, user.getId());
+        saveSession(sessionId, challenge, user.getId(), sessionTtl);
 
         if (user.isEnabled()) {
             //if user enabled then has credential, so can log in
@@ -94,14 +96,15 @@ public class CompleteVerificationUseCase {
         return persistedOtpOptional.get();
     }
 
-    private void saveSession(UUID ceremonyId, byte[] challenge, UUID userId) {
+    private void saveSession(UUID sessionId, byte[] challenge, UUID userId, long ttl) {
         AuthSession authSession = new AuthSession(
-                ceremonyId,
+                sessionId,
                 challenge,
                 userId,
-                Instant.now(clock)
+                ttl,
+                clock
         );
-        sessionRepository.save(authSession, ceremonyId);
+        sessionRepository.save(authSession, sessionId);
     }
 
     private void verifyOtp(Otp persistedOtp, String value) {
