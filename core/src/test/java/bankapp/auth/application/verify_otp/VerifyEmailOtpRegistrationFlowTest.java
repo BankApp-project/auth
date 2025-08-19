@@ -8,8 +8,7 @@ import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -41,6 +40,23 @@ public class VerifyEmailOtpRegistrationFlowTest extends VerifyEmailOtpTestBase {
         assertInstanceOf(RegistrationResponse.class, response);
     }
 
+    @Test
+    void should_return_RegistrationResponse_with_already_persisted_user_when_user_exists_but_is_not_enabled() {
+        // Given
+        User disabledUser = new User(DEFAULT_EMAIL);
+        disabledUser.setEnabled(false); // Explicitly set to false
+        userRepository.save(disabledUser);
+
+        // When
+        var response = defaultUseCase.handle(defaultCommand);
+        assertInstanceOf(RegistrationResponse.class, response);
+        var regResponse = (RegistrationResponse) response;
+
+        // Then
+        var userIdAsBytes = ByteArrayUtil.uuidToBytes(disabledUser.getId());
+        var userHandle = regResponse.options().user().id();
+        assertArrayEquals(userIdAsBytes, userHandle);
+    }
 
     @Test
     void should_pass_generated_challenge_to_CredentialOptionsService_for_new_user() {

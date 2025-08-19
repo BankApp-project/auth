@@ -12,6 +12,7 @@ import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
 import bankapp.auth.application.verify_otp.port.out.CredentialRepository;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.application.verify_otp.port.out.stubs.StubChallengeGenerator;
+import bankapp.auth.application.verify_otp.port.out.stubs.StubCredentialOptionsService;
 import bankapp.auth.application.verify_otp.port.out.stubs.StubUserRepository;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;
@@ -55,7 +56,7 @@ public abstract class VerifyEmailOtpTestBase {
         otpRepository = new StubOtpRepository();
         hasher = new StubHasher();
         userRepository = new StubUserRepository();
-        credentialOptionsPort = mock(CredentialOptionsPort.class);
+        credentialOptionsPort = new StubCredentialOptionsService();
         credentialRepository = mock(CredentialRepository.class);
         challengeGenerator = new StubChallengeGenerator();
         sessionRepository = new StubSessionRepository();

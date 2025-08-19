@@ -1,10 +1,11 @@
 package bankapp.auth.application.verify_otp;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.verify_otp.port.in.commands.VerifyEmailOtpCommand;
 import bankapp.auth.application.verify_otp.port.out.ChallengeGenerationPort;
+import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
 import bankapp.auth.application.verify_otp.port.out.CredentialRepository;
 import bankapp.auth.application.verify_otp.port.out.UserRepository;
 import bankapp.auth.application.verify_otp.port.out.dto.LoginResponse;
@@ -14,7 +15,6 @@ import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.application.verify_otp.port.out.CredentialOptionsPort;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -65,16 +65,23 @@ public class VerifyEmailOtpUseCase {
         UUID sessionId = UUID.randomUUID();
 
         Optional<User> userOptional = userRepository.findByEmail(command.key());
+        User user;
 
-        if (userOptional.isPresent() && userOptional.get().isEnabled()) {
-            User user = userOptional.get();
-            var userCredentials = credentialRepository.load(user.getId());
-            saveSession(sessionId, challenge, user.getId());
-            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge), sessionId.toString());
-        } else {
-            User user = new User(email);
+        if (userOptional.isEmpty()) {
+            user = new User(email);
             userRepository.save(user);
             saveSession(sessionId, challenge, user.getId());
+            return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId.toString());
+        }
+
+        user = userOptional.get();
+        saveSession(sessionId, challenge, user.getId());
+
+        if (user.isEnabled()) {
+            //if user enabled then has credential, so can be logged in
+            var userCredentials = credentialRepository.load(user.getId());
+            return new LoginResponse(credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge), sessionId.toString());
+        } else {
             return new RegistrationResponse(credentialOptionsPort.getPasskeyCreationOptions(user, challenge), sessionId.toString());
         }
     }
@@ -93,7 +100,7 @@ public class VerifyEmailOtpUseCase {
                 challenge,
                 userId,
                 Instant.now(clock)
-                );
+        );
         sessionRepository.save(authSession, ceremonyId.toString());
     }
 
