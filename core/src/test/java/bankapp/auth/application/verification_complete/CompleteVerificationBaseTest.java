@@ -74,15 +74,10 @@ public abstract class CompleteVerificationBaseTest {
         // Prepare the default command and use case instance
         defaultCommand = new CompleteVerificationCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
         defaultUseCase = new CompleteVerificationUseCase(
-                log,
+                sessionTtl, log,
                 DEFAULT_CLOCK,
                 otpRepository,
-                hasher,
-                userRepository,
-                credentialOptionsPort,
-                credentialRepository,
-                challengeGenerator,
-                sessionRepository,
-                sessionTtl);
+                sessionRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher
+        );
     }
 }

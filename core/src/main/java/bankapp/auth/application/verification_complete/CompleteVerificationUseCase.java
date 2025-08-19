@@ -23,41 +23,42 @@ import java.util.UUID;
 
 public class CompleteVerificationUseCase {
 
-    private final LoggerPort log;
-
-    private final Clock clock;
     private final long sessionTtl;
 
+    private final LoggerPort log;
+    private final Clock clock;
+
     private final OtpRepository otpRepository;
-    private final HashingPort hasher;
-    private final UserRepository userRepository;
-    private final CredentialOptionsPort credentialOptionsPort;
-    private final CredentialRepository credentialRepository;
-    private final ChallengeGenerationPort challengeGenerator;
     private final SessionRepository sessionRepository;
+    private final UserRepository userRepository;
+    private final CredentialRepository credentialRepository;
+
+    private final CredentialOptionsPort credentialOptionsPort;
+    private final ChallengeGenerationPort challengeGenerator;
+    private final HashingPort hasher;
 
     public CompleteVerificationUseCase(
+            long sessionTtl,
             @NotNull LoggerPort log,
             @NotNull Clock clock,
             @NotNull OtpRepository otpRepository,
-            @NotNull HashingPort hasher,
+            @NotNull SessionRepository sessionRepository,
+            @NotNull CredentialRepository credentialRepository,
             @NotNull UserRepository userRepository,
             @NotNull CredentialOptionsPort credentialOptionsPort,
-            @NotNull CredentialRepository credentialRepository,
             @NotNull ChallengeGenerationPort challengeGenerator,
-            @NotNull SessionRepository sessionRepository,
-            long sessionTtl
+            @NotNull HashingPort hasher
     ) {
+        this.sessionTtl = sessionTtl;
         this.log = log;
-        this.otpRepository = otpRepository;
         this.clock = clock;
-        this.hasher = hasher;
+        this.otpRepository = otpRepository;
+        this.sessionRepository = sessionRepository;
+        this.credentialRepository = credentialRepository;
         this.userRepository = userRepository;
         this.credentialOptionsPort = credentialOptionsPort;
-        this.credentialRepository = credentialRepository;
         this.challengeGenerator = challengeGenerator;
-        this.sessionRepository = sessionRepository;
-        this.sessionTtl = sessionTtl;
+        this.hasher = hasher;
     }
 
     public CompleteVerificationResponse handle(CompleteVerificationCommand command) {
@@ -114,23 +115,31 @@ public class CompleteVerificationUseCase {
     }
 
     private void saveSession(UUID sessionId, byte[] challenge, UUID userId, long ttl) {
-        AuthSession authSession = new AuthSession(
-                sessionId,
-                challenge,
-                userId,
-                ttl,
-                clock
-        );
-        sessionRepository.save(authSession, sessionId);
+        try {
+            AuthSession authSession = new AuthSession(
+                    sessionId,
+                    challenge,
+                    userId,
+                    ttl,
+                    clock
+            );
+            sessionRepository.save(authSession, sessionId);
+        } catch (RuntimeException e) {
+            throw new CompleteVerificationException("Failed to save session", e);
+        }
     }
 
     private CompleteVerificationResponse prepareResponse(User user, byte[] challenge, UUID sessionId) {
-        if (user.isEnabled()) {
-            var userCredentials = credentialRepository.load(user.getId());
-            var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge);
-            return new LoginResponse(passkeyOptions, sessionId);
+        try {
+            if (user.isEnabled()) {
+                var userCredentials = credentialRepository.load(user.getId());
+                var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge);
+                return new LoginResponse(passkeyOptions, sessionId);
+            }
+            var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user,challenge);
+            return new RegistrationResponse(passkeyOptions, sessionId);
+        } catch (RuntimeException e) {
+            throw new CompleteVerificationException("Failed to prepare response", e);
         }
-        var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user,challenge);
-        return new RegistrationResponse(passkeyOptions, sessionId);
     }
 }

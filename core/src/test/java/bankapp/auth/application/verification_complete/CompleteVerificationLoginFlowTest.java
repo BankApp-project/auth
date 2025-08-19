@@ -68,9 +68,8 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         when(mockCredentialRepository.load(defaultUser.getId())).thenReturn(credentials);
 
         var useCase = new CompleteVerificationUseCase(
-                log, DEFAULT_CLOCK, otpRepository, hasher, userRepository,
-                mockCredentialOptionsService, mockCredentialRepository, challengeGenerator,
-                sessionRepository, sessionTtl);
+                sessionTtl, log, DEFAULT_CLOCK, otpRepository, sessionRepository, mockCredentialRepository, userRepository, mockCredentialOptionsService, challengeGenerator, hasher
+        );
 
         // When
         useCase.handle(defaultCommand);
@@ -88,9 +87,8 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         when(mockChallengeGenerator.generate()).thenReturn(challenge);
 
         var useCase = new CompleteVerificationUseCase(
-                log, DEFAULT_CLOCK, otpRepository, hasher, userRepository,
-                mockCredentialOptionsService, credentialRepository, mockChallengeGenerator,
-                sessionRepository, sessionTtl);
+                sessionTtl, log, DEFAULT_CLOCK, otpRepository, sessionRepository, credentialRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator, hasher
+        );
 
         // When
         useCase.handle(defaultCommand);
