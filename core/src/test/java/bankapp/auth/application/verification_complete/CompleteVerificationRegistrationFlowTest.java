@@ -15,7 +15,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class VerifyEmailOtpRegistrationFlowTest extends VerifyEmailOtpTestBase {
+public class CompleteVerificationRegistrationFlowTest extends CompleteVerificationBaseTest {
 
     @Test
     void should_return_RegistrationResponse_if_user_does_not_exist() {

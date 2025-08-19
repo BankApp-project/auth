@@ -17,7 +17,6 @@ import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.vo.EmailAddress;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class VerifyEmailOtpTest extends VerifyEmailOtpTestBase {
+public class CompleteVerificationTest extends CompleteVerificationBaseTest {
 
     private static final String INVALID_OTP_KEY = "nonexisting@bankapp.online";
 

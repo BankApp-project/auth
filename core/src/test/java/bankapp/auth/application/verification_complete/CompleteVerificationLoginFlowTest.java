@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class VerifyEmailOtpLoginFlowTest extends VerifyEmailOtpTestBase {
+public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseTest {
 
     private User defaultUser;
 

@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
  * An abstract base class for tests related to the CompleteVerificationUseCase.
  * It handles the common setup of constants, dependencies, and test data.
  */
-public abstract class VerifyEmailOtpTestBase {
+public abstract class CompleteVerificationBaseTest {
 
     // --- SHARED CONSTANTS ---
     protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
