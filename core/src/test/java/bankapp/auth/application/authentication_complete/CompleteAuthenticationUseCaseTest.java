@@ -1,5 +1,6 @@
 package bankapp.auth.application.authentication_complete;
 
+import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubSessionRepository;
@@ -12,6 +13,8 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -40,24 +43,59 @@ public class CompleteAuthenticationUseCaseTest {
 
    private CompleteAuthenticationUseCase useCase;
    private CompleteAuthenticationCommand command;
+   private WebAuthnPort webAuthnPort;
 
-   @BeforeEach
+    @BeforeEach
    void setup() {
        sessionRepo = new StubSessionRepository();
+       sessionRepo.save(testSession, sessionId);
 
-       useCase = new CompleteAuthenticationUseCase(sessionRepo);
+       webAuthnPort = mock(WebAuthnPort.class);
+
+       useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort);
        command = new CompleteAuthenticationCommand(sessionId, authenticationResponseJSON);
    }
 
     @Test
     void should_load_authSession_from_repository() {
         sessionRepo = mock(SessionRepository.class);
-        useCase = new CompleteAuthenticationUseCase(sessionRepo);
+        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort);
 
         when(sessionRepo.load(eq(sessionId))).thenReturn(Optional.of(testSession));
 
         useCase.handle(command);
 
         verify(sessionRepo).load(eq(sessionId));
+    }
+
+    @Test
+    void should_verify_user_request() {
+        // When
+        useCase.handle(command);
+
+        // Then
+        verify(webAuthnPort).confirmAuthenticationChallenge(eq(command.AuthenticationResponseJSON()), eq(testSession) );
+    }
+
+    @Test
+    void should_throw_exception_when_session_not_present_for_given_id() {
+        // Given
+        var invalidSessionId = UUID.randomUUID();
+        var invalidCommand = new CompleteAuthenticationCommand(invalidSessionId, authenticationResponseJSON);
+        // When
+        // Then
+        assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
+    }
+
+    @Test
+    void should_throw_CompleteAuthenticationException_when_challenge_verification_fails() {
+        // Given
+        String exceptionMsg = "Challenge verification failed";
+        when(webAuthnPort.confirmAuthenticationChallenge(any(),any())).thenThrow(new RuntimeException(exceptionMsg));
+        // When
+        // Then
+        var exceptionThrowed = assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
+
+        assertTrue(exceptionThrowed.getMessage().contains(exceptionMsg));
     }
 }

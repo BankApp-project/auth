@@ -5,5 +5,7 @@ import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 
 public interface WebAuthnPort {
 
-    CredentialRecord confirmRegistrationChallenge(String publicKeyCredentialJson, AuthSession sessionData);
+    CredentialRecord confirmRegistrationChallenge(String registrationResponseJSON, AuthSession sessionData);
+
+    Object confirmAuthenticationChallenge(String authenticationResponseJSON, AuthSession sessionData);
 }
