@@ -31,6 +31,7 @@ class CompleteRegistrationUseCaseTest {
 
     private CompleteRegistrationCommand command;
     private CompleteRegistrationUseCase useCase;
+
     @BeforeEach
     void setUp() {
         sessionRepo = mock(SessionRepository.class);
@@ -85,14 +86,6 @@ class CompleteRegistrationUseCaseTest {
 
     @Test
     void should_persist_new_credential_when_verification_successful() {
-        // Given
-        sessionRepo = mock(SessionRepository.class);
-        webAuthnPort = mock(WebAuthnPort.class);
-
-        command = new CompleteRegistrationCommand(sessionId, "blob");
-        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository);
-
-        when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testAuthSession));
 
         CredentialRecord stubCredentialRecord = new CredentialRecord(
                 null,
@@ -108,6 +101,7 @@ class CompleteRegistrationUseCaseTest {
                 null,
                 null
         );
+
         when(webAuthnPort.confirmRegistrationChallenge(eq(command.publicKeyCredentialJson()), any())).thenReturn(stubCredentialRecord);
 
         useCase.handle(command);
