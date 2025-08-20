@@ -87,7 +87,7 @@ public class CompleteRegistrationUseCase {
     private CredentialRecord verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, AuthSession session) {
         CredentialRecord credential;
         try {
-            credential = webAuthnPort.confirmRegistrationChallenge(command.publicKeyCredentialJson(), session);
+            credential = webAuthnPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), session);
         } catch (Exception e) {
             throw new CompleteRegistrationException("Failed to confirm new credential registration: " + e.getMessage(), e);
         }

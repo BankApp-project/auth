@@ -4,10 +4,10 @@ import java.util.UUID;
 
 public record CompleteRegistrationCommand(
         UUID sessionId,
-        String publicKeyCredentialJson
+        String RegistrationResponseJSON
 ) {
     public CompleteRegistrationCommand {
-        if (publicKeyCredentialJson == null || publicKeyCredentialJson.isBlank()) {
+        if (RegistrationResponseJSON == null || RegistrationResponseJSON.isBlank()) {
             throw new IllegalArgumentException("Public key credential JSON cannot be null or blank");
         }
         if (sessionId == null) {

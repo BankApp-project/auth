@@ -82,7 +82,7 @@ class CompleteRegistrationUseCaseTest {
                 null
         );
 
-        when(webAuthnPort.confirmRegistrationChallenge(eq(command.publicKeyCredentialJson()), any())).thenReturn(stubCredentialRecord);
+        when(webAuthnPort.confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), any())).thenReturn(stubCredentialRecord);
         when(userRepository.findById(any())).thenReturn(Optional.of(testUser));
     }
 
@@ -101,7 +101,7 @@ class CompleteRegistrationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnPort).confirmRegistrationChallenge(eq(command.publicKeyCredentialJson()), eq(testAuthSession) );
+        verify(webAuthnPort).confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), eq(testAuthSession) );
     }
 
     @Test
