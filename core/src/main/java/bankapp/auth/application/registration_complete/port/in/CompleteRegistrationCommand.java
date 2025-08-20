@@ -1,4 +1,4 @@
-package bankapp.auth.application.registration_complete;
+package bankapp.auth.application.registration_complete.port.in;
 
 import java.util.UUID;
 

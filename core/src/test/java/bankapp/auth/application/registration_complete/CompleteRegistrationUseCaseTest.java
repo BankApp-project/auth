@@ -1,13 +1,17 @@
 package bankapp.auth.application.registration_complete;
 
+import bankapp.auth.application.shared.port.out.dto.AuthTokens;
+import bankapp.auth.application.registration_complete.port.in.CompleteRegistrationCommand;
+import bankapp.auth.application.shared.port.out.TokenIssuingPort;
+import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
-import bankapp.auth.application.verification_complete.port.out.CredentialRepository;
-import bankapp.auth.application.verification_complete.port.out.UserRepository;
+import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
+import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;

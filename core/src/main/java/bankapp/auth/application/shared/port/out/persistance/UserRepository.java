@@ -1,4 +1,4 @@
-package bankapp.auth.application.verification_complete.port.out;
+package bankapp.auth.application.shared.port.out.persistance;
 
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;

@@ -1,3 +1,3 @@
-package bankapp.auth.application.registration_complete;
+package bankapp.auth.application.shared.port.out.dto;
 
 public record AuthTokens(String accessToken, String refreshToken) {}

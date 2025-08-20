@@ -1,4 +1,4 @@
-package bankapp.auth.application.verification_complete.port.out;
+package bankapp.auth.application.shared.port.out.persistance;
 
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;

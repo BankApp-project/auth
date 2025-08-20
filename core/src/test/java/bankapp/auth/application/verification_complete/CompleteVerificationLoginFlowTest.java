@@ -1,7 +1,7 @@
 package bankapp.auth.application.verification_complete;
 
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verification_complete.port.out.CredentialRepository;
+import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.domain.model.User;

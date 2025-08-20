@@ -1,4 +1,4 @@
-package bankapp.auth.application.registration_complete;
+package bankapp.auth.application.shared.port.out;
 
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;

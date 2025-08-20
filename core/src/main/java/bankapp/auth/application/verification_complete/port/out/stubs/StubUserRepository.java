@@ -1,6 +1,6 @@
 package bankapp.auth.application.verification_complete.port.out.stubs;
 
-import bankapp.auth.application.verification_complete.port.out.UserRepository;
+import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 
