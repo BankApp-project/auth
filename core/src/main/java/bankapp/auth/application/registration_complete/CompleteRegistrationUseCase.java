@@ -35,28 +35,24 @@ public class CompleteRegistrationUseCase {
         this.log = log;
     }
 
+    //deleted logs for now. it was hard to read flow.
     public RegistrationResult handle(@NonNull CompleteRegistrationCommand command) {
-        log.info("Finalizing registration for session ID: {}", command.sessionId());
-
         var session = getSession(command);
-        log.debug("Loaded registration session for user: {}", session.userId());
 
         CredentialRecord credential = verifyAndExtractCredentialRecord(command, session);
-        log.debug("New credential verified for user: {}", session.userId());
 
         saveCredentialRecord(credential);
-        log.debug("Credential record persisted for user: {}", session.userId());
 
         sessionRepository.delete(command.sessionId());
-        log.debug("Consumed registration session removed: {}", command.sessionId());
 
-        User activatedUser = fetchAndActivateUser(credential.userHandle());
-        log.debug("User account activated: {}", activatedUser.getId());
+        User user = fetchUser(credential.userHandle());
 
-        var tokens = generateTokensForUser(activatedUser);
-        log.debug("Authentication tokens created for user: {}", activatedUser.getId());
+        user.activate();
 
-        log.info("Registration finalized and tokens issued for user: {}", activatedUser.getId());
+        userRepository.save(user);
+
+        var tokens = generateTokensForUser(user);
+
         return new RegistrationResult(tokens);
     }
 
@@ -64,20 +60,14 @@ public class CompleteRegistrationUseCase {
         return tokenIssuer.issueTokensForUser(activatedUser.getId());
     }
 
-    private User fetchAndActivateUser(byte[] userHandle) {
+    private User fetchUser(byte[] userHandle) {
         var userId = ByteArrayUtil.bytesToUuid(userHandle);
 
         var userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw new CompleteRegistrationException("User does not exists");
         }
-        var user = userOpt.get();
-
-        user.activate();
-
-        userRepository.save(user);
-
-        return user;
+        return userOpt.get();
     }
 
     private AuthSession getSession(CompleteRegistrationCommand command) {
