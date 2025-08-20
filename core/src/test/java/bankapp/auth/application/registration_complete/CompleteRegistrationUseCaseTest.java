@@ -3,7 +3,11 @@ package bankapp.auth.application.registration_complete;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification_complete.port.out.CredentialRepository;
+import bankapp.auth.application.verification_complete.port.out.UserRepository;
+import bankapp.auth.domain.model.User;
+import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +18,9 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/*
+ * Using mocks instead of stubs for learning purposes.
+ */
 class CompleteRegistrationUseCaseTest {
 
     private final UUID sessionId = UUID.randomUUID();
@@ -25,10 +32,12 @@ class CompleteRegistrationUseCaseTest {
                 Clock.systemUTC()
         );
     CredentialRecord stubCredentialRecord;
+    User testUser;
 
     private SessionRepository sessionRepo;
     private WebAuthnPort webAuthnPort;
     private CredentialRepository credentialRepository;
+    private UserRepository userRepository;
 
     private CompleteRegistrationCommand command;
     private CompleteRegistrationUseCase useCase;
@@ -38,16 +47,19 @@ class CompleteRegistrationUseCaseTest {
         sessionRepo = mock(SessionRepository.class);
         webAuthnPort = mock(WebAuthnPort.class);
         credentialRepository = mock(CredentialRepository.class);
+        userRepository = mock(UserRepository.class);
 
         command = new CompleteRegistrationCommand(sessionId, "blob");
-        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository);
+        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository, userRepository);
 
 
         when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testAuthSession));
 
+        testUser = new User(new EmailAddress("test@bankapp.online"));
+        var userHandle = ByteArrayUtil.uuidToBytes(testUser.getId());
         stubCredentialRecord = new CredentialRecord(
                 null,
-                null,
+                userHandle,
                 null,
                 null,
                 0L,
@@ -138,5 +150,19 @@ class CompleteRegistrationUseCaseTest {
 
         // Verify session is NOT deleted when credential saving fails
         verify(sessionRepo, never()).delete(sessionId);
+    }
+
+    @Test
+    void should_activate_user_account_when_credential_saved_successfuly() {
+
+        assertFalse(testUser.isEnabled());
+        when(userRepository.findById(any())).thenReturn(Optional.of(testUser));
+        useCase.handle(command);
+        verify(userRepository).save(argThat(User::isEnabled));
+    }
+
+    @Test
+    void should_throw_exception_when_user_with_given_id_not_found() {
+
     }
 }

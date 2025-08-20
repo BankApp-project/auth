@@ -11,4 +11,14 @@ public class ByteArrayUtil {
         bb.putLong(uuid.getLeastSignificantBits());
         return bb.array();
     }
+
+    public static UUID bytesToUuid(byte[] bytes) {
+        if (bytes.length != 16) {
+            throw new IllegalArgumentException("Byte array must be exactly 16 bytes long");
+        }
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        long mostSigBits = bb.getLong();
+        long leastSigBits = bb.getLong();
+        return new UUID(mostSigBits, leastSigBits);
+    }
 }
