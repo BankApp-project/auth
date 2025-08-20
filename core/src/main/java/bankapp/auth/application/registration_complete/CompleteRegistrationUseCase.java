@@ -35,21 +35,31 @@ public class CompleteRegistrationUseCase {
     }
 
     public RegistrationResult handle(CompleteRegistrationCommand command) {
+        log.info("Finalizing registration for session ID: {}", command.sessionId());
 
         var session = getSession(command);
+        log.debug("Loaded registration session for user: {}", session.userId());
 
         CredentialRecord credential = verifyAndExtractCredentialRecord(command, session);
+        log.debug("New credential verified for user: {}", session.userId());
 
         saveCredentialRecord(credential);
+        log.debug("Credential record persisted for user: {}", session.userId());
 
         sessionRepository.delete(command.sessionId());
+        log.debug("Consumed registration session removed: {}", command.sessionId());
 
         User activatedUser = fetchAndActivateUser(credential.userHandle());
+        log.debug("User account activated: {}", activatedUser.getId());
 
         var tokens = generateTokensForUser(activatedUser);
+        log.debug("Authentication tokens created for user: {}", activatedUser.getId());
 
+        log.info("Registration finalized and tokens issued for user: {}", activatedUser.getId());
         return new RegistrationResult(tokens);
     }
+
+
 
     private AuthTokens generateTokensForUser(User activatedUser) {
         return tokenIssuer.issueTokensForUser(activatedUser.getId());
