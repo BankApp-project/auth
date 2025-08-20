@@ -13,4 +13,6 @@ public interface CredentialRepository {
      * @return a list of credential records, may be empty if no records found
      */
     List<CredentialRecord> load(UUID id);
+
+    void save(CredentialRecord credentialRecord);
 }

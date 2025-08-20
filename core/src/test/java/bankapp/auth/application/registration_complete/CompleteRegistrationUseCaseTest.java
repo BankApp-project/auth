@@ -1,7 +1,9 @@
 package bankapp.auth.application.registration_complete;
 
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
+import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.verification_complete.port.out.CredentialRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +27,7 @@ class CompleteRegistrationUseCaseTest {
 
     private SessionRepository sessionRepo;
     private WebAuthnPort webAuthnPort;
+    private CredentialRepository credentialRepository;
 
     private CompleteRegistrationCommand command;
     private CompleteRegistrationUseCase useCase;
@@ -32,9 +35,10 @@ class CompleteRegistrationUseCaseTest {
     void setUp() {
         sessionRepo = mock(SessionRepository.class);
         webAuthnPort = mock(WebAuthnPort.class);
+        credentialRepository = mock(CredentialRepository.class);
 
         command = new CompleteRegistrationCommand(sessionId, "blob");
-        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort);
+        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository);
 
 
         when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testAuthSession));
@@ -77,5 +81,37 @@ class CompleteRegistrationUseCaseTest {
        var exceptionThrowed = assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
 
        assertTrue(exceptionThrowed.getMessage().contains(exceptionMsg));
+    }
+
+    @Test
+    void should_persist_new_credential_when_verification_successful() {
+        // Given
+        sessionRepo = mock(SessionRepository.class);
+        webAuthnPort = mock(WebAuthnPort.class);
+
+        command = new CompleteRegistrationCommand(sessionId, "blob");
+        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository);
+
+        when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testAuthSession));
+
+        CredentialRecord stubCredentialRecord = new CredentialRecord(
+                null,
+                null,
+                null,
+                null,
+                0L,
+                false,
+                false,
+                false,
+                null,
+                null,
+                null,
+                null
+        );
+        when(webAuthnPort.verify(eq(command.publicKeyCredentialJson()), any())).thenReturn(stubCredentialRecord);
+
+        useCase.handle(command);
+
+        verify(credentialRepository).save(stubCredentialRecord);
     }
 }
