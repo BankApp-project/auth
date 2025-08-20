@@ -30,7 +30,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
 
         // Then, add the specific setup for the login flow: an existing, enabled user
         defaultUser = new User(DEFAULT_EMAIL);
-        defaultUser.setEnabled(true);
+        defaultUser.activate();
         userRepository.save(defaultUser);
     }
 

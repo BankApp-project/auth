@@ -73,7 +73,7 @@ public class CompleteRegistrationUseCase {
         }
         var user = userOpt.get();
 
-        user.setEnabled(true);
+        user.activate();
 
         userRepository.save(user);
 
