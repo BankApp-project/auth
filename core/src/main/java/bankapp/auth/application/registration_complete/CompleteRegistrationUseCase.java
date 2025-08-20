@@ -17,6 +17,12 @@ public class CompleteRegistrationUseCase {
 
     public void handle(CompleteRegistrationCommand command) {
         var session = sessionRepository.load(command.sessionId());
+        if (session.isEmpty()) {
+            throw new CompleteRegistrationException("No such session");
+        }
         webAuthnPort.verify(command.publicKeyCredentialJson(), session.get());
     }
+
 }
+//check if session is present
+// ??

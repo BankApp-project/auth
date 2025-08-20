@@ -9,6 +9,7 @@ import java.time.Clock;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class CompleteRegistrationUseCaseTest {
@@ -55,5 +56,14 @@ class CompleteRegistrationUseCaseTest {
 
         // Then
         verify(webAuthnPort).verify(eq(command.publicKeyCredentialJson()), eq(testAuthSession) );
+    }
+
+    @Test
+    void should_throw_exception_when_session_not_present_for_given_id() {
+        // Given
+        when(sessionRepo.load(any())).thenReturn(Optional.empty());
+        // When
+        // Then
+        assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
     }
 }
