@@ -118,11 +118,25 @@ class CompleteRegistrationUseCaseTest {
 
     @Test
     void should_not_delete_challenge_when_user_fails_to_register_new_credential() {
-        doThrow(new RuntimeException("Failed to save credential"))
-                .when(credentialRepository)
-                .save(stubCredentialRecord);
+        // Given
+        when(webAuthnPort.confirmRegistrationChallenge(any(), any())).thenThrow(new RuntimeException("Verification failed"));
 
+        // When & Then
         assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
+
+        // Verify session is NOT deleted when verification fails
+        verify(sessionRepo, never()).delete(sessionId);
+    }
+
+    @Test
+    void should_not_delete_session_when_credential_save_fails() {
+        // Given
+        doThrow(new RuntimeException("Database error")).when(credentialRepository).save(any());
+
+        // When & Then
+        assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
+
+        // Verify session is NOT deleted when credential saving fails
         verify(sessionRepo, never()).delete(sessionId);
     }
 }
