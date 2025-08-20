@@ -1,5 +1,6 @@
 package bankapp.auth.application.verification_complete.port.out;
 
+import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public interface CredentialRepository {
      */
     List<CredentialRecord> load(UUID id);
 
-    void save(CredentialRecord credentialRecord);
+    void save(CredentialRecord credentialRecord) throws CredentialAlreadyExistsException;
 }

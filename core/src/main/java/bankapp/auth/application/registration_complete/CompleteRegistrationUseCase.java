@@ -1,5 +1,6 @@
 package bankapp.auth.application.registration_complete;
 
+import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
@@ -92,6 +93,8 @@ public class CompleteRegistrationUseCase {
     private void saveCredentialRecord(CredentialRecord credential) {
         try {
             credentialRepository.save(credential);
+        } catch (CredentialAlreadyExistsException e) {
+            throw new CompleteRegistrationException("Credential already exists with this ID or PublicKey. Aborted.");
         } catch (RuntimeException e) {
             throw new CompleteRegistrationException("Failed to save credential: " + e.getMessage(), e);
         }
