@@ -8,6 +8,7 @@ import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification_complete.port.out.CredentialRepository;
 import bankapp.auth.application.verification_complete.port.out.UserRepository;
 import bankapp.auth.domain.model.User;
+import lombok.NonNull;
 
 public class CompleteRegistrationUseCase {
 
@@ -34,7 +35,7 @@ public class CompleteRegistrationUseCase {
         this.log = log;
     }
 
-    public RegistrationResult handle(CompleteRegistrationCommand command) {
+    public RegistrationResult handle(@NonNull CompleteRegistrationCommand command) {
         log.info("Finalizing registration for session ID: {}", command.sessionId());
 
         var session = getSession(command);
@@ -58,8 +59,6 @@ public class CompleteRegistrationUseCase {
         log.info("Registration finalized and tokens issued for user: {}", activatedUser.getId());
         return new RegistrationResult(tokens);
     }
-
-
 
     private AuthTokens generateTokensForUser(User activatedUser) {
         return tokenIssuer.issueTokensForUser(activatedUser.getId());
@@ -92,7 +91,7 @@ public class CompleteRegistrationUseCase {
     private CredentialRecord verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, AuthSession session) {
         CredentialRecord credential;
         try {
-            credential =  webAuthnPort.confirmRegistrationChallenge(command.publicKeyCredentialJson(), session);
+            credential = webAuthnPort.confirmRegistrationChallenge(command.publicKeyCredentialJson(), session);
         } catch (Exception e) {
             throw new CompleteRegistrationException("Failed to confirm new credential registration: " + e.getMessage(), e);
         }

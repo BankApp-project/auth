@@ -188,3 +188,4 @@ class CompleteRegistrationUseCaseTest {
         assertNotNull(res.tokens().refreshToken());
     }
 }
+//Credential already exists: What if a credential with the same public key or ID is somehow saved twice? A unique constraint in the database is essential, but the application could also check for this explicitly if needed.
