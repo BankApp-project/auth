@@ -1,5 +1,6 @@
 package bankapp.auth.application.registration_complete;
 
+import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
@@ -35,9 +36,10 @@ class CompleteRegistrationUseCaseTest {
     User testUser;
 
     private SessionRepository sessionRepo;
-    private WebAuthnPort webAuthnPort;
     private CredentialRepository credentialRepository;
     private UserRepository userRepository;
+    private WebAuthnPort webAuthnPort;
+    private TokenIssuingPort tokenIssuingPort;
 
     private CompleteRegistrationCommand command;
     private CompleteRegistrationUseCase useCase;
@@ -48,9 +50,12 @@ class CompleteRegistrationUseCaseTest {
         webAuthnPort = mock(WebAuthnPort.class);
         credentialRepository = mock(CredentialRepository.class);
         userRepository = mock(UserRepository.class);
+        tokenIssuingPort = mock(TokenIssuingPort.class);
+
+        LoggerPort log = mock(LoggerPort.class);
 
         command = new CompleteRegistrationCommand(sessionId, "blob");
-        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository, userRepository);
+        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository, userRepository, tokenIssuingPort, log);
 
 
         when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testAuthSession));
@@ -73,6 +78,7 @@ class CompleteRegistrationUseCaseTest {
         );
 
         when(webAuthnPort.confirmRegistrationChallenge(eq(command.publicKeyCredentialJson()), any())).thenReturn(stubCredentialRecord);
+        when(userRepository.findById(any())).thenReturn(Optional.of(testUser));
     }
 
     @Test
@@ -156,7 +162,6 @@ class CompleteRegistrationUseCaseTest {
     void should_activate_user_account_when_credential_saved_successfuly() {
 
         assertFalse(testUser.isEnabled());
-        when(userRepository.findById(any())).thenReturn(Optional.of(testUser));
         useCase.handle(command);
         verify(userRepository).save(argThat(User::isEnabled));
     }
@@ -167,5 +172,19 @@ class CompleteRegistrationUseCaseTest {
 
         var exception = assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
         assertTrue(exception.getMessage().contains("User does not exists"));
+    }
+
+    @Test
+    void should_return_tokens_for_activated_user() {
+
+        AuthTokens testTokens;
+        testTokens = new AuthTokens("accessToken", "refreshToken");
+        when(tokenIssuingPort.issueTokensForUser(any())).thenReturn(testTokens);
+
+        var res = useCase.handle(command);
+        verify(tokenIssuingPort).issueTokensForUser(eq(testUser.getId()));
+        assertNotNull(res.tokens());
+        assertNotNull(res.tokens().accessToken());
+        assertNotNull(res.tokens().refreshToken());
     }
 }

@@ -1,11 +1,13 @@
 package bankapp.auth.application.registration_complete;
 
+import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification_complete.port.out.CredentialRepository;
 import bankapp.auth.application.verification_complete.port.out.UserRepository;
+import bankapp.auth.domain.model.User;
 
 public class CompleteRegistrationUseCase {
 
@@ -13,31 +15,47 @@ public class CompleteRegistrationUseCase {
     private final WebAuthnPort webAuthnPort;
     private final CredentialRepository credentialRepository;
     private final UserRepository userRepository;
+    private final TokenIssuingPort tokenIssuer;
+    private final LoggerPort log;
 
     public CompleteRegistrationUseCase(
             SessionRepository sessionRepository,
             WebAuthnPort webAuthnPort,
             CredentialRepository credentialRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            TokenIssuingPort tokenIssuingPort,
+            LoggerPort log
     ) {
         this.sessionRepository = sessionRepository;
         this.webAuthnPort = webAuthnPort;
         this.credentialRepository = credentialRepository;
         this.userRepository = userRepository;
+        this.tokenIssuer = tokenIssuingPort;
+        this.log = log;
     }
 
-    public void handle(CompleteRegistrationCommand command) {
+    public RegistrationResult handle(CompleteRegistrationCommand command) {
+
         var session = getSession(command);
 
         CredentialRecord credential = verifyAndExtractCredentialRecord(command, session);
 
         saveCredentialRecord(credential);
+
         sessionRepository.delete(command.sessionId());
 
-        activateUser(credential.userHandle());
+        User activatedUser = fetchAndActivateUser(credential.userHandle());
+
+        var tokens = generateTokensForUser(activatedUser);
+
+        return new RegistrationResult(tokens);
     }
 
-    private void activateUser(byte[] userHandle) {
+    private AuthTokens generateTokensForUser(User activatedUser) {
+        return tokenIssuer.issueTokensForUser(activatedUser.getId());
+    }
+
+    private User fetchAndActivateUser(byte[] userHandle) {
         var userId = ByteArrayUtil.bytesToUuid(userHandle);
 
         var userOpt = userRepository.findById(userId);
@@ -49,6 +67,8 @@ public class CompleteRegistrationUseCase {
         user.setEnabled(true);
 
         userRepository.save(user);
+
+        return user;
     }
 
     private AuthSession getSession(CompleteRegistrationCommand command) {
