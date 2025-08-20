@@ -84,7 +84,7 @@ public class CompleteAuthenticationUseCaseTest {
         var invalidCommand = new CompleteAuthenticationCommand(invalidSessionId, authenticationResponseJSON);
         // When
         // Then
-        assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
+        assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(invalidCommand));
     }
 
     @Test

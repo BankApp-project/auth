@@ -15,6 +15,9 @@ public class CompleteAuthenticationUseCase {
 
     public CompleteAuthenticationResponse handle(CompleteAuthenticationCommand command) {
         var sessionOptional = sessionRepository.load(command.sessionId());
+        if (sessionOptional.isEmpty()) {
+            throw new CompleteAuthenticationException("No such session with ID: " + command.sessionId());
+        }
         var session = sessionOptional.get();
         webAuthnPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session);
 
