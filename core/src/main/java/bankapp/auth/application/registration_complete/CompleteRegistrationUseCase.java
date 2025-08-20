@@ -66,7 +66,7 @@ public class CompleteRegistrationUseCase {
 
         var userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
-            throw new CompleteRegistrationException("User does not exists");
+            throw new CompleteRegistrationException("User does not exists for userId: " + userId);
         }
         return userOpt.get();
     }
@@ -74,7 +74,7 @@ public class CompleteRegistrationUseCase {
     private AuthSession getSession(CompleteRegistrationCommand command) {
         var session = sessionRepository.load(command.sessionId());
         if (session.isEmpty()) {
-            throw new CompleteRegistrationException("No such session");
+            throw new CompleteRegistrationException("No such session with ID: " + command.sessionId());
         }
         return session.get();
     }
