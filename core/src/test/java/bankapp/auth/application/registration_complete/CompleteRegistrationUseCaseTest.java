@@ -9,7 +9,7 @@ import java.time.Clock;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CompleteRegistrationUseCaseTest {
@@ -65,5 +65,17 @@ class CompleteRegistrationUseCaseTest {
         // When
         // Then
         assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
+    }
+
+    @Test
+    void should_throw_CompleteRegistrationException_when_challenge_verification_fails() {
+        // Given
+        String exceptionMsg = "Challenge verification failed";
+        when(webAuthnPort.verify(any(),any())).thenThrow(new RuntimeException(exceptionMsg));
+        // When
+        // Then
+       var exceptionThrowed = assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
+
+       assertTrue(exceptionThrowed.getMessage().contains(exceptionMsg));
     }
 }

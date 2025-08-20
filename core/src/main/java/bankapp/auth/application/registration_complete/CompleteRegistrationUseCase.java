@@ -20,7 +20,11 @@ public class CompleteRegistrationUseCase {
         if (session.isEmpty()) {
             throw new CompleteRegistrationException("No such session");
         }
-        webAuthnPort.verify(command.publicKeyCredentialJson(), session.get());
+        try {
+            webAuthnPort.verify(command.publicKeyCredentialJson(), session.get());
+        } catch (Exception e) {
+            throw new CompleteRegistrationException("Failed to verify new credential registration: " + e.getMessage(), e);
+        }
     }
 
 }
