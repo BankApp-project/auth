@@ -6,7 +6,6 @@ import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification_complete.port.out.CredentialRepository;
 import bankapp.auth.application.verification_complete.port.out.UserRepository;
-import bankapp.auth.domain.model.User;
 
 public class CompleteRegistrationUseCase {
 
@@ -35,10 +34,20 @@ public class CompleteRegistrationUseCase {
         saveCredentialRecord(credential);
         sessionRepository.delete(command.sessionId());
 
-        var userId = ByteArrayUtil.bytesToUuid(credential.userHandle());
+        activateUser(credential.userHandle());
+    }
+
+    private void activateUser(byte[] userHandle) {
+        var userId = ByteArrayUtil.bytesToUuid(userHandle);
+
         var userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new CompleteRegistrationException("User does not exists");
+        }
         var user = userOpt.get();
+
         user.setEnabled(true);
+
         userRepository.save(user);
     }
 

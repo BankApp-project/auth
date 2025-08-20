@@ -163,6 +163,9 @@ class CompleteRegistrationUseCaseTest {
 
     @Test
     void should_throw_exception_when_user_with_given_id_not_found() {
+        when(userRepository.findById(any())).thenReturn(Optional.empty());
 
+        var exception = assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
+        assertTrue(exception.getMessage().contains("User does not exists"));
     }
 }
