@@ -1,5 +1,6 @@
 package bankapp.auth.application.registration_complete;
 
+import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.verification_complete.port.out.CredentialRepository;
@@ -20,18 +21,28 @@ public class CompleteRegistrationUseCase {
     }
 
     public void handle(CompleteRegistrationCommand command) {
+        var session = getSession(command);
+
+        CredentialRecord credential = verifyAndExtractCredentialRecord(command, session);
+
+        credentialRepository.save(credential);
+    }
+
+    private AuthSession getSession(CompleteRegistrationCommand command) {
         var session = sessionRepository.load(command.sessionId());
         if (session.isEmpty()) {
             throw new CompleteRegistrationException("No such session");
         }
+        return session.get();
+    }
 
+    private CredentialRecord verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, AuthSession session) {
         CredentialRecord credential;
         try {
-            credential =  webAuthnPort.verify(command.publicKeyCredentialJson(), session.get());
+            credential =  webAuthnPort.confirmRegistrationChallenge(command.publicKeyCredentialJson(), session);
         } catch (Exception e) {
-            throw new CompleteRegistrationException("Failed to verify new credential registration: " + e.getMessage(), e);
+            throw new CompleteRegistrationException("Failed to confirm new credential registration: " + e.getMessage(), e);
         }
-
-        credentialRepository.save(credential);
+        return credential;
     }
 }

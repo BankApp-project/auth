@@ -59,7 +59,7 @@ class CompleteRegistrationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnPort).verify(eq(command.publicKeyCredentialJson()), eq(testAuthSession) );
+        verify(webAuthnPort).confirmRegistrationChallenge(eq(command.publicKeyCredentialJson()), eq(testAuthSession) );
     }
 
     @Test
@@ -75,7 +75,7 @@ class CompleteRegistrationUseCaseTest {
     void should_throw_CompleteRegistrationException_when_challenge_verification_fails() {
         // Given
         String exceptionMsg = "Challenge verification failed";
-        when(webAuthnPort.verify(any(),any())).thenThrow(new RuntimeException(exceptionMsg));
+        when(webAuthnPort.confirmRegistrationChallenge(any(),any())).thenThrow(new RuntimeException(exceptionMsg));
         // When
         // Then
        var exceptionThrowed = assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
@@ -108,7 +108,7 @@ class CompleteRegistrationUseCaseTest {
                 null,
                 null
         );
-        when(webAuthnPort.verify(eq(command.publicKeyCredentialJson()), any())).thenReturn(stubCredentialRecord);
+        when(webAuthnPort.confirmRegistrationChallenge(eq(command.publicKeyCredentialJson()), any())).thenReturn(stubCredentialRecord);
 
         useCase.handle(command);
 
