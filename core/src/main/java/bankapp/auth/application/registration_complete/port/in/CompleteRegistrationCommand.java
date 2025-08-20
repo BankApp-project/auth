@@ -8,7 +8,7 @@ public record CompleteRegistrationCommand(
 ) {
     public CompleteRegistrationCommand {
         if (RegistrationResponseJSON == null || RegistrationResponseJSON.isBlank()) {
-            throw new IllegalArgumentException("Public key credential JSON cannot be null or blank");
+            throw new IllegalArgumentException("Registration Response JSON cannot be null or blank");
         }
         if (sessionId == null) {
             throw new IllegalArgumentException("Session ID cannot be null");
