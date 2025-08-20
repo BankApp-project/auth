@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface SessionRepository {
     void save(AuthSession authSession, UUID key);
     Optional<AuthSession> load(UUID key);
+    void delete(UUID sessionId);
 }

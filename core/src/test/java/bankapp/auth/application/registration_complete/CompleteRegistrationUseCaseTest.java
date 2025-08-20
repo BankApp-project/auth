@@ -24,6 +24,7 @@ class CompleteRegistrationUseCaseTest {
                 5L,
                 Clock.systemUTC()
         );
+    CredentialRecord stubCredentialRecord;
 
     private SessionRepository sessionRepo;
     private WebAuthnPort webAuthnPort;
@@ -43,6 +44,23 @@ class CompleteRegistrationUseCaseTest {
 
 
         when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testAuthSession));
+
+        stubCredentialRecord = new CredentialRecord(
+                null,
+                null,
+                null,
+                null,
+                0L,
+                false,
+                false,
+                false,
+                null,
+                null,
+                null,
+                null
+        );
+
+        when(webAuthnPort.confirmRegistrationChallenge(eq(command.publicKeyCredentialJson()), any())).thenReturn(stubCredentialRecord);
     }
 
     @Test
@@ -87,25 +105,24 @@ class CompleteRegistrationUseCaseTest {
     @Test
     void should_persist_new_credential_when_verification_successful() {
 
-        CredentialRecord stubCredentialRecord = new CredentialRecord(
-                null,
-                null,
-                null,
-                null,
-                0L,
-                false,
-                false,
-                false,
-                null,
-                null,
-                null,
-                null
-        );
-
-        when(webAuthnPort.confirmRegistrationChallenge(eq(command.publicKeyCredentialJson()), any())).thenReturn(stubCredentialRecord);
-
         useCase.handle(command);
 
         verify(credentialRepository).save(stubCredentialRecord);
+    }
+
+    @Test
+    void should_delete_challenge_when_user_successfully_register_new_credential() {
+        assertDoesNotThrow(() -> useCase.handle(command));
+        verify(sessionRepo).delete(sessionId);
+    }
+
+    @Test
+    void should_not_delete_challenge_when_user_fails_to_register_new_credential() {
+        doThrow(new RuntimeException("Failed to save credential"))
+                .when(credentialRepository)
+                .save(stubCredentialRecord);
+
+        assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
+        verify(sessionRepo, never()).delete(sessionId);
     }
 }

@@ -25,7 +25,8 @@ public class CompleteRegistrationUseCase {
 
         CredentialRecord credential = verifyAndExtractCredentialRecord(command, session);
 
-        credentialRepository.save(credential);
+        saveCredentialRecord(credential);
+        sessionRepository.delete(command.sessionId());
     }
 
     private AuthSession getSession(CompleteRegistrationCommand command) {
@@ -43,6 +44,15 @@ public class CompleteRegistrationUseCase {
         } catch (Exception e) {
             throw new CompleteRegistrationException("Failed to confirm new credential registration: " + e.getMessage(), e);
         }
+
         return credential;
+    }
+
+    private void saveCredentialRecord(CredentialRecord credential) {
+        try {
+            credentialRepository.save(credential);
+        } catch (RuntimeException e) {
+            throw new CompleteRegistrationException("Failed to save credential: " + e.getMessage(), e);
+        }
     }
 }

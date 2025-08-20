@@ -20,4 +20,9 @@ public class StubSessionRepository implements SessionRepository {
     public Optional<AuthSession> load(UUID key) {
         return Optional.ofNullable(sessionCache.get(key));
     }
+
+    @Override
+    public void delete(UUID sessionId) {
+        sessionCache.remove(sessionId);
+    }
 }
