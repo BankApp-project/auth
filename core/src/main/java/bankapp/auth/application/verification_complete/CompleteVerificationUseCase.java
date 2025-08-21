@@ -132,7 +132,7 @@ public class CompleteVerificationUseCase {
     private CompleteVerificationResponse prepareResponse(User user, byte[] challenge, UUID sessionId) {
         try {
             if (user.isEnabled()) {
-                var userCredentials = credentialRepository.load(user.getId());
+                var userCredentials = credentialRepository.loadForUserId(user.getId());
                 var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge);
                 return new LoginResponse(passkeyOptions, sessionId);
             }

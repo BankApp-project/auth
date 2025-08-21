@@ -65,7 +65,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
 
         var mockCredentialRepository = mock(CredentialRepository.class);
         var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
-        when(mockCredentialRepository.load(defaultUser.getId())).thenReturn(credentials);
+        when(mockCredentialRepository.loadForUserId(defaultUser.getId())).thenReturn(credentials);
 
         var useCase = new CompleteVerificationUseCase(
                 sessionTtl, log, DEFAULT_CLOCK, otpRepository, sessionRepository, mockCredentialRepository, userRepository, mockCredentialOptionsService, challengeGenerator, hasher

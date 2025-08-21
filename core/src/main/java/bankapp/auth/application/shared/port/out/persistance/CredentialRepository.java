@@ -8,12 +8,14 @@ import java.util.UUID;
 
 public interface CredentialRepository {
 
+    CredentialRecord load(UUID credentialId);
+
     /**
      * Loads credential records for the given ID.
-     * @param id the UUID to search for
+     * @param userId the User ID to search for
      * @return a list of credential records, may be empty if no records found
      */
-    List<CredentialRecord> load(UUID id);
+    List<CredentialRecord> loadForUserId(UUID userId);
 
     void save(CredentialRecord credentialRecord) throws CredentialAlreadyExistsException;
 }
