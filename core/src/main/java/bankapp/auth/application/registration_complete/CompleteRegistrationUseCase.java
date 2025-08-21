@@ -51,7 +51,7 @@ public class CompleteRegistrationUseCase {
 
         sessionRepository.delete(command.sessionId());
 
-        User user = fetchUser(credential.userHandle());
+        User user = fetchUser(credential.getUserHandle());
 
         user.activate();
 

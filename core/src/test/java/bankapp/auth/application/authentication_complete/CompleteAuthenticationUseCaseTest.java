@@ -27,6 +27,7 @@ public class CompleteAuthenticationUseCaseTest {
    private final Clock clock = Clock.systemUTC();
    private final Instant expirationTime = Instant.now(clock).plusSeconds(DEFAULT_TTL);
 
+   private CredentialRecord credentialRecord;
    private byte[] credentialId;
    private final UUID sessionId = UUID.randomUUID();
    private final UUID userId = UUID.randomUUID();
@@ -57,9 +58,10 @@ public class CompleteAuthenticationUseCaseTest {
        webAuthnPort = mock(WebAuthnPort.class);
        credentialRepository = mock(CredentialRepository.class);
 
-        CredentialRecord credentialRecord = getCredentialRecord(userId);
-        credentialId = credentialRecord.id();
+        credentialRecord = getCredentialRecord(userId);
+        credentialId = credentialRecord.getId();
         when(credentialRepository.load(credentialId)).thenReturn(credentialRecord);
+
 
        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository);
        command = new CompleteAuthenticationCommand(sessionId, authenticationResponseJSON, credentialId);
@@ -133,5 +135,16 @@ public class CompleteAuthenticationUseCaseTest {
         useCase.handle(command);
 
         verify(credentialRepository).load(eq(credentialId));
+    }
+
+    @Test
+    void should_save_updated_credentialRecord() {
+        // When
+        var updatedCredential = credentialRecord.signCountIncrement();
+        when(webAuthnPort.confirmAuthenticationChallenge(eq(authenticationResponseJSON), any(), eq(credentialRecord)))
+                .thenReturn(updatedCredential);
+        useCase.handle(command);
+        // Then
+        verify(credentialRepository).save(eq(updatedCredential));
     }
 }

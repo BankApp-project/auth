@@ -1,6 +1,8 @@
 package bankapp.auth.application.shared.port.out.dto;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
@@ -16,85 +18,125 @@ import java.util.Map;
  *
  * @see <a href="https://www.w3.org/TR/webauthn-3/#credential-record">W3C WebAuthn Level 3: Credential Record</a>
  */
-public record CredentialRecord(
-        // === Core Fields Required for Authentication ===
+@Getter
+@EqualsAndHashCode
+public class CredentialRecord {
 
-        /*
-         * The credential ID of the public key credential. This is a globally unique
-         * identifier for the credential, used to look it up during authentication.
-         * Stored as the raw byte array.
-         */
-        byte[] id,
+    // === Core Fields Required for Authentication ===
 
-        /*
-         * Corresponding User ID as a byte array
-         */
-        byte[] userHandle,
+    /*
+     * The credential ID of the public key credential. This is a globally unique
+     * identifier for the credential, used to look it up during authentication.
+     * Stored as the raw byte array.
+     */
+    private final byte[] id;
 
-        /*
-         * The credential type. For WebAuthn, this MUST be the string "public-key".
-         */
-        String type,
+    /*
+     * Corresponding User ID as a byte array
+     */
+    private final byte[] userHandle;
 
-        /*
-         * The COSE-formatted public key of the credential. The Relying Party uses
-         * this key to verify authentication signatures from the user's authenticator.
-         */
-        byte[] publicKey,
+    /*
+     * The credential type. For WebAuthn, this MUST be the string "public-key".
+     */
+    private final String type;
 
-        /*
-         * The signature counter of the credential. The Relying Party MUST store
-         * this value and verify that it increases with each new authentication to
-         * help detect cloned authenticators.
-         */
-        long signCount,
+    /*
+     * The COSE-formatted public key of the credential. The Relying Party uses
+     * this key to verify authentication signatures from the user's authenticator.
+     */
+    private final byte[] publicKey;
 
-        /*
-         * A flag indicating that the user has been successfully verified (e.g., via PIN
-         * or biometrics) for this credential at least once.
-         */
-        boolean uvInitialized,
+    /*
+     * The signature counter of the credential. The Relying Party MUST store
+     * this value and verify that it increases with each new authentication to
+     * help detect cloned authenticators.
+     * NOTE: This field is not final to allow for modification.
+     */
+    private long signCount;
 
-        // === Optional Flags and Metadata ===
+    /*
+     * A flag indicating that the user has been successfully verified (e.g., via PIN
+     * or biometrics) for this credential at least once.
+     */
+    private final boolean uvInitialized;
 
-        /*
-         * A flag indicating if the authenticator reported that the credential is
-         * "backup eligible".
-         */
-        boolean backupEligible,
+    // === Optional Flags and Metadata ===
 
-        /*
-         * A flag indicating if the authenticator reported that the credential is
-         * currently "backed up".
-         */
-        boolean backupState,
+    /*
+     * A flag indicating if the authenticator reported that the credential is
+     * "backup eligible".
+     */
+    private final boolean backupEligible;
 
-        /*
-         * A list of authenticator transport methods (e.g., "internal", "usb", "nfc")
-         * that the client believes can be used to exercise the credential. May be empty.
-         */
-        List<AuthenticatorTransport> transports,
+    /*
+     * A flag indicating if the authenticator reported that the credential is
+     * currently "backed up".
+     */
+    private final boolean backupState;
 
-        /*
-         * The client extension outputs created by the authenticator for this
-         * credential during the original registration ceremony. Can be null.
-         */
-        Map<String, Object> extensions,
+    /*
+     * A list of authenticator transport methods (e.g., "internal", "usb", "nfc")
+     * that the client believes can be used to exercise the credential. May be empty.
+     */
+    private final List<AuthenticatorTransport> transports;
 
-        // === Attestation Data for Auditing and Verification ===
+    /*
+     * The client extension outputs created by the authenticator for this
+     * credential during the original registration ceremony. Can be null.
+     */
+    private final Map<String, Object> extensions;
 
-        /*
-         * The raw `attestationObject` received from the authenticator during registration.
-         * This is a CBOR-encoded byte array. Storing this allows the Relying Party to
-         * inspect the credential's attestation statement at any time for auditing,
-         * such as to verify the authenticator's model or certification level.
-         */
-        byte[] attestationObject,
+    // === Attestation Data for Auditing and Verification ===
 
-        /*
-         * The raw `clientDataJSON` received during registration. This is a UTF-8 encoded
-         * byte array. Storing this, along with the attestationObject, allows the
-         * Relying Party to re-verify the original attestation signature at a later date.
-         */
-        byte[] attestationClientDataJSON
-) {}
+    /*
+     * The raw `attestationObject` received from the authenticator during registration.
+     * This is a CBOR-encoded byte array. Storing this allows the Relying Party to
+     * inspect the credential's attestation statement at any time for auditing,
+     * such as to verify the authenticator's model or certification level.
+     */
+    private final byte[] attestationObject;
+
+    /*
+     * The raw `clientDataJSON` received during registration. This is a UTF-8 encoded
+     * byte array. Storing this, along with the attestationObject, allows the
+     * Relying Party to re-verify the original attestation signature at a later date.
+     */
+    private final byte[] attestationClientDataJSON;
+
+    /**
+     * Constructor to initialize all fields.
+     */
+    public CredentialRecord(
+            byte[] id,
+            byte[] userHandle,
+            String type,
+            byte[] publicKey,
+            long signCount,
+            boolean uvInitialized,
+            boolean backupEligible,
+            boolean backupState,
+            List<AuthenticatorTransport> transports,
+            Map<String, Object> extensions,
+            byte[] attestationObject,
+            byte[] attestationClientDataJSON
+    ) {
+        this.id = id;
+        this.userHandle = userHandle;
+        this.type = type;
+        this.publicKey = publicKey;
+        this.signCount = signCount;
+        this.uvInitialized = uvInitialized;
+        this.backupEligible = backupEligible;
+        this.backupState = backupState;
+        this.transports = transports;
+        this.extensions = extensions;
+        this.attestationObject = attestationObject;
+        this.attestationClientDataJSON = attestationClientDataJSON;
+    }
+
+    public CredentialRecord signCountIncrement() {
+        this.signCount++;
+        return this;
+    }
+}
