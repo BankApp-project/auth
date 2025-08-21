@@ -14,6 +14,8 @@ class OtpTest {
 
     private static final String DEFAULT_VALUE = "123456";
     private static final String DEFAULT_KEY = "test@bankapp.online";
+    private static final Clock clock = Clock.systemUTC();
+    private static final Instant DEFAULT_EXPIRATION_TIME = Instant.now(clock).plusSeconds(60);
     private static Otp DEFAULT_OTP;
 
 
@@ -105,26 +107,22 @@ class OtpTest {
 
     @Test
     void should_be_able_to_set_expiration_time_in_minutes() {
-        Clock clock = Clock.systemUTC();
-        DEFAULT_OTP.setExpirationTime(clock, 5);
+        Otp otp = new Otp(DEFAULT_KEY,DEFAULT_VALUE,DEFAULT_EXPIRATION_TIME);
 
-        assertNotNull(DEFAULT_OTP.getExpirationTime());
+        assertNotNull(otp.getExpirationTime());
     }
 
     @Test
-    void should_return_true_if_not_expired() {
-        Clock clock = Clock.systemUTC();
-        DEFAULT_OTP.setExpirationTime(clock, 5);
-
-        assertTrue(DEFAULT_OTP.isValid(clock));
+    void should_not_be_expired_if_clock_is_just_before_expiration_time() {
+        Otp otp = new Otp(DEFAULT_KEY,DEFAULT_VALUE,DEFAULT_EXPIRATION_TIME);
+        Clock justBeforeExpirationClock = Clock.fixed(DEFAULT_EXPIRATION_TIME.minusSeconds(1),ZoneId.of("Z"));
+        assertTrue(otp.isValid(justBeforeExpirationClock));
     }
 
     @Test
-    void should_return_false_if_expired() {
-        Clock clock = Clock.systemUTC();
-        DEFAULT_OTP.setExpirationTime(clock, 5);
-
-        Clock fixedClock = Clock.fixed(Instant.now().plusSeconds(6),ZoneId.of("Z"));
-        assertFalse(DEFAULT_OTP.isValid(fixedClock));
+    void should_be_expired_if_clock_is_just_after_expiration_time() {
+        Otp otp = new Otp(DEFAULT_KEY,DEFAULT_VALUE,DEFAULT_EXPIRATION_TIME);
+        Clock justAfterExpirationClock = Clock.fixed(DEFAULT_EXPIRATION_TIME.plusSeconds(1),ZoneId.of("Z"));
+        assertFalse(otp.isValid(justAfterExpirationClock));
     }
 }

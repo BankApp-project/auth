@@ -31,7 +31,7 @@ public abstract class CompleteVerificationBaseTest {
 
     // --- SHARED CONSTANTS ---
     protected static final Clock DEFAULT_CLOCK = Clock.systemUTC();
-    protected static final int DEFAULT_TTL = 98; // in seconds
+    protected static final long DEFAULT_TTL = 98; // in seconds
     protected static final String DEFAULT_OTP_KEY = "test@bankapp.online";
     protected static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
     protected static final String DEFAULT_OTP_VALUE = "123456";
@@ -67,8 +67,7 @@ public abstract class CompleteVerificationBaseTest {
 
         // Create and save a valid OTP
         hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);
-        Otp validOtp = new Otp(hashedOtpValue, DEFAULT_OTP_KEY);
-        validOtp.setExpirationTime(DEFAULT_CLOCK, DEFAULT_TTL);
+        Otp validOtp = new Otp(DEFAULT_OTP_KEY, hashedOtpValue, DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(validOtp);
 
         // Prepare the default command and use case instance

@@ -15,6 +15,7 @@ public class Otp {
 
     private Instant expirationTime;
 
+    @Deprecated
     public Otp(String value, String key) {
         this.value = Objects.requireNonNull(value, "OTP value cannot be null");
         this.key = Objects.requireNonNull(key, "OTP key cannot be null");
@@ -36,6 +37,10 @@ public class Otp {
         this.expirationTime = expirationTime;
     }
 
+    public Otp(String key, String value, Clock clock, Long ttl) {
+        this(key, value, Instant.now(clock).plusSeconds(ttl));
+    }
+
     @Override
     public final boolean equals(Object object) {
         if (!(object instanceof Otp otp)) return false;
@@ -54,11 +59,6 @@ public class Otp {
     public String toString() {
         // Avoid logging the actual OTP value and keys in production for security.
         return "OTP[value=******, key=" + (key != null ? key.substring(0, Math.min(3, key.length())) + "..." : "null") + "]";
-    }
-
-    @Deprecated
-    public void setExpirationTime(Clock clock, int seconds) {
-        this.expirationTime = Instant.now(clock).plusSeconds(seconds);
     }
 
     public boolean isValid(Clock clock) {
