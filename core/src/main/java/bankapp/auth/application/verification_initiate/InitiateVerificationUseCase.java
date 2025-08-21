@@ -5,7 +5,6 @@ import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verification_initiate.port.out.events.EmailVerificationOtpGeneratedEvent;
 import bankapp.auth.application.shared.port.out.*;
 import bankapp.auth.domain.OtpService;
-import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.annotations.NotNull;
 
 public class InitiateVerificationUseCase {

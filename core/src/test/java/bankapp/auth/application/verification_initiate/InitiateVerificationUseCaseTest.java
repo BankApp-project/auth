@@ -20,7 +20,6 @@ import java.time.Clock;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -39,8 +38,6 @@ public class InitiateVerificationUseCaseTest {
     private OtpGenerationPort otpGenerator;
     private OtpRepository otpSaver;
     private NotificationPort notificationPort;
-    private OtpService otpService;
-    private OtpConfigPort otpConfig;
 
     private InitiateVerificationCommand command;
     private InitiateVerificationUseCase useCase;
@@ -52,8 +49,8 @@ public class InitiateVerificationUseCaseTest {
         eventPublisher = mock(EventPublisherPort.class);
         otpSaver = mock(OtpRepository.class);
         notificationPort = mock(NotificationPort.class);
-        otpConfig = new OtpConfig(DEFAULT_OTP_LEN,DEFAULT_TTL);
-        otpService = new OtpService(otpGenerator,hasher,DEFAULT_CLOCK, otpConfig);
+        OtpConfigPort otpConfig = new OtpConfig(DEFAULT_OTP_LEN, DEFAULT_TTL);
+        OtpService otpService = new OtpService(otpGenerator, hasher, DEFAULT_CLOCK, otpConfig);
 
         command = new InitiateVerificationCommand(VALID_EMAIL);
         useCase = new InitiateVerificationUseCase(eventPublisher, otpSaver, notificationPort, otpService);
