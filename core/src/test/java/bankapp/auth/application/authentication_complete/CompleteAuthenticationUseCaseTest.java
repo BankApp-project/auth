@@ -3,6 +3,7 @@ package bankapp.auth.application.authentication_complete;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
+import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
@@ -189,5 +190,13 @@ public class CompleteAuthenticationUseCaseTest {
     void should_issue_tokens() {
        useCase.handle(command);
         verify(tokenIssuingPort).issueTokensForUser(testSession.userId());
+    }
+
+    @Test
+    void should_return_tokens() {
+        AuthTokens authTokens = new AuthTokens("accessToken", "refreshToken");
+        when(tokenIssuingPort.issueTokensForUser(testSession.userId())).thenReturn(authTokens);
+        var res = useCase.handle(command);
+        assertEquals(res.authTokens(), authTokens);
     }
 }

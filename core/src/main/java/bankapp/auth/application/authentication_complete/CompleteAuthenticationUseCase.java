@@ -3,6 +3,7 @@ package bankapp.auth.application.authentication_complete;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
+import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
@@ -30,9 +31,9 @@ public class CompleteAuthenticationUseCase {
 
         sessionRepository.delete(command.sessionId());
 
-        tokenIssuingPort.issueTokensForUser(session.userId());
+        AuthTokens tokens = tokenIssuingPort.issueTokensForUser(session.userId());
 
-        return null;
+        return new CompleteAuthenticationResponse(tokens);
     }
 
     private CredentialRecord verifyChallengeAndUpdateCredentialRecord(CompleteAuthenticationCommand command, AuthSession session) {
