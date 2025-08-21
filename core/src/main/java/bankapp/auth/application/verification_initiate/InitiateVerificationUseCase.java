@@ -1,77 +1,47 @@
 package bankapp.auth.application.verification_initiate;
 
 import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
-import bankapp.auth.application.shared.port.out.HashingPort;
-import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verification_initiate.port.out.events.EmailVerificationOtpGeneratedEvent;
 import bankapp.auth.application.shared.port.out.*;
+import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.annotations.NotNull;
-import bankapp.auth.domain.model.annotations.Nullable;
-
-import java.time.Clock;
 
 public class InitiateVerificationUseCase {
 
-    private final Clock clock;
-
-    private final int otpSize;
-    private final int ttl;
-
+    private final OtpService otpService;
     private final EventPublisherPort eventPublisher;
-    private final OtpGenerationPort otpGenerator;
-    private final HashingPort hasher;
     private final OtpRepository otpRepository;
     private final NotificationPort notificator;
 
     public InitiateVerificationUseCase(
             @NotNull EventPublisherPort eventPublisher,
-            @NotNull OtpGenerationPort otpGenerator,
-            @NotNull HashingPort hasher,
             @NotNull OtpRepository otpRepository,
             @NotNull NotificationPort notificator,
-            @NotNull Clock clock,
-            @Nullable Integer otpSize,
-            @Nullable Integer defaultTtl
-            ) {
+            @NotNull OtpService otpService) {
         this.eventPublisher = eventPublisher;
-        this.otpGenerator = otpGenerator;
-        this.hasher = hasher;
         this.otpRepository = otpRepository;
         this.notificator = notificator;
-        this.clock = clock;
-
-       this.otpSize = otpSize == null ? 6 : otpSize;
-       this.ttl = defaultTtl == null ? 10 : defaultTtl;
+        this.otpService = otpService;
     }
 
+    //refactor to move otp logic to `OtpService`
     public Otp handle(InitiateVerificationCommand command) {
 
         try {
-            String otpValue = otpGenerator.generate(otpSize);
 
-            Otp otp = new Otp(otpValue, command.email().toString());
+            VerificationData data = otpService.createVerificationOtp(command.email());
 
-            var hashedValue = hasher.hashSecurely(otpValue);
+            otpRepository.save(data.otpToPersist());
 
-            Otp hashedOtp = new Otp(hashedValue, command.email().toString());
+            notificator.sendOtpToUserEmail(command.email().getValue(), data.rawOtpCode());
 
-            hashedOtp.setExpirationTime(clock, getTtlInSeconds());
+            eventPublisher.publish(new EmailVerificationOtpGeneratedEvent(data.otpToPersist()));
 
-            otpRepository.save(hashedOtp);
-
-            notificator.sendOtpToUserEmail(otp.getKey(), otp.getValue());
-
-            eventPublisher.publish(new EmailVerificationOtpGeneratedEvent(hashedOtp));
-
-            return otp;
+            return data.otpToPersist();
         } catch (Exception e) {
             throw new InitiateVerificationException("Failed to initiate verification: " + e.getMessage(), e);
         }
-    }
-
-    private int getTtlInSeconds() {
-        return ttl * 60;
     }
 }

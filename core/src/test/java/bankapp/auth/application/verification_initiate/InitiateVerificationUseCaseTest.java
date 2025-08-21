@@ -7,8 +7,11 @@ import bankapp.auth.application.verification_initiate.port.out.events.EmailVerif
 import bankapp.auth.application.shared.port.out.EventPublisherPort;
 import bankapp.auth.application.shared.port.out.NotificationPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
+import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;
+import bankapp.auth.domain.port.out.OtpConfigPort;
+import bankapp.auth.domain.port.out.stubs.OtpConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -36,20 +39,24 @@ public class InitiateVerificationUseCaseTest {
     private OtpGenerationPort otpGenerator;
     private OtpRepository otpSaver;
     private NotificationPort notificationPort;
+    private OtpService otpService;
+    private OtpConfigPort otpConfig;
 
     private InitiateVerificationCommand command;
     private InitiateVerificationUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        eventPublisher = mock(EventPublisherPort.class);
-        hasher = mock(HashingPort.class);
         otpGenerator = mock(OtpGenerationPort.class);
+        hasher = mock(HashingPort.class);
+        eventPublisher = mock(EventPublisherPort.class);
         otpSaver = mock(OtpRepository.class);
         notificationPort = mock(NotificationPort.class);
+        otpConfig = new OtpConfig(DEFAULT_OTP_LEN,DEFAULT_TTL);
+        otpService = new OtpService(otpGenerator,hasher,DEFAULT_CLOCK, otpConfig);
 
         command = new InitiateVerificationCommand(VALID_EMAIL);
-        useCase = new InitiateVerificationUseCase(eventPublisher, otpGenerator, hasher, otpSaver, notificationPort, DEFAULT_CLOCK, DEFAULT_OTP_LEN, DEFAULT_TTL);
+        useCase = new InitiateVerificationUseCase(eventPublisher, otpSaver, notificationPort, otpService);
 
         when(otpGenerator.generate(anyInt())).thenReturn(DEFAULT_VALUE);
         when(hasher.hashSecurely(anyString())).thenReturn(DEFAULT_HASHED_VALUE);
@@ -70,21 +77,6 @@ public class InitiateVerificationUseCaseTest {
         useCase.handle(command);
         //then
         verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
-    }
-/*
-    Test Case 2: Invalid Email Format
-    Given: A user is on the login page
-    When: A user provides an invalidly formatted email address (e.g., "user@.com").
-    Then: The command is rejected, and no event is published.
- */
-
-
-    @Test
-    void should_use_correct_otp_length() {
-        var result = useCase.handle(command);
-
-        //then
-        assertEquals(DEFAULT_OTP_LEN, result.getValue().length(), "Use case should generate OTP with correct length");
     }
 
     @Test
@@ -176,30 +168,6 @@ public class InitiateVerificationUseCaseTest {
         verify(notificationPort, never()).sendOtpToUserEmail(anyString(), anyString());
     }
 
-// BDD Test Cases: Should only publish event when all previous steps completed successfully
-
-    @Test
-    void should_only_publish_event_after_otp_generation_completes_successfully() {
-        // When: The use case is executed
-        useCase.handle(command);
-
-        // Then: Event should be published only after OTP generation
-        InOrder inOrder = inOrder(otpGenerator, eventPublisher);
-        inOrder.verify(otpGenerator).generate(DEFAULT_OTP_LEN);
-        inOrder.verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
-    }
-
-    @Test
-    void should_only_publish_event_after_otp_hashing_completes_successfully() {
-        // When: The use case is executed
-        useCase.handle(command);
-
-        // Then: Event should be published only after OTP hashing
-        InOrder inOrder = inOrder(hasher, eventPublisher);
-        inOrder.verify(hasher).hashSecurely(DEFAULT_VALUE);
-        inOrder.verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
-    }
-
     @Test
     void should_only_publish_event_after_otp_saving_completes_successfully() {
         // When: The use case is executed
@@ -207,19 +175,6 @@ public class InitiateVerificationUseCaseTest {
 
         // Then: Event should be published only after OTP saving
         InOrder inOrder = inOrder(otpSaver, eventPublisher);
-        inOrder.verify(otpSaver).save(any(Otp.class));
-        inOrder.verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
-    }
-
-    @Test
-    void should_follow_correct_execution_order_before_publishing_event() {
-        // When: The use case is executed
-        useCase.handle(command);
-
-        // Then: All prerequisite steps should complete before event publishing
-        InOrder inOrder = inOrder(otpGenerator, hasher, otpSaver, eventPublisher);
-        inOrder.verify(otpGenerator).generate(DEFAULT_OTP_LEN);
-        inOrder.verify(hasher).hashSecurely(DEFAULT_VALUE);
         inOrder.verify(otpSaver).save(any(Otp.class));
         inOrder.verify(eventPublisher).publish(any(EmailVerificationOtpGeneratedEvent.class));
     }

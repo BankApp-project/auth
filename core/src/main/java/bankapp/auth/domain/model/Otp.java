@@ -15,7 +15,7 @@ public class Otp {
 
     private Instant expirationTime;
 
-    public Otp( String value, String key) {
+    public Otp(String value, String key) {
         this.value = Objects.requireNonNull(value, "OTP value cannot be null");
         this.key = Objects.requireNonNull(key, "OTP key cannot be null");
 
@@ -26,6 +26,14 @@ public class Otp {
         if (key.trim().isEmpty()) {
             throw new OtpFormatException("OTP key cannot be empty");
         }
+    }
+
+    public Otp(String key, String value, Instant expirationTime) {
+        this(value, key);
+        if (expirationTime == null) {
+            throw new NullPointerException("Expiration time cannot be null");
+        }
+        this.expirationTime = expirationTime;
     }
 
     @Override
@@ -48,6 +56,7 @@ public class Otp {
         return "OTP[value=******, key=" + (key != null ? key.substring(0, Math.min(3, key.length())) + "..." : "null") + "]";
     }
 
+    @Deprecated
     public void setExpirationTime(Clock clock, int seconds) {
         this.expirationTime = Instant.now(clock).plusSeconds(seconds);
     }

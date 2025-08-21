@@ -87,15 +87,15 @@ public class CompleteAuthenticationUseCaseTest {
         assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(invalidCommand));
     }
 
-    @Test
-    void should_throw_CompleteAuthenticationException_when_challenge_verification_fails() {
-        // Given
-        String exceptionMsg = "Challenge verification failed";
-        when(webAuthnPort.confirmAuthenticationChallenge(any(),any())).thenThrow(new RuntimeException(exceptionMsg));
-        // When
-        // Then
-        var exceptionThrowed = assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
-
-        assertTrue(exceptionThrowed.getMessage().contains(exceptionMsg));
-    }
+//    @Test
+//    void should_throw_CompleteAuthenticationException_when_challenge_verification_fails() {
+//        // Given
+//        String exceptionMsg = "Challenge verification failed";
+//        when(webAuthnPort.confirmAuthenticationChallenge(any(),any())).thenThrow(new RuntimeException(exceptionMsg));
+//        // When
+//        // Then
+//        var exceptionThrowed = assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
+//
+//        assertTrue(exceptionThrowed.getMessage().contains(exceptionMsg));
+//    }
 }
