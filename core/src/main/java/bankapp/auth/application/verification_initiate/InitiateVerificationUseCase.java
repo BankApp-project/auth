@@ -27,10 +27,9 @@ public class InitiateVerificationUseCase {
     }
 
     //refactor to move otp logic to `OtpService`
-    public Otp handle(InitiateVerificationCommand command) {
+    public void handle(InitiateVerificationCommand command) {
 
         try {
-
             VerificationData data = otpService.createVerificationOtp(command.email());
 
             otpRepository.save(data.otpToPersist());
@@ -39,7 +38,6 @@ public class InitiateVerificationUseCase {
 
             eventPublisher.publish(new EmailVerificationOtpGeneratedEvent(data.otpToPersist()));
 
-            return data.otpToPersist();
         } catch (Exception e) {
             throw new InitiateVerificationException("Failed to initiate verification: " + e.getMessage(), e);
         }

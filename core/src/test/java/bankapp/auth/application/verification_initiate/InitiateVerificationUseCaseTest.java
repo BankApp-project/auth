@@ -80,14 +80,6 @@ public class InitiateVerificationUseCaseTest {
     }
 
     @Test
-    void should_generate_otp() {
-        var result = useCase.handle(command);
-
-        //then
-        assertThat(result).isInstanceOf(Otp.class);
-    }
-
-    @Test
     void should_hash_otp() {
         useCase.handle(command);
 
