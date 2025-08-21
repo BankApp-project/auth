@@ -25,12 +25,14 @@ public class CompleteAuthenticationUseCase {
 
         credentialRepository.save(updatedCredential);
 
+        sessionRepository.delete(command.sessionId());
+
         return null;
     }
 
     private CredentialRecord verifyChallengeAndUpdateCredentialRecord(CompleteAuthenticationCommand command, AuthSession session) {
-        var credentialRecord = credentialRepository.load(command.credentialId());
         try {
+            var credentialRecord = credentialRepository.load(command.credentialId());
             return webAuthnPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session, credentialRecord);
         } catch (RuntimeException e) {
             throw new CompleteAuthenticationException("Failed to confirm authentication challenge: " + e.getMessage(), e);

@@ -15,8 +15,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -146,5 +145,42 @@ public class CompleteAuthenticationUseCaseTest {
         useCase.handle(command);
         // Then
         verify(credentialRepository).save(eq(updatedCredential));
+    }
+
+
+    @Test
+    void should_delete_challenge_when_successfully_saved_updated_credential() {
+        var session = sessionRepo.load(sessionId);
+        assertTrue(session.isPresent());
+
+        assertDoesNotThrow(() -> useCase.handle(command));
+
+        assertTrue(sessionRepo.load(sessionId).isEmpty());
+    }
+
+    @Test
+    void should_not_delete_challenge_when_user_fails_to_register_new_credential() {
+        // Given
+        when(webAuthnPort.confirmAuthenticationChallenge(any(), any(), any())).thenThrow(new RuntimeException("Verification failed"));
+
+        // When & Then
+        assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
+
+        // Verify session is NOT deleted when verification fails
+        assertTrue(sessionRepo.load(sessionId).isPresent());
+    }
+
+
+
+    @Test
+    void should_not_delete_challenge_when_fails_to_load_credential() {
+        // Given
+        when(credentialRepository.load(credentialId)).thenThrow(new RuntimeException("Failed to load credential"));
+
+        // When & Then
+        assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
+
+        // Verify session is NOT deleted when verification fails
+        assertTrue(sessionRepo.load(sessionId).isPresent());
     }
 }
