@@ -1,5 +1,6 @@
 package bankapp.auth.application.authentication_complete;
 
+import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
@@ -11,11 +12,13 @@ public class CompleteAuthenticationUseCase {
     private final SessionRepository sessionRepository;
     private final CredentialRepository credentialRepository;
     private final WebAuthnPort webAuthnPort;
+    private final TokenIssuingPort tokenIssuingPort;
 
-    public CompleteAuthenticationUseCase(SessionRepository sessionRepo, WebAuthnPort webAuthnPort, CredentialRepository credentialRepository) {
+    public CompleteAuthenticationUseCase(SessionRepository sessionRepo, WebAuthnPort webAuthnPort, CredentialRepository credentialRepository, TokenIssuingPort tokenIssuingPort) {
         this.sessionRepository = sessionRepo;
         this.webAuthnPort = webAuthnPort;
         this.credentialRepository = credentialRepository;
+        this.tokenIssuingPort = tokenIssuingPort;
     }
 
     public CompleteAuthenticationResponse handle(CompleteAuthenticationCommand command) {
@@ -26,6 +29,8 @@ public class CompleteAuthenticationUseCase {
         credentialRepository.save(updatedCredential);
 
         sessionRepository.delete(command.sessionId());
+
+        tokenIssuingPort.issueTokensForUser(session.userId());
 
         return null;
     }

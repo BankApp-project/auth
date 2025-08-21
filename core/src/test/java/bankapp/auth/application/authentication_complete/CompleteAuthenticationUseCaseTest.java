@@ -1,5 +1,6 @@
 package bankapp.auth.application.authentication_complete;
 
+import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
@@ -45,6 +46,7 @@ public class CompleteAuthenticationUseCaseTest {
     private SessionRepository sessionRepo;
     private WebAuthnPort webAuthnPort;
     private CredentialRepository credentialRepository;
+    private TokenIssuingPort tokenIssuingPort;
 
     private CompleteAuthenticationUseCase useCase;
     private CompleteAuthenticationCommand command;
@@ -61,8 +63,9 @@ public class CompleteAuthenticationUseCaseTest {
         credentialId = credentialRecord.getId();
         when(credentialRepository.load(credentialId)).thenReturn(credentialRecord);
 
+        tokenIssuingPort = mock(TokenIssuingPort.class);
 
-       useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository);
+        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository, tokenIssuingPort);
        command = new CompleteAuthenticationCommand(sessionId, authenticationResponseJSON, credentialId);
    }
 
@@ -88,7 +91,7 @@ public class CompleteAuthenticationUseCaseTest {
     @Test
     void should_load_authSession_from_repository() {
         sessionRepo = mock(SessionRepository.class);
-        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository);
+        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository, tokenIssuingPort);
 
         when(sessionRepo.load(eq(sessionId))).thenReturn(Optional.of(testSession));
 
@@ -170,8 +173,6 @@ public class CompleteAuthenticationUseCaseTest {
         assertTrue(sessionRepo.load(sessionId).isPresent());
     }
 
-
-
     @Test
     void should_not_delete_challenge_when_fails_to_load_credential() {
         // Given
@@ -182,5 +183,11 @@ public class CompleteAuthenticationUseCaseTest {
 
         // Verify session is NOT deleted when verification fails
         assertTrue(sessionRepo.load(sessionId).isPresent());
+    }
+
+    @Test
+    void should_issue_tokens() {
+       useCase.handle(command);
+        verify(tokenIssuingPort).issueTokensForUser(testSession.userId());
     }
 }
