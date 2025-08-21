@@ -2,7 +2,7 @@ package bankapp.auth.application.authentication_complete;
 
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
-import bankapp.auth.application.shared.port.out.dto.AuthSession;
+import bankapp.auth.application.shared.port.out.dto.RegistrationSession;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
@@ -35,7 +35,7 @@ public class CompleteAuthenticationUseCaseTest {
    private final byte[] challenge = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
    private final String authenticationResponseJSON = "blob";
 
-   private final AuthSession testSession = new AuthSession(
+   private final RegistrationSession testSession = new RegistrationSession(
            sessionId,
            challenge,
            userId,

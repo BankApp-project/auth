@@ -6,7 +6,7 @@ import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.LoggerPort;
-import bankapp.auth.application.shared.port.out.dto.AuthSession;
+import bankapp.auth.application.shared.port.out.dto.RegistrationSession;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 class CompleteRegistrationUseCaseTest {
 
     private final UUID sessionId = UUID.randomUUID();
-    private final AuthSession testAuthSession = new AuthSession(
+    private final RegistrationSession testRegistrationSession = new RegistrationSession(
                 sessionId,
                 new byte[]{},
                 UUID.randomUUID(),
@@ -63,7 +63,7 @@ class CompleteRegistrationUseCaseTest {
         useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository, userRepository, tokenIssuingPort, log);
 
 
-        when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testAuthSession));
+        when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testRegistrationSession));
 
         testUser = new User(new EmailAddress("test@bankapp.online"));
         var userHandle = ByteArrayUtil.uuidToBytes(testUser.getId());
@@ -101,7 +101,7 @@ class CompleteRegistrationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnPort).confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), eq(testAuthSession) );
+        verify(webAuthnPort).confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), eq(testRegistrationSession) );
     }
 
     @Test

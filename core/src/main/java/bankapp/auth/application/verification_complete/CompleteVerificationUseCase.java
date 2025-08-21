@@ -2,7 +2,7 @@ package bankapp.auth.application.verification_complete;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.LoggerPort;
-import bankapp.auth.application.shared.port.out.dto.AuthSession;
+import bankapp.auth.application.shared.port.out.dto.RegistrationSession;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
@@ -61,6 +61,7 @@ public class CompleteVerificationUseCase {
         this.hasher = hasher;
     }
 
+    //TODO DIVIDE IT TO VERIFICATION_COMPLETE AND REGISTRATION_INITIATE / AUTHENTICATION_INITIATE
     public CompleteVerificationResponse handle(CompleteVerificationCommand command) {
         log.info("Starting verification completion for email: {}", command.key().getValue());
 
@@ -116,14 +117,14 @@ public class CompleteVerificationUseCase {
 
     private void saveSession(UUID sessionId, byte[] challenge, UUID userId, long ttl) {
         try {
-            AuthSession authSession = new AuthSession(
+            RegistrationSession registrationSession = new RegistrationSession(
                     sessionId,
                     challenge,
                     userId,
                     ttl,
                     clock
             );
-            sessionRepository.save(authSession, sessionId);
+            sessionRepository.save(registrationSession, sessionId);
         } catch (RuntimeException e) {
             throw new CompleteVerificationException("Failed to save session", e);
         }
