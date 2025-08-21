@@ -24,8 +24,11 @@ public class CompleteAuthenticationUseCase {
         var session = sessionOptional.get();
 
         var credentialRecord = credentialRepository.load(command.credentialId());
-        webAuthnPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session, credentialRecord);
-
+        try {
+            webAuthnPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session, credentialRecord);
+        } catch (RuntimeException e) {
+            throw new CompleteAuthenticationException("Failed to confirm authentication challenge: " + e.getMessage(), e);
+        }
         return null;
     }
 }
