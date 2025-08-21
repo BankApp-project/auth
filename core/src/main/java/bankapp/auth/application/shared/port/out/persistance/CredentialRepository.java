@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface CredentialRepository {
 
-    CredentialRecord load(UUID credentialId);
+    CredentialRecord load(byte[] credentialId);
 
     /**
      * Loads credential records for the given ID.

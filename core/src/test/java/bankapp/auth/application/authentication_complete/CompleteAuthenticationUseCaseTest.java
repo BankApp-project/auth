@@ -2,6 +2,8 @@ package bankapp.auth.application.authentication_complete;
 
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.AuthSession;
+import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubSessionRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
@@ -24,6 +26,7 @@ public class CompleteAuthenticationUseCaseTest {
    private final Clock clock = Clock.systemUTC();
    private final Instant expirationTime = Instant.now(clock).plusSeconds(DEFAULT_TTL);
 
+   private byte[] credentialId;
    private final UUID sessionId = UUID.randomUUID();
    private final UUID userId = UUID.randomUUID();
    private final byte[] challenge = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
@@ -38,11 +41,12 @@ public class CompleteAuthenticationUseCaseTest {
 
 
 
-   private SessionRepository sessionRepo;
+    private SessionRepository sessionRepo;
+    private WebAuthnPort webAuthnPort;
+    private CredentialRepository credentialRepository;
 
-   private CompleteAuthenticationUseCase useCase;
-   private CompleteAuthenticationCommand command;
-   private WebAuthnPort webAuthnPort;
+    private CompleteAuthenticationUseCase useCase;
+    private CompleteAuthenticationCommand command;
 
     @BeforeEach
    void setup() {
@@ -50,15 +54,39 @@ public class CompleteAuthenticationUseCaseTest {
        sessionRepo.save(testSession, sessionId);
 
        webAuthnPort = mock(WebAuthnPort.class);
+       credentialRepository = mock(CredentialRepository.class);
 
-       useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort);
-       command = new CompleteAuthenticationCommand(sessionId, authenticationResponseJSON);
+        CredentialRecord credentialRecord = getCredentialRecord(userId);
+        credentialId = credentialRecord.id();
+        when(credentialRepository.load(credentialId)).thenReturn(credentialRecord);
+
+       useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository);
+       command = new CompleteAuthenticationCommand(sessionId, authenticationResponseJSON, credentialId);
    }
+
+    private CredentialRecord getCredentialRecord(UUID userId) {
+        var userHandle = ByteArrayUtil.uuidToBytes(userId);
+        var credentialId = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
+        return new CredentialRecord(
+                credentialId,
+                userHandle,
+                null,
+                null,
+                0L,
+                false,
+                false,
+                false,
+                null,
+                null,
+                null,
+                null
+        );
+    }
 
     @Test
     void should_load_authSession_from_repository() {
         sessionRepo = mock(SessionRepository.class);
-        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort);
+        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository);
 
         when(sessionRepo.load(eq(sessionId))).thenReturn(Optional.of(testSession));
 
@@ -73,14 +101,14 @@ public class CompleteAuthenticationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnPort).confirmAuthenticationChallenge(eq(command.AuthenticationResponseJSON()), eq(testSession) );
+        verify(webAuthnPort).confirmAuthenticationChallenge(eq(command.AuthenticationResponseJSON()), eq(testSession), any());
     }
 
     @Test
     void should_throw_exception_when_session_not_present_for_given_id() {
         // Given
         var invalidSessionId = UUID.randomUUID();
-        var invalidCommand = new CompleteAuthenticationCommand(invalidSessionId, authenticationResponseJSON);
+        var invalidCommand = new CompleteAuthenticationCommand(invalidSessionId, authenticationResponseJSON, credentialId);
         // When
         // Then
         assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(invalidCommand));
@@ -97,4 +125,12 @@ public class CompleteAuthenticationUseCaseTest {
 //
 //        assertTrue(exceptionThrowed.getMessage().contains(exceptionMsg));
 //    }
+
+    @Test
+    void should_load_credentialRecord_for_given_data() {
+        // When & Then
+        useCase.handle(command);
+
+        verify(credentialRepository).load(eq(credentialId));
+    }
 }

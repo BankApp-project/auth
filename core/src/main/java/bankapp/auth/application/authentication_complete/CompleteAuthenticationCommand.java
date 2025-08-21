@@ -4,7 +4,8 @@ import java.util.UUID;
 
 public record CompleteAuthenticationCommand(
     UUID sessionId,
-    String AuthenticationResponseJSON
+    String AuthenticationResponseJSON,
+    byte[] credentialId
 ) {
     public CompleteAuthenticationCommand {
         if (AuthenticationResponseJSON == null || AuthenticationResponseJSON.isBlank()) {
@@ -12,6 +13,9 @@ public record CompleteAuthenticationCommand(
         }
         if (sessionId == null) {
             throw new IllegalArgumentException("Session ID cannot be null");
+        }
+        if (credentialId == null) {
+            throw new IllegalArgumentException("Credential ID cannot be null");
         }
     }
 }
