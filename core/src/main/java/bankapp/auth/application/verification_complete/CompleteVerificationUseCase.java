@@ -72,13 +72,12 @@ public class CompleteVerificationUseCase {
         log.debug("User found/created with ID: {}", user.getId());
 
         byte[] challenge = challengeGenerator.generate();
-        UUID sessionId = UUID.randomUUID();
-        log.debug("Generated challenge and session ID: {}", sessionId);
+        log.debug("challenge generated");
 
-        saveSession(sessionId, challenge, user.getId(), sessionTtl);
+        var session = saveSession(challenge, user.getId());
         log.debug("Session saved successfully");
 
-        CompleteVerificationResponse response = prepareResponse(user, challenge, sessionId);
+        CompleteVerificationResponse response = prepareResponse(user, challenge, session.sessionId());
         log.info("Verification completion successful for user: {}, response type: {}",
                 user.getId(), response.getClass().getSimpleName());
 
@@ -115,16 +114,18 @@ public class CompleteVerificationUseCase {
         return userOptional.get();
     }
 
-    private void saveSession(UUID sessionId, byte[] challenge, UUID userId, long ttl) {
+    private RegistrationSession saveSession(byte[] challenge, UUID userId) {
         try {
+            UUID sessionId = UUID.randomUUID();
             RegistrationSession registrationSession = new RegistrationSession(
                     sessionId,
                     challenge,
                     userId,
-                    ttl,
+                    sessionTtl,
                     clock
             );
             sessionRepository.save(registrationSession, sessionId);
+            return registrationSession;
         } catch (RuntimeException e) {
             throw new CompleteVerificationException("Failed to save session", e);
         }
