@@ -2,7 +2,7 @@ package bankapp.auth.application.verification_complete;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.LoggerPort;
-import bankapp.auth.application.shared.port.out.dto.RegistrationSession;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
@@ -114,10 +114,10 @@ public class CompleteVerificationUseCase {
         return userOptional.get();
     }
 
-    private RegistrationSession saveSession(byte[] challenge, UUID userId) {
+    private Challenge saveSession(byte[] challenge, UUID userId) {
         try {
             UUID sessionId = UUID.randomUUID();
-            RegistrationSession registrationSession = new RegistrationSession(
+            Challenge registrationSession = new Challenge(
                     sessionId,
                     challenge,
                     userId,

@@ -7,7 +7,7 @@ import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.LoggerPort;
-import bankapp.auth.application.shared.port.out.dto.RegistrationSession;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
@@ -76,7 +76,7 @@ public class CompleteRegistrationUseCase {
         return userOpt.get();
     }
 
-    private RegistrationSession getSession(CompleteRegistrationCommand command) {
+    private Challenge getSession(CompleteRegistrationCommand command) {
         var session = sessionRepository.load(command.sessionId());
         if (session.isEmpty()) {
             throw new CompleteRegistrationException("No such session with ID: " + command.sessionId());
@@ -84,7 +84,7 @@ public class CompleteRegistrationUseCase {
         return session.get();
     }
 
-    private CredentialRecord verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, RegistrationSession session) {
+    private CredentialRecord verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge session) {
         CredentialRecord credential;
         try {
             credential = webAuthnPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), session);
