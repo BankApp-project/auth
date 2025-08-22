@@ -74,7 +74,7 @@ public class CompleteVerificationUseCase {
         byte[] challenge = challengeGenerator.generate();
         log.debug("challenge generated");
 
-        var session = saveSession(challenge, user.getId());
+        var session = saveSession(challenge);
         log.debug("Session saved successfully");
 
         CompleteVerificationResponse response = prepareResponse(user, challenge, session.sessionId());
@@ -114,13 +114,12 @@ public class CompleteVerificationUseCase {
         return userOptional.get();
     }
 
-    private Challenge saveSession(byte[] challenge, UUID userId) {
+    private Challenge saveSession(byte[] challenge) {
         try {
             UUID sessionId = UUID.randomUUID();
             Challenge registrationSession = new Challenge(
                     sessionId,
                     challenge,
-                    userId,
                     sessionTtl,
                     clock
             );

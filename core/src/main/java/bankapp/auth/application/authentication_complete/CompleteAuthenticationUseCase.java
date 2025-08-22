@@ -8,6 +8,8 @@ import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 
+import java.util.UUID;
+
 public class CompleteAuthenticationUseCase {
 
     private final SessionRepository sessionRepository;
@@ -27,12 +29,13 @@ public class CompleteAuthenticationUseCase {
 
         var updatedCredential = verifyChallengeAndUpdateCredentialRecord(command, session);
 
+        UUID userId = updatedCredential.getUserHandle();
+
         credentialRepository.save(updatedCredential);
 
         sessionRepository.delete(command.sessionId());
 
-        AuthTokens tokens = tokenIssuingPort.issueTokensForUser(session.userId());
-
+        AuthTokens tokens = tokenIssuingPort.issueTokensForUser(userId);
         return new CompleteAuthenticationResponse(tokens);
     }
 

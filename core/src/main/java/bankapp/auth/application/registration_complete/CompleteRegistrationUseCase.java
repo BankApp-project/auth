@@ -10,11 +10,12 @@ import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
-import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.User;
 import lombok.NonNull;
+
+import java.util.UUID;
 
 public class CompleteRegistrationUseCase {
 
@@ -66,9 +67,7 @@ public class CompleteRegistrationUseCase {
         return tokenIssuer.issueTokensForUser(activatedUser.getId());
     }
 
-    private User fetchUser(byte[] userHandle) {
-        var userId = ByteArrayUtil.bytesToUuid(userHandle);
-
+    private User fetchUser(UUID userId) {
         var userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             throw new CompleteRegistrationException("User does not exists for userId: " + userId);

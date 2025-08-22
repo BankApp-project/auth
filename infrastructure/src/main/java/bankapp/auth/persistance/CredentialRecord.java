@@ -1,4 +1,4 @@
-package bankapp.auth.application.shared.port.out.dto;
+package bankapp.auth.persistance;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import lombok.EqualsAndHashCode;

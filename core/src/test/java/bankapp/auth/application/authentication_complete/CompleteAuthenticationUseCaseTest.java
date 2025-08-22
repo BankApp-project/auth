@@ -28,8 +28,8 @@ public class CompleteAuthenticationUseCaseTest {
    private final Clock clock = Clock.systemUTC();
    private final Instant expirationTime = Instant.now(clock).plusSeconds(DEFAULT_TTL);
 
-   private CredentialRecord credentialRecord;
    private byte[] credentialId;
+   private CredentialRecord credentialRecord;
    private final UUID sessionId = UUID.randomUUID();
    private final UUID userId = UUID.randomUUID();
    private final byte[] challenge = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
@@ -38,7 +38,6 @@ public class CompleteAuthenticationUseCaseTest {
    private final Challenge testSession = new Challenge(
            sessionId,
            challenge,
-           userId,
            expirationTime
    );
 
@@ -63,6 +62,11 @@ public class CompleteAuthenticationUseCaseTest {
         credentialRecord = getCredentialRecord(userId);
         credentialId = credentialRecord.getId();
         when(credentialRepository.load(credentialId)).thenReturn(credentialRecord);
+        when(webAuthnPort.confirmAuthenticationChallenge(
+                authenticationResponseJSON,
+                testSession,
+                credentialRecord
+        )).thenReturn(credentialRecord.signCountIncrement());
 
         tokenIssuingPort = mock(TokenIssuingPort.class);
 
@@ -71,11 +75,10 @@ public class CompleteAuthenticationUseCaseTest {
    }
 
     private CredentialRecord getCredentialRecord(UUID userId) {
-        var userHandle = ByteArrayUtil.uuidToBytes(userId);
         var credentialId = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
         return new CredentialRecord(
                 credentialId,
-                userHandle,
+                userId,
                 null,
                 null,
                 0L,
@@ -189,13 +192,13 @@ public class CompleteAuthenticationUseCaseTest {
     @Test
     void should_issue_tokens() {
        useCase.handle(command);
-        verify(tokenIssuingPort).issueTokensForUser(testSession.userId());
+        verify(tokenIssuingPort).issueTokensForUser(credentialRecord.getUserHandle());
     }
 
     @Test
     void should_return_tokens() {
         AuthTokens authTokens = new AuthTokens("accessToken", "refreshToken");
-        when(tokenIssuingPort.issueTokensForUser(testSession.userId())).thenReturn(authTokens);
+        when(tokenIssuingPort.issueTokensForUser(credentialRecord.getUserHandle())).thenReturn(authTokens);
         var res = useCase.handle(command);
         assertEquals(res.authTokens(), authTokens);
     }

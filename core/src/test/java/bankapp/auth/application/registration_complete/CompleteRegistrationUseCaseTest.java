@@ -9,7 +9,6 @@ import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
-import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.User;
@@ -33,8 +32,7 @@ class CompleteRegistrationUseCaseTest {
     private final Challenge testChallenge = new Challenge(
                 sessionId,
                 new byte[]{},
-                UUID.randomUUID(),
-                5L,
+            5L,
                 Clock.systemUTC()
         );
     CredentialRecord stubCredentialRecord;
@@ -66,10 +64,9 @@ class CompleteRegistrationUseCaseTest {
         when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testChallenge));
 
         testUser = new User(new EmailAddress("test@bankapp.online"));
-        var userHandle = ByteArrayUtil.uuidToBytes(testUser.getId());
         stubCredentialRecord = new CredentialRecord(
                 null,
-                userHandle,
+                testUser.getId(),
                 null,
                 null,
                 0L,

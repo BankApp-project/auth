@@ -49,7 +49,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         // Create a realistic dummy CredentialRecord for testing purposes
         var credential = new CredentialRecord(
                 new byte[]{1, 2, 3, 4}, // credentialId
-                ByteArrayUtil.uuidToBytes(defaultUser.getId()), // userId
+                defaultUser.getId(),
                 "public-key", // type
                 new byte[]{5, 6, 7, 8}, // publicKey
                 1L, // signatureCount
