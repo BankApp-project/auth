@@ -46,7 +46,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
         // Given
         Clock fixedClock = Clock.fixed(Instant.now().plusSeconds(DEFAULT_TTL + 1), ZoneId.of("Z"));
         // Re-create use case with the clock that is in the future
-        var useCaseWithFutureClock = new CompleteVerificationUseCase(sessionTtl, log, fixedClock, otpRepository, sessionRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher);
+        var useCaseWithFutureClock = new CompleteVerificationUseCase(sessionTtl, log, fixedClock, otpRepository, challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher);
 
         // When / Then
         var exception = assertThrows(CompleteVerificationException.class, () -> useCaseWithFutureClock.handle(defaultCommand));
@@ -73,7 +73,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        var useCase = new CompleteVerificationUseCase(sessionTtl, log, DEFAULT_CLOCK, otpRepository, sessionRepository, credentialRepository, userRepositoryMock, credentialOptionsPort, challengeGenerator, hasher);
+        var useCase = new CompleteVerificationUseCase(sessionTtl, log, DEFAULT_CLOCK, otpRepository, challengeRepository, credentialRepository, userRepositoryMock, credentialOptionsPort, challengeGenerator, hasher);
 
         // When
         useCase.handle(defaultCommand);
@@ -112,7 +112,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
         var sessionId = res.sessionId();
 
         // Then
-        assertThat(sessionRepository.load(sessionId)).isPresent();
+        assertThat(challengeRepository.load(sessionId)).isPresent();
     }
 
     @Test
@@ -122,13 +122,13 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
         var useCase = new CompleteVerificationUseCase(
                 sessionTtl, log, DEFAULT_CLOCK,
                 otpRepository,
-                sessionRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher
+                challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher
         );
         // When
         var res = useCase.handle(defaultCommand);
 
         var sessionId = res.sessionId();
-        var sessionOptional = sessionRepository.load(sessionId);
+        var sessionOptional = challengeRepository.load(sessionId);
         assertTrue(sessionOptional.isPresent());
         Clock fixedClockBeforeExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(sessionTtl-1),DEFAULT_CLOCK.getZone());
         Clock fixedClockAfterExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(sessionTtl+1), DEFAULT_CLOCK.getZone());

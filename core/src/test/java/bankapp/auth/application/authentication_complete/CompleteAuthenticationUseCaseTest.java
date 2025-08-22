@@ -6,8 +6,8 @@ import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
-import bankapp.auth.application.shared.port.out.stubs.StubSessionRepository;
+import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
+import bankapp.auth.application.shared.port.out.stubs.StubChallengeRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class CompleteAuthenticationUseCaseTest {
 
 
 
-    private SessionRepository sessionRepo;
+    private ChallengeRepository sessionRepo;
     private WebAuthnPort webAuthnPort;
     private CredentialRepository credentialRepository;
     private TokenIssuingPort tokenIssuingPort;
@@ -53,7 +53,7 @@ public class CompleteAuthenticationUseCaseTest {
 
     @BeforeEach
    void setup() {
-       sessionRepo = new StubSessionRepository();
+       sessionRepo = new StubChallengeRepository();
        sessionRepo.save(testSession, sessionId);
 
        webAuthnPort = mock(WebAuthnPort.class);
@@ -94,7 +94,7 @@ public class CompleteAuthenticationUseCaseTest {
 
     @Test
     void should_load_authSession_from_repository() {
-        sessionRepo = mock(SessionRepository.class);
+        sessionRepo = mock(ChallengeRepository.class);
         useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository, tokenIssuingPort);
 
         when(sessionRepo.load(eq(sessionId))).thenReturn(Optional.of(testSession));

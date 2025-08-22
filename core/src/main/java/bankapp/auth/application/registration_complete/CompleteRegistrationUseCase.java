@@ -9,7 +9,7 @@ import bankapp.auth.application.shared.exception.CredentialAlreadyExistsExceptio
 import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.User;
@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class CompleteRegistrationUseCase {
 
-    private final SessionRepository sessionRepository;
+    private final ChallengeRepository challengeRepository;
     private final WebAuthnPort webAuthnPort;
     private final CredentialRepository credentialRepository;
     private final UserRepository userRepository;
@@ -27,14 +27,14 @@ public class CompleteRegistrationUseCase {
     private final LoggerPort log;
 
     public CompleteRegistrationUseCase(
-            SessionRepository sessionRepository,
+            ChallengeRepository challengeRepository,
             WebAuthnPort webAuthnPort,
             CredentialRepository credentialRepository,
             UserRepository userRepository,
             TokenIssuingPort tokenIssuingPort,
             LoggerPort log
     ) {
-        this.sessionRepository = sessionRepository;
+        this.challengeRepository = challengeRepository;
         this.webAuthnPort = webAuthnPort;
         this.credentialRepository = credentialRepository;
         this.userRepository = userRepository;
@@ -50,7 +50,7 @@ public class CompleteRegistrationUseCase {
 
         saveCredentialRecord(credential);
 
-        sessionRepository.delete(command.sessionId());
+        challengeRepository.delete(command.sessionId());
 
         User user = fetchUser(credential.getUserHandle());
 
@@ -76,7 +76,7 @@ public class CompleteRegistrationUseCase {
     }
 
     private Challenge getSession(CompleteRegistrationCommand command) {
-        var session = sessionRepository.load(command.sessionId());
+        var session = challengeRepository.load(command.sessionId());
         if (session.isEmpty()) {
             throw new CompleteRegistrationException("No such session with ID: " + command.sessionId());
         }

@@ -6,19 +6,19 @@ import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 
 import java.util.UUID;
 
 public class CompleteAuthenticationUseCase {
 
-    private final SessionRepository sessionRepository;
+    private final ChallengeRepository challengeRepository;
     private final CredentialRepository credentialRepository;
     private final WebAuthnPort webAuthnPort;
     private final TokenIssuingPort tokenIssuingPort;
 
-    public CompleteAuthenticationUseCase(SessionRepository sessionRepo, WebAuthnPort webAuthnPort, CredentialRepository credentialRepository, TokenIssuingPort tokenIssuingPort) {
-        this.sessionRepository = sessionRepo;
+    public CompleteAuthenticationUseCase(ChallengeRepository sessionRepo, WebAuthnPort webAuthnPort, CredentialRepository credentialRepository, TokenIssuingPort tokenIssuingPort) {
+        this.challengeRepository = sessionRepo;
         this.webAuthnPort = webAuthnPort;
         this.credentialRepository = credentialRepository;
         this.tokenIssuingPort = tokenIssuingPort;
@@ -33,7 +33,7 @@ public class CompleteAuthenticationUseCase {
 
         credentialRepository.save(updatedCredential);
 
-        sessionRepository.delete(command.sessionId());
+        challengeRepository.delete(command.sessionId());
 
         AuthTokens tokens = tokenIssuingPort.issueTokensForUser(userId);
         return new CompleteAuthenticationResponse(tokens);
@@ -49,7 +49,7 @@ public class CompleteAuthenticationUseCase {
     }
 
     private Challenge getSession(CompleteAuthenticationCommand command) {
-        var sessionOptional = sessionRepository.load(command.sessionId());
+        var sessionOptional = challengeRepository.load(command.sessionId());
         if (sessionOptional.isEmpty()) {
             throw new CompleteAuthenticationException("No such session with ID: " + command.sessionId());
         }

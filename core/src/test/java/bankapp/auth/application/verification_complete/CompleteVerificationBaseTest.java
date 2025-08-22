@@ -1,10 +1,10 @@
 package bankapp.auth.application.verification_complete;
 
 import bankapp.auth.application.shared.port.out.LoggerPort;
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
-import bankapp.auth.application.shared.port.out.stubs.StubSessionRepository;
+import bankapp.auth.application.shared.port.out.stubs.StubChallengeRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubHasher;
 import bankapp.auth.application.shared.port.out.stubs.StubOtpRepository;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
@@ -45,7 +45,7 @@ public abstract class CompleteVerificationBaseTest {
     protected CredentialOptionsPort credentialOptionsPort;
     protected CredentialRepository credentialRepository;
     protected ChallengeGenerationPort challengeGenerator;
-    protected SessionRepository sessionRepository;
+    protected ChallengeRepository challengeRepository;
     protected LoggerPort log;
 
     // --- SHARED TEST DATA ---
@@ -62,7 +62,7 @@ public abstract class CompleteVerificationBaseTest {
         credentialOptionsPort = new StubCredentialOptionsService();
         credentialRepository = mock(CredentialRepository.class);
         challengeGenerator = new StubChallengeGenerator();
-        sessionRepository = new StubSessionRepository();
+        challengeRepository = new StubChallengeRepository();
         log = mock(LoggerPort.class);
 
         // Create and save a valid OTP
@@ -76,7 +76,7 @@ public abstract class CompleteVerificationBaseTest {
                 sessionTtl, log,
                 DEFAULT_CLOCK,
                 otpRepository,
-                sessionRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher
+                challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher
         );
     }
 }

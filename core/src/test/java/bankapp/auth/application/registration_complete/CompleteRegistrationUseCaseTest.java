@@ -8,7 +8,7 @@ import bankapp.auth.application.shared.exception.CredentialAlreadyExistsExceptio
 import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.User;
@@ -38,7 +38,7 @@ class CompleteRegistrationUseCaseTest {
     CredentialRecord stubCredentialRecord;
     User testUser;
 
-    private SessionRepository sessionRepo;
+    private ChallengeRepository sessionRepo;
     private CredentialRepository credentialRepository;
     private UserRepository userRepository;
     private WebAuthnPort webAuthnPort;
@@ -49,7 +49,7 @@ class CompleteRegistrationUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        sessionRepo = mock(SessionRepository.class);
+        sessionRepo = mock(ChallengeRepository.class);
         webAuthnPort = mock(WebAuthnPort.class);
         credentialRepository = mock(CredentialRepository.class);
         userRepository = mock(UserRepository.class);

@@ -4,7 +4,7 @@ import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
@@ -29,7 +29,7 @@ public class CompleteVerificationUseCase {
     private final Clock clock;
 
     private final OtpRepository otpRepository;
-    private final SessionRepository sessionRepository;
+    private final ChallengeRepository challengeRepository;
     private final UserRepository userRepository;
     private final CredentialRepository credentialRepository;
 
@@ -42,7 +42,7 @@ public class CompleteVerificationUseCase {
             @NotNull LoggerPort log,
             @NotNull Clock clock,
             @NotNull OtpRepository otpRepository,
-            @NotNull SessionRepository sessionRepository,
+            @NotNull ChallengeRepository challengeRepository,
             @NotNull CredentialRepository credentialRepository,
             @NotNull UserRepository userRepository,
             @NotNull CredentialOptionsPort credentialOptionsPort,
@@ -53,7 +53,7 @@ public class CompleteVerificationUseCase {
         this.log = log;
         this.clock = clock;
         this.otpRepository = otpRepository;
-        this.sessionRepository = sessionRepository;
+        this.challengeRepository = challengeRepository;
         this.credentialRepository = credentialRepository;
         this.userRepository = userRepository;
         this.credentialOptionsPort = credentialOptionsPort;
@@ -123,7 +123,7 @@ public class CompleteVerificationUseCase {
                     sessionTtl,
                     clock
             );
-            sessionRepository.save(registrationSession, sessionId);
+            challengeRepository.save(registrationSession, sessionId);
             return registrationSession;
         } catch (RuntimeException e) {
             throw new CompleteVerificationException("Failed to save session", e);

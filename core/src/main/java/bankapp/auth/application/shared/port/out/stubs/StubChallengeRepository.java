@@ -1,13 +1,13 @@
 package bankapp.auth.application.shared.port.out.stubs;
 
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
-public class StubSessionRepository implements SessionRepository {
+public class StubChallengeRepository implements ChallengeRepository {
 
     private final HashMap<UUID, Challenge> sessionCache = new HashMap<>();
 
