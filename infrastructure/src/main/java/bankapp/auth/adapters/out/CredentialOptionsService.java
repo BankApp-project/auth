@@ -45,9 +45,9 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         List<PublicKeyCredentialDescriptor> res = new ArrayList<>();
         for (var credential : userCredentials) {
             var credentialDescriptor = new PublicKeyCredentialDescriptor(
-                    credential.type(),
-                    credential.id(),
-                    credential.transports()
+                    credential.getType(),
+                    credential.getId(),
+                    credential.getTransports()
             );
             res.add(credentialDescriptor);
         }

@@ -24,7 +24,7 @@ public class CredentialOptionsServiceLoginFlowTest {
     private static final User DEFAULT_USER = new User(DEFAULT_EMAIL_ADDRESS);
     private static final List<CredentialRecord> DEFAULT_USER_CREDENTIALS = List.of(new CredentialRecord(
                 ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
-                ByteArrayUtil.uuidToBytes(DEFAULT_USER.getId()),
+                DEFAULT_USER.getId(),
                 null,
                 null,
                 0L,
@@ -83,9 +83,9 @@ public class CredentialOptionsServiceLoginFlowTest {
         var allowedCredentials = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE).allowCredentials();
 
         assertNotNull(allowedCredentials);
-        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().id() ,allowedCredentials.getFirst().id());
-        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().type(), allowedCredentials.getFirst().type());
-        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().transports(),allowedCredentials.getFirst().transports());
+        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getId() ,allowedCredentials.getFirst().id());
+        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getType(), allowedCredentials.getFirst().type());
+        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getTransports(),allowedCredentials.getFirst().transports());
     }
 
     @Test
