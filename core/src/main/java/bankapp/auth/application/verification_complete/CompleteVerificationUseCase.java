@@ -19,11 +19,10 @@ import bankapp.auth.domain.model.vo.EmailAddress;
 
 import java.time.Clock;
 import java.util.Optional;
-import java.util.UUID;
 
 public class CompleteVerificationUseCase {
 
-    private final long sessionTtl;
+    private final long challengeTtl;
 
     private final LoggerPort log;
     private final Clock clock;
@@ -38,7 +37,7 @@ public class CompleteVerificationUseCase {
     private final HashingPort hasher;
 
     public CompleteVerificationUseCase(
-            long sessionTtl,
+            long challengeTtl,
             @NotNull LoggerPort log,
             @NotNull Clock clock,
             @NotNull OtpRepository otpRepository,
@@ -49,7 +48,7 @@ public class CompleteVerificationUseCase {
             @NotNull ChallengeGenerationPort challengeGenerator,
             @NotNull HashingPort hasher
     ) {
-        this.sessionTtl = sessionTtl;
+        this.challengeTtl = challengeTtl;
         this.log = log;
         this.clock = clock;
         this.otpRepository = otpRepository;
@@ -71,19 +70,18 @@ public class CompleteVerificationUseCase {
         User user = findOrCreateUser(command.key());
         log.debug("User found/created with ID: {}", user.getId());
 
-        byte[] challenge = challengeGenerator.generate();
+        var challenge = challengeGenerator.generate(clock, challengeTtl);
         log.debug("challenge generated");
 
-        var session = saveSession(challenge);
+        saveChallenge(challenge);
         log.debug("Session saved successfully");
 
-        CompleteVerificationResponse response = prepareResponse(user, challenge, session.sessionId());
+        CompleteVerificationResponse response = prepareResponse(user, challenge);
         log.info("Verification completion successful for user: {}, response type: {}",
                 user.getId(), response.getClass().getSimpleName());
 
         return response;
     }
-
 
     private void verifyAndConsumeOtp(EmailAddress email, String otpValue) {
         Optional<Otp> persistedOtpOptional = otpRepository.load(email.getValue());
@@ -114,31 +112,23 @@ public class CompleteVerificationUseCase {
         return userOptional.get();
     }
 
-    private Challenge saveSession(byte[] challenge) {
+    private void saveChallenge(Challenge challenge) {
         try {
-            UUID sessionId = UUID.randomUUID();
-            Challenge registrationSession = new Challenge(
-                    sessionId,
-                    challenge,
-                    sessionTtl,
-                    clock
-            );
-            challengeRepository.save(registrationSession, sessionId);
-            return registrationSession;
+            challengeRepository.save(challenge);
         } catch (RuntimeException e) {
             throw new CompleteVerificationException("Failed to save session", e);
         }
     }
 
-    private CompleteVerificationResponse prepareResponse(User user, byte[] challenge, UUID sessionId) {
+    private CompleteVerificationResponse prepareResponse(User user, Challenge challenge) {
         try {
             if (user.isEnabled()) {
                 var userCredentials = credentialRepository.loadForUserId(user.getId());
-                var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge);
-                return new LoginResponse(passkeyOptions, sessionId);
+                var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge.challenge());
+                return new LoginResponse(passkeyOptions, challenge.sessionId());
             }
-            var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user,challenge);
-            return new RegistrationResponse(passkeyOptions, sessionId);
+            var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user, challenge.challenge());
+            return new RegistrationResponse(passkeyOptions, challenge.sessionId());
         } catch (RuntimeException e) {
             throw new CompleteVerificationException("Failed to prepare response", e);
         }

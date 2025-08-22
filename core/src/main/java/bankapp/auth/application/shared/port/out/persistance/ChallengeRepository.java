@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ChallengeRepository {
-    void save(Challenge challenge, UUID key);
+    void save(Challenge challenge);
     Optional<Challenge> load(UUID key);
     void delete(UUID sessionId);
 }

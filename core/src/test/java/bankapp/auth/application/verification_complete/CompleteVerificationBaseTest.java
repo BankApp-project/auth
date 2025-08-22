@@ -35,7 +35,7 @@ public abstract class CompleteVerificationBaseTest {
     protected static final String DEFAULT_OTP_KEY = "test@bankapp.online";
     protected static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
     protected static final String DEFAULT_OTP_VALUE = "123456";
-    protected static final int sessionTtl = 66; // in seconds
+    protected static final int challengeTtl = 66; // in seconds
 
     // --- SHARED DEPENDENCIES & MOCKS ---
     // Use stubs for predictable behavior and mocks for verification
@@ -73,7 +73,7 @@ public abstract class CompleteVerificationBaseTest {
         // Prepare the default command and use case instance
         defaultCommand = new CompleteVerificationCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
         defaultUseCase = new CompleteVerificationUseCase(
-                sessionTtl, log,
+                challengeTtl, log,
                 DEFAULT_CLOCK,
                 otpRepository,
                 challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher

@@ -1,14 +1,15 @@
 package bankapp.auth.application.verification_complete;
 
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
 import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
 import bankapp.auth.domain.model.User;
-import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseTest {
+
 
     private User defaultUser;
 
@@ -68,7 +70,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         when(mockCredentialRepository.loadForUserId(defaultUser.getId())).thenReturn(credentials);
 
         var useCase = new CompleteVerificationUseCase(
-                sessionTtl, log, DEFAULT_CLOCK, otpRepository, challengeRepository, mockCredentialRepository, userRepository, mockCredentialOptionsService, challengeGenerator, hasher
+                challengeTtl, log, DEFAULT_CLOCK, otpRepository, challengeRepository, mockCredentialRepository, userRepository, mockCredentialOptionsService, challengeGenerator, hasher
         );
 
         // When
@@ -83,17 +85,24 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         // Given
         var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
         var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
-        var challenge = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
-        when(mockChallengeGenerator.generate()).thenReturn(challenge);
+
+        var challenge = new Challenge(
+                UUID.randomUUID(),
+                new byte[]{123},
+                challengeTtl,
+                DEFAULT_CLOCK
+        );
+
+        when(mockChallengeGenerator.generate(DEFAULT_CLOCK, challengeTtl)).thenReturn(challenge);
 
         var useCase = new CompleteVerificationUseCase(
-                sessionTtl, log, DEFAULT_CLOCK, otpRepository, challengeRepository, credentialRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator, hasher
+                challengeTtl, log, DEFAULT_CLOCK, otpRepository, challengeRepository, credentialRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator, hasher
         );
 
         // When
         useCase.handle(defaultCommand);
 
         // Then
-        verify(mockCredentialOptionsService).getPasskeyRequestOptions(any(), eq(challenge));
+        verify(mockCredentialOptionsService).getPasskeyRequestOptions(any(), eq(challenge.challenge()));
     }
 }

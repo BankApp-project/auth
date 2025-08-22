@@ -6,9 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.Clock;
+
 import static org.mockito.Mockito.verify;
 
 public class InitiateAuthenticationUseCaseTest {
+
+    private final Clock clock = Clock.systemUTC();
+    private final long challengeTtl = 60; // In seconds
 
     @Mock
     ChallengeGenerationPort challengeGenerator;
@@ -20,10 +25,10 @@ public class InitiateAuthenticationUseCaseTest {
 
     @Test
     void should_generate_challenge() {
-        var useCase = new InitiateAuthenticationUseCase(challengeGenerator);
+        var useCase = new InitiateAuthenticationUseCase(challengeGenerator, clock, challengeTtl);
         var command = new InitiateAuthenticationCommand();
         useCase.handle(command);
 
-        verify(challengeGenerator).generate();
+        verify(challengeGenerator).generate(clock, challengeTtl);
     }
 }

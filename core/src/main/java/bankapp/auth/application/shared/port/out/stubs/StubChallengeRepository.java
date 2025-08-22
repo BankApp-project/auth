@@ -12,8 +12,8 @@ public class StubChallengeRepository implements ChallengeRepository {
     private final HashMap<UUID, Challenge> sessionCache = new HashMap<>();
 
     @Override
-    public void save(Challenge challenge, UUID key) {
-        sessionCache.put(key, challenge);
+    public void save(Challenge challenge) {
+        sessionCache.put(challenge.sessionId(), challenge);
     }
 
     @Override

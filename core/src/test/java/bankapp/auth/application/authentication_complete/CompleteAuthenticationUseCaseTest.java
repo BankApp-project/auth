@@ -54,7 +54,7 @@ public class CompleteAuthenticationUseCaseTest {
     @BeforeEach
    void setup() {
        sessionRepo = new StubChallengeRepository();
-       sessionRepo.save(testSession, sessionId);
+       sessionRepo.save(testSession);
 
        webAuthnPort = mock(WebAuthnPort.class);
        credentialRepository = mock(CredentialRepository.class);
