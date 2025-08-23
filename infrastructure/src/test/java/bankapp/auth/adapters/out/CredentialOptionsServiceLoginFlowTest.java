@@ -8,6 +8,7 @@ import bankapp.auth.application.shared.service.ByteArrayUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,5 +89,12 @@ public class CredentialOptionsServiceLoginFlowTest {
 
         assertNotNull(uv);
         assertEquals("required", uv.getValue());
+    }
+
+    @Test
+    void should_return_empty_allowed_credential_list_when_userCredentials_is_null () {
+        var res = passkeyOptionsService.getPasskeyRequestOptions(null,DEFAULT_CHALLENGE);
+
+        assertEquals(new ArrayList<>(), res.allowCredentials());
     }
 }

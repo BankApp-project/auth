@@ -9,6 +9,7 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialDescripto
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
+import bankapp.auth.domain.model.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         this.timeout = timeout;
     }
 
-    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(List<Passkey> userCredentials, byte[] challenge) {
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, byte[] challenge) {
         return new PublicKeyCredentialRequestOptions(
                 challenge,
                 timeout,
@@ -42,8 +43,11 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         );
     }
 
-    private List<PublicKeyCredentialDescriptor> getAllowedCredentials(List<Passkey> userCredentials) {
+    private List<PublicKeyCredentialDescriptor> getAllowedCredentials(@Nullable List<Passkey> userCredentials) {
         List<PublicKeyCredentialDescriptor> res = new ArrayList<>();
+        if (userCredentials == null) {
+            return res;
+        }
         for (var credential : userCredentials) {
             var credentialDescriptor = new PublicKeyCredentialDescriptor(
                     passkeyType,
