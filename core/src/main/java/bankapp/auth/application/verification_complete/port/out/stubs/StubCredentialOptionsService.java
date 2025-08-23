@@ -1,5 +1,6 @@
 package bankapp.auth.application.verification_complete.port.out.stubs;
 
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public class StubCredentialOptionsService implements CredentialOptionsPort {
     @Override
-    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, byte[] challenge) {
+    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Challenge challenge) {
         return new PublicKeyCredentialCreationOptions(
                 null,
                 new PublicKeyCredentialCreationOptions.PublicKeyCredentialUserEntity(
@@ -19,7 +20,7 @@ public class StubCredentialOptionsService implements CredentialOptionsPort {
                        user.getEmail().getValue(),
                        user.getEmail().getValue()
                 ),
-                challenge,
+                challenge.challenge(),
                 null,
                 null,
                 null,

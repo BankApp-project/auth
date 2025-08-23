@@ -1,6 +1,7 @@
 package bankapp.auth.adapters.out;
 
 import bankapp.auth.application.shared.enums.AuthMode;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.application.shared.enums.UserVerificationRequirement;
@@ -59,7 +60,8 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         return res;
     }
 
-    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, byte[] challenge) {
+    // TODO should calculate ttl based on challenge.expirationTime()
+    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Challenge challenge) {
         String userDisplayName = user.getEmail().getValue();
 
         byte[] userHandle = getUserHandle(user.getId());
@@ -67,7 +69,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         return new PublicKeyCredentialCreationOptions(
                         getRpEntity(),
                         getUserEntity(userHandle, userDisplayName),
-                        challenge,
+                        challenge.challenge(),
                         getPublicKeyCredentialParametersList(),
                         timeout,
                         new ArrayList<>(),

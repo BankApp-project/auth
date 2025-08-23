@@ -80,6 +80,6 @@ public class CompleteVerificationRegistrationFlowTest extends CompleteVerificati
         useCase.handle(defaultCommand);
 
         // Then
-        verify(mockCredentialOptionsService).getPasskeyCreationOptions(any(User.class), eq(challenge.challenge()));
+        verify(mockCredentialOptionsService).getPasskeyCreationOptions(any(User.class), eq(challenge));
     }
 }

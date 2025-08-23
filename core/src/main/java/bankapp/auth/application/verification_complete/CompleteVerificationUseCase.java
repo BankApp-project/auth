@@ -127,7 +127,7 @@ public class CompleteVerificationUseCase {
                 var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge.challenge());
                 return new LoginResponse(passkeyOptions, challenge.sessionId());
             }
-            var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user, challenge.challenge());
+            var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user, challenge);
             return new RegistrationResponse(passkeyOptions, challenge.sessionId());
         } catch (RuntimeException e) {
             throw new CompleteVerificationException("Failed to prepare response", e);
