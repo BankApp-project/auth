@@ -1,5 +1,6 @@
 package bankapp.auth.application.authentication_complete;
 
+import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
@@ -24,7 +25,7 @@ public class CompleteAuthenticationUseCase {
         this.tokenIssuingPort = tokenIssuingPort;
     }
 
-    public CompleteAuthenticationResponse handle(CompleteAuthenticationCommand command) {
+    public AuthenticationGrant handle(CompleteAuthenticationCommand command) {
         var session = getSession(command);
 
         var updatedCredential = verifyChallengeAndUpdateCredentialRecord(command, session);
@@ -36,7 +37,7 @@ public class CompleteAuthenticationUseCase {
         challengeRepository.delete(command.sessionId());
 
         AuthTokens tokens = tokenIssuingPort.issueTokensForUser(userId);
-        return new CompleteAuthenticationResponse(tokens);
+        return new AuthenticationGrant(tokens);
     }
 
     private Passkey verifyChallengeAndUpdateCredentialRecord(CompleteAuthenticationCommand command, Challenge session) {

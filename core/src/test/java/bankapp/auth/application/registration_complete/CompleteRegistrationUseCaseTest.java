@@ -180,9 +180,9 @@ class CompleteRegistrationUseCaseTest {
 
         var res = useCase.handle(command);
         verify(tokenIssuingPort).issueTokensForUser(eq(testUser.getId()));
-        assertNotNull(res.tokens());
-        assertNotNull(res.tokens().accessToken());
-        assertNotNull(res.tokens().refreshToken());
+        assertNotNull(res.authTokens());
+        assertNotNull(res.authTokens().accessToken());
+        assertNotNull(res.authTokens().refreshToken());
     }
 
     @Test

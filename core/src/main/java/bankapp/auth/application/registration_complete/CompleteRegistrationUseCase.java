@@ -1,7 +1,7 @@
 package bankapp.auth.application.registration_complete;
 
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
-import bankapp.auth.application.registration_complete.dto.CompleteRegistrationResponse;
+import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.registration_complete.port.in.CompleteRegistrationCommand;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
@@ -43,7 +43,7 @@ public class CompleteRegistrationUseCase {
     }
 
     //deleted logs for now. it was hard to read flow.
-    public CompleteRegistrationResponse handle(@NonNull CompleteRegistrationCommand command) {
+    public AuthenticationGrant handle(@NonNull CompleteRegistrationCommand command) {
         var session = getSession(command);
 
         Passkey credential = verifyAndExtractCredentialRecord(command, session);
@@ -60,7 +60,7 @@ public class CompleteRegistrationUseCase {
 
         var tokens = generateTokensForUser(user);
 
-        return new CompleteRegistrationResponse(tokens);
+        return new AuthenticationGrant(tokens);
     }
 
     private AuthTokens generateTokensForUser(User activatedUser) {
