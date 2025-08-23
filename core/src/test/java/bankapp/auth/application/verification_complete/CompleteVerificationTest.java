@@ -109,7 +109,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
     void should_persist_session_after_generation() {
         // Given / When
         var res = defaultUseCase.handle(defaultCommand);
-        var sessionId = res.sessionId();
+        var sessionId = res.challengeId();
 
         // Then
         assertThat(challengeRepository.load(sessionId)).isPresent();
@@ -127,7 +127,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
         // When
         var res = useCase.handle(defaultCommand);
 
-        var sessionId = res.sessionId();
+        var sessionId = res.challengeId();
         var sessionOptional = challengeRepository.load(sessionId);
         assertTrue(sessionOptional.isPresent());
         Clock fixedClockBeforeExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(sessionTtl-1),DEFAULT_CLOCK.getZone());

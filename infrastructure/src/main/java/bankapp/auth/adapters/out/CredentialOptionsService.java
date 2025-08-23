@@ -33,6 +33,11 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         this.timeout = timeout;
     }
 
+    @Override
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(Challenge challenge) {
+        return getPasskeyRequestOptions(null, challenge);
+    }
+
     // TODO should calculate ttl based on challenge.expirationTime()
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, Challenge challenge) {
         return new PublicKeyCredentialRequestOptions(

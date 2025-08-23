@@ -37,4 +37,9 @@ public class StubCredentialOptionsService implements CredentialOptionsPort {
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(List<Passkey> userCredentials, Challenge challenge) {
         return null;
     }
+
+    @Override
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(Challenge challenge) {
+        return getPasskeyRequestOptions(null, challenge);
+    }
 }

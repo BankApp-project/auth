@@ -71,13 +71,13 @@ public class InitiateAuthenticationUseCaseTest {
     void should_generate_LoginResponse_for_given_challenge() {
         useCase.handle(command);
 
-        verify(credentialOptionsService).getPasskeyRequestOptions(eq(null),eq(defaultChallenge));
+        verify(credentialOptionsService).getPasskeyRequestOptions(eq(defaultChallenge));
     }
 
-//    @Test
-//    void should_return_response_with_newly_generated_challenge() {
-//        var res = useCase.handle(command);
-//
-//        assertEquals(defaultChallenge, res);
-//    }
+    @Test
+    void should_return_response_with_newly_generated_challenge() {
+        var res = useCase.handle(command);
+
+        assertEquals(defaultChallenge.sessionId(), res.challengeId());
+    }
 }

@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public record LoginResponse(
         PublicKeyCredentialRequestOptions options,
-        UUID sessionId
+        UUID challengeId
 ) implements CompleteVerificationResponse {
 }

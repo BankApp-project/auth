@@ -1,6 +1,7 @@
 package bankapp.auth.adapters.out;
 
 import bankapp.auth.application.shared.enums.AuthMode;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
@@ -8,6 +9,7 @@ import bankapp.auth.application.shared.service.ByteArrayUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +22,7 @@ public class CredentialOptionsServiceLoginFlowTest {
 
     private static final AuthMode DEFAULT_AUTH_MODE = AuthMode.SMARTPHONE;
     private static final String DEFAULT_RPID = "bankapp.online";
+    private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
     private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
     private static final EmailAddress DEFAULT_EMAIL_ADDRESS = new EmailAddress("test@bankapp.online");
     private static final User DEFAULT_USER = new User(DEFAULT_EMAIL_ADDRESS);
@@ -32,7 +35,12 @@ public class CredentialOptionsServiceLoginFlowTest {
             false,
                 null
     ));
-    private static final byte[] DEFAULT_CHALLENGE = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
+    private static final Challenge DEFAULT_CHALLENGE = new Challenge(
+            UUID.randomUUID(),
+            new byte[]{123},
+            DEFAULT_TIMEOUT / 1000,
+            DEFAULT_CLOCK
+    );
 
     CredentialOptionsService passkeyOptionsService;
 
