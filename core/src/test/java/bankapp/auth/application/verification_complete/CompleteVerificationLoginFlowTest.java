@@ -103,6 +103,6 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         useCase.handle(defaultCommand);
 
         // Then
-        verify(mockCredentialOptionsService).getPasskeyRequestOptions(any(), eq(challenge.challenge()));
+        verify(mockCredentialOptionsService).getPasskeyRequestOptions(any(), eq(challenge));
     }
 }

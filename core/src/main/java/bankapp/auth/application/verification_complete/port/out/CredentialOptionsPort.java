@@ -11,5 +11,5 @@ import java.util.List;
 
 public interface CredentialOptionsPort {
     PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Challenge challenge);
-    PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, byte[] challenge);
+    PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, Challenge challenge);
 }

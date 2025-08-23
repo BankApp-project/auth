@@ -3,6 +3,7 @@ package bankapp.auth.application.authentication_initiate;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
+import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -12,6 +13,7 @@ import java.time.Clock;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +33,9 @@ public class InitiateAuthenticationUseCaseTest {
     @Mock
     ChallengeRepository challengeRepository;
 
+    @Mock
+    CredentialOptionsPort credentialOptionsService;
+
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
@@ -44,14 +49,12 @@ public class InitiateAuthenticationUseCaseTest {
 
         when(challengeGenerator.generate(clock,challengeTtl)).thenReturn(defaultChallenge);
 
-        useCase = new InitiateAuthenticationUseCase(challengeGenerator, clock, challengeTtl, challengeRepository);
+        useCase = new InitiateAuthenticationUseCase(challengeGenerator, clock, challengeTtl, challengeRepository, credentialOptionsService);
         command = new InitiateAuthenticationCommand();
     }
 
     @Test
     void should_generate_challenge() {
-        var useCase = new InitiateAuthenticationUseCase(challengeGenerator, clock, challengeTtl, challengeRepository);
-        var command = new InitiateAuthenticationCommand();
         useCase.handle(command);
 
         verify(challengeGenerator).generate(clock, challengeTtl);
@@ -65,9 +68,16 @@ public class InitiateAuthenticationUseCaseTest {
     }
 
     @Test
-    void should_return_newly_generated_challenge() {
-        var res = useCase.handle(command);
+    void should_generate_LoginResponse_for_given_challenge() {
+        useCase.handle(command);
 
-        assertEquals(defaultChallenge, res);
+        verify(credentialOptionsService).getPasskeyRequestOptions(eq(null),eq(defaultChallenge));
     }
+
+//    @Test
+//    void should_return_response_with_newly_generated_challenge() {
+//        var res = useCase.handle(command);
+//
+//        assertEquals(defaultChallenge, res);
+//    }
 }

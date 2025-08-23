@@ -124,7 +124,7 @@ public class CompleteVerificationUseCase {
         try {
             if (user.isEnabled()) {
                 var userCredentials = credentialRepository.loadForUserId(user.getId());
-                var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge.challenge());
+                var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge);
                 return new LoginResponse(passkeyOptions, challenge.sessionId());
             }
             var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user, challenge);
