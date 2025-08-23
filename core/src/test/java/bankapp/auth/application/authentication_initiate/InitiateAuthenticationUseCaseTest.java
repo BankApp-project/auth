@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.Clock;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,5 +62,12 @@ public class InitiateAuthenticationUseCaseTest {
         useCase.handle(command);
 
         verify(challengeRepository).save(defaultChallenge);
+    }
+
+    @Test
+    void should_return_newly_generated_challenge() {
+        var res = useCase.handle(command);
+
+        assertEquals(defaultChallenge, res);
     }
 }

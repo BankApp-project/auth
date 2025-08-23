@@ -1,5 +1,6 @@
 package bankapp.auth.application.authentication_initiate;
 
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 
@@ -20,9 +21,11 @@ public class InitiateAuthenticationUseCase {
         this.challengeRepository = challengeRepository;
     }
 
-    void handle(InitiateAuthenticationCommand command) {
+    Challenge handle(InitiateAuthenticationCommand command) {
         var challenge = challengeGenerator.generate(clock, challengeTtl);
 
         challengeRepository.save(challenge);
+
+        return challenge;
     }
 }
