@@ -2,13 +2,13 @@ package bankapp.auth.application.authentication_complete;
 
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
-import bankapp.auth.domain.model.Passkey;
-import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
+import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubChallengeRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
+import bankapp.auth.domain.model.Passkey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,26 +21,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-//and this case will be done with stubs and mocks
 public class CompleteAuthenticationUseCaseTest {
 
-    private static final long DEFAULT_TTL = 90L;
-   private final Clock clock = Clock.systemUTC();
-   private final Instant expirationTime = Instant.now(clock).plusSeconds(DEFAULT_TTL);
+    private final static long DEFAULT_TTL = 90L;
+    private final static Clock DEFAULT_CLOCK = Clock.systemUTC();
+    private final static Instant DEFAULT_EXPIRATION_TIME = Instant.now(DEFAULT_CLOCK).plusSeconds(DEFAULT_TTL);
 
-   private byte[] credentialId;
-   private Passkey passkey;
-   private final UUID sessionId = UUID.randomUUID();
-   private final UUID userId = UUID.randomUUID();
-   private final byte[] challenge = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
-   private final String authenticationResponseJSON = "blob";
+    private byte[] credentialId;
+    private Passkey passkey;
+    private final static UUID DEFAULT_SESSION_ID = UUID.randomUUID();
+    private final static UUID DEFAULT_USER_ID = UUID.randomUUID();
+    private final String authenticationResponseJSON = "blob";
 
-   private final Challenge testSession = new Challenge(
-           sessionId,
-           challenge,
-           expirationTime
-   );
-
+    private final static byte[] DEFAULT_RAW_CHALLENGE = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
+    private final static Challenge TEST_CHALLENGE = new Challenge(
+            DEFAULT_SESSION_ID,
+            DEFAULT_RAW_CHALLENGE,
+            DEFAULT_EXPIRATION_TIME
+    );
 
 
     private ChallengeRepository sessionRepo;
@@ -52,33 +50,33 @@ public class CompleteAuthenticationUseCaseTest {
     private CompleteAuthenticationCommand command;
 
     @BeforeEach
-   void setup() {
-       sessionRepo = new StubChallengeRepository();
-       sessionRepo.save(testSession);
+    void setup() {
+        sessionRepo = new StubChallengeRepository();
+        sessionRepo.save(TEST_CHALLENGE);
 
-       webAuthnPort = mock(WebAuthnPort.class);
-       credentialRepository = mock(CredentialRepository.class);
+        webAuthnPort = mock(WebAuthnPort.class);
+        credentialRepository = mock(CredentialRepository.class);
 
-        passkey = getCredentialRecord(userId);
+        passkey = getCredentialRecord();
         credentialId = passkey.getId();
         when(credentialRepository.load(credentialId)).thenReturn(passkey);
         when(webAuthnPort.confirmAuthenticationChallenge(
                 authenticationResponseJSON,
-                testSession,
+                TEST_CHALLENGE,
                 passkey
         )).thenReturn(passkey.signCountIncrement());
 
         tokenIssuingPort = mock(TokenIssuingPort.class);
 
         useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository, tokenIssuingPort);
-       command = new CompleteAuthenticationCommand(sessionId, authenticationResponseJSON, credentialId);
-   }
+        command = new CompleteAuthenticationCommand(DEFAULT_SESSION_ID, authenticationResponseJSON, credentialId);
+    }
 
-    private Passkey getCredentialRecord(UUID userId) {
+    private Passkey getCredentialRecord() {
         var credentialId = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
         return new Passkey(
                 credentialId,
-                userId,
+                DEFAULT_USER_ID,
                 null,
                 0L,
                 false,
@@ -92,11 +90,11 @@ public class CompleteAuthenticationUseCaseTest {
         sessionRepo = mock(ChallengeRepository.class);
         useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository, tokenIssuingPort);
 
-        when(sessionRepo.load(eq(sessionId))).thenReturn(Optional.of(testSession));
+        when(sessionRepo.load(eq(DEFAULT_SESSION_ID))).thenReturn(Optional.of(TEST_CHALLENGE));
 
         useCase.handle(command);
 
-        verify(sessionRepo).load(eq(sessionId));
+        verify(sessionRepo).load(eq(DEFAULT_SESSION_ID));
     }
 
     @Test
@@ -105,7 +103,7 @@ public class CompleteAuthenticationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnPort).confirmAuthenticationChallenge(eq(command.AuthenticationResponseJSON()), eq(testSession), any());
+        verify(webAuthnPort).confirmAuthenticationChallenge(eq(command.AuthenticationResponseJSON()), eq(TEST_CHALLENGE), any());
     }
 
     @Test
@@ -122,7 +120,7 @@ public class CompleteAuthenticationUseCaseTest {
     void should_throw_CompleteAuthenticationException_when_challenge_verification_fails() {
         // Given
         String exceptionMsg = "Challenge verification failed";
-        when(webAuthnPort.confirmAuthenticationChallenge(any(),any(), any())).thenThrow(new RuntimeException(exceptionMsg));
+        when(webAuthnPort.confirmAuthenticationChallenge(any(), any(), any())).thenThrow(new RuntimeException(exceptionMsg));
         // When
         // Then
         var exceptionThrowed = assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
@@ -152,12 +150,12 @@ public class CompleteAuthenticationUseCaseTest {
 
     @Test
     void should_delete_challenge_when_successfully_saved_updated_credential() {
-        var session = sessionRepo.load(sessionId);
+        var session = sessionRepo.load(DEFAULT_SESSION_ID);
         assertTrue(session.isPresent());
 
         assertDoesNotThrow(() -> useCase.handle(command));
 
-        assertTrue(sessionRepo.load(sessionId).isEmpty());
+        assertTrue(sessionRepo.load(DEFAULT_SESSION_ID).isEmpty());
     }
 
     @Test
@@ -169,7 +167,7 @@ public class CompleteAuthenticationUseCaseTest {
         assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
 
         // Verify session is NOT deleted when verification fails
-        assertTrue(sessionRepo.load(sessionId).isPresent());
+        assertTrue(sessionRepo.load(DEFAULT_SESSION_ID).isPresent());
     }
 
     @Test
@@ -181,12 +179,12 @@ public class CompleteAuthenticationUseCaseTest {
         assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
 
         // Verify session is NOT deleted when verification fails
-        assertTrue(sessionRepo.load(sessionId).isPresent());
+        assertTrue(sessionRepo.load(DEFAULT_SESSION_ID).isPresent());
     }
 
     @Test
     void should_issue_tokens() {
-       useCase.handle(command);
+        useCase.handle(command);
         verify(tokenIssuingPort).issueTokensForUser(passkey.getUserHandle());
     }
 

@@ -19,13 +19,18 @@ import static org.mockito.Mockito.when;
 
 public class InitiateAuthenticationUseCaseTest {
 
-    private final Clock clock = Clock.systemUTC();
-    private final long challengeTtl = 60; // In seconds
+    private final static Clock DEFAULT_CLOCK = Clock.systemUTC();
+    private final static long DEFAULT_CHALLENGE_TTL = 60; // In seconds
 
-    private Challenge defaultChallenge;
+    private final static Challenge DEFAULT_CHALLENGE = new Challenge(
+            UUID.randomUUID(),
+            new byte[]{123},
+            DEFAULT_CHALLENGE_TTL,
+            DEFAULT_CLOCK
+    );
 
-    InitiateAuthenticationUseCase useCase;
-    InitiateAuthenticationCommand command;
+    private InitiateAuthenticationUseCase useCase;
+    private InitiateAuthenticationCommand command;
 
     @Mock
     ChallengeGenerationPort challengeGenerator;
@@ -40,16 +45,10 @@ public class InitiateAuthenticationUseCaseTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
 
-        defaultChallenge = new Challenge(
-                UUID.randomUUID(),
-                new byte[]{123},
-                challengeTtl,
-                clock
-        );
 
-        when(challengeGenerator.generate(clock,challengeTtl)).thenReturn(defaultChallenge);
+        when(challengeGenerator.generate(DEFAULT_CLOCK, DEFAULT_CHALLENGE_TTL)).thenReturn(DEFAULT_CHALLENGE);
 
-        useCase = new InitiateAuthenticationUseCase(challengeGenerator, clock, challengeTtl, challengeRepository, credentialOptionsService);
+        useCase = new InitiateAuthenticationUseCase(DEFAULT_CLOCK, DEFAULT_CHALLENGE_TTL, challengeGenerator, challengeRepository, credentialOptionsService);
         command = new InitiateAuthenticationCommand();
     }
 
@@ -57,27 +56,27 @@ public class InitiateAuthenticationUseCaseTest {
     void should_generate_challenge() {
         useCase.handle(command);
 
-        verify(challengeGenerator).generate(clock, challengeTtl);
+        verify(challengeGenerator).generate(DEFAULT_CLOCK, DEFAULT_CHALLENGE_TTL);
     }
 
     @Test
     void should_persist_generated_challenge() {
         useCase.handle(command);
 
-        verify(challengeRepository).save(defaultChallenge);
+        verify(challengeRepository).save(DEFAULT_CHALLENGE);
     }
 
     @Test
     void should_generate_LoginResponse_for_given_challenge() {
         useCase.handle(command);
 
-        verify(credentialOptionsService).getPasskeyRequestOptions(eq(defaultChallenge));
+        verify(credentialOptionsService).getPasskeyRequestOptions(eq(DEFAULT_CHALLENGE));
     }
 
     @Test
     void should_return_response_with_newly_generated_challenge() {
         var res = useCase.handle(command);
 
-        assertEquals(defaultChallenge.sessionId(), res.challengeId());
+        assertEquals(DEFAULT_CHALLENGE.sessionId(), res.challengeId());
     }
 }

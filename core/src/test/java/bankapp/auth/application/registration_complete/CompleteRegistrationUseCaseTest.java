@@ -1,16 +1,16 @@
 package bankapp.auth.application.registration_complete;
 
-import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.registration_complete.port.in.CompleteRegistrationCommand;
-import bankapp.auth.application.shared.port.out.TokenIssuingPort;
-import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.LoggerPort;
+import bankapp.auth.application.shared.port.out.TokenIssuingPort;
+import bankapp.auth.application.shared.port.out.WebAuthnPort;
+import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,20 +23,18 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/*
- * Using mocks instead of stubs for learning purposes.
- */
 class CompleteRegistrationUseCaseTest {
 
-    private final UUID sessionId = UUID.randomUUID();
-    private final Challenge testChallenge = new Challenge(
-                sessionId,
-                new byte[]{},
-            5L,
-                Clock.systemUTC()
-        );
-    Passkey stubPasskey;
-    User testUser;
+    private final static long DEFAULT_TTL = 90L;
+    private final static UUID DEFAULT_CHALLENGE_ID = UUID.randomUUID();
+    private final static Challenge DEFAULT_CHALLENGE = new Challenge(
+            DEFAULT_CHALLENGE_ID,
+            new byte[]{111},
+            DEFAULT_TTL,
+            Clock.systemUTC()
+    );
+    private Passkey stubPasskey;
+    private User testUser;
 
     private ChallengeRepository sessionRepo;
     private CredentialRepository credentialRepository;
@@ -57,11 +55,11 @@ class CompleteRegistrationUseCaseTest {
 
         LoggerPort log = mock(LoggerPort.class);
 
-        command = new CompleteRegistrationCommand(sessionId, "blob");
+        command = new CompleteRegistrationCommand(DEFAULT_CHALLENGE_ID, "blob");
         useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository, userRepository, tokenIssuingPort, log);
 
 
-        when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testChallenge));
+        when(sessionRepo.load(DEFAULT_CHALLENGE_ID)).thenReturn(Optional.of(DEFAULT_CHALLENGE));
 
         testUser = new User(new EmailAddress("test@bankapp.online"));
         stubPasskey = new Passkey(
@@ -84,7 +82,7 @@ class CompleteRegistrationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(sessionRepo).load(eq(sessionId));
+        verify(sessionRepo).load(eq(DEFAULT_CHALLENGE_ID));
     }
 
     @Test
@@ -93,7 +91,7 @@ class CompleteRegistrationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnPort).confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), eq(testChallenge) );
+        verify(webAuthnPort).confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), eq(DEFAULT_CHALLENGE));
     }
 
     @Test
@@ -109,12 +107,12 @@ class CompleteRegistrationUseCaseTest {
     void should_throw_CompleteRegistrationException_when_challenge_verification_fails() {
         // Given
         String exceptionMsg = "Challenge verification failed";
-        when(webAuthnPort.confirmRegistrationChallenge(any(),any())).thenThrow(new RuntimeException(exceptionMsg));
+        when(webAuthnPort.confirmRegistrationChallenge(any(), any())).thenThrow(new RuntimeException(exceptionMsg));
         // When
         // Then
-       var exceptionThrowed = assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
+        var exceptionThrowed = assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
 
-       assertTrue(exceptionThrowed.getMessage().contains(exceptionMsg));
+        assertTrue(exceptionThrowed.getMessage().contains(exceptionMsg));
     }
 
     @Test
@@ -128,7 +126,7 @@ class CompleteRegistrationUseCaseTest {
     @Test
     void should_delete_challenge_when_user_successfully_register_new_credential() {
         assertDoesNotThrow(() -> useCase.handle(command));
-        verify(sessionRepo).delete(sessionId);
+        verify(sessionRepo).delete(DEFAULT_CHALLENGE_ID);
     }
 
     @Test
@@ -140,7 +138,7 @@ class CompleteRegistrationUseCaseTest {
         assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
 
         // Verify session is NOT deleted when verification fails
-        verify(sessionRepo, never()).delete(sessionId);
+        verify(sessionRepo, never()).delete(DEFAULT_CHALLENGE_ID);
     }
 
     @Test
@@ -152,7 +150,7 @@ class CompleteRegistrationUseCaseTest {
         assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
 
         // Verify session is NOT deleted when credential saving fails
-        verify(sessionRepo, never()).delete(sessionId);
+        verify(sessionRepo, never()).delete(DEFAULT_CHALLENGE_ID);
     }
 
     @Test

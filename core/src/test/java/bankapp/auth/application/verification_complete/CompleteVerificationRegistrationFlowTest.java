@@ -1,21 +1,20 @@
 package bankapp.auth.application.verification_complete;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
+import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import bankapp.auth.application.verification_complete.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.User;
-import bankapp.auth.application.shared.service.ByteArrayUtil;
-import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class CompleteVerificationRegistrationFlowTest extends CompleteVerificationBaseTest {
 

@@ -16,7 +16,7 @@ public class InitiateAuthenticationUseCase {
     private final ChallengeRepository challengeRepository;
     private final CredentialOptionsPort credentialOptionsService;
 
-    public InitiateAuthenticationUseCase(ChallengeGenerationPort challengeGenerator, Clock clock, long challengeTtl, ChallengeRepository challengeRepository, CredentialOptionsPort credentialOptionsService) {
+    public InitiateAuthenticationUseCase(Clock clock, long challengeTtl, ChallengeGenerationPort challengeGenerator, ChallengeRepository challengeRepository, CredentialOptionsPort credentialOptionsService) {
         this.clock = clock;
         this.challengeTtl = challengeTtl;
         this.challengeGenerator = challengeGenerator;

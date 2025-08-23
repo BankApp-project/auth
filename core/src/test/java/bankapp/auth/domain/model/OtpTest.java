@@ -28,7 +28,7 @@ class OtpTest {
 
     @BeforeEach
     void setup() {
-       DEFAULT_OTP = new Otp(DEFAULT_VALUE, DEFAULT_KEY, DEFAULT_EXPIRATION_TIME);
+        DEFAULT_OTP = new Otp(DEFAULT_VALUE, DEFAULT_KEY, DEFAULT_EXPIRATION_TIME);
     }
 
     @Test
@@ -115,14 +115,14 @@ class OtpTest {
     @Test
     void should_not_be_expired_if_clock_is_just_before_expiration_time() {
         Otp otp = new Otp(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_EXPIRATION_TIME);
-        Clock justBeforeExpirationClock = Clock.fixed(DEFAULT_EXPIRATION_TIME.minusSeconds(1),ZoneId.of("Z"));
+        Clock justBeforeExpirationClock = Clock.fixed(DEFAULT_EXPIRATION_TIME.minusSeconds(1), ZoneId.of("Z"));
         assertTrue(otp.isValid(justBeforeExpirationClock));
     }
 
     @Test
     void should_be_expired_if_clock_is_just_after_expiration_time() {
         Otp otp = new Otp(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_EXPIRATION_TIME);
-        Clock justAfterExpirationClock = Clock.fixed(DEFAULT_EXPIRATION_TIME.plusSeconds(1),ZoneId.of("Z"));
+        Clock justAfterExpirationClock = Clock.fixed(DEFAULT_EXPIRATION_TIME.plusSeconds(1), ZoneId.of("Z"));
         assertFalse(otp.isValid(justAfterExpirationClock));
     }
 }

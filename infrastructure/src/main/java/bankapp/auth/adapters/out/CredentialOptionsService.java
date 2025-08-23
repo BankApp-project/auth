@@ -21,7 +21,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
     private final AuthMode authMode;
     private final String rpId;
     private final long timeout;
-    private final String passkeyType = "public-key";
+    private final static String PASSKEY_TYPE = "public-key";
 
     public CredentialOptionsService(
             AuthMode authMode,
@@ -57,7 +57,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         }
         for (var credential : userCredentials) {
             var credentialDescriptor = new PublicKeyCredentialDescriptor(
-                    passkeyType,
+                    PASSKEY_TYPE,
                     credential.getId(),
                     credential.getTransports()
             );

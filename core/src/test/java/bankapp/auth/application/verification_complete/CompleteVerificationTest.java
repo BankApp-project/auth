@@ -1,7 +1,7 @@
 package bankapp.auth.application.verification_complete;
 
-import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
+import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.Test;
@@ -130,8 +130,8 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
         var sessionId = res.challengeId();
         var sessionOptional = challengeRepository.load(sessionId);
         assertTrue(sessionOptional.isPresent());
-        Clock fixedClockBeforeExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(sessionTtl-1),DEFAULT_CLOCK.getZone());
-        Clock fixedClockAfterExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(sessionTtl+1), DEFAULT_CLOCK.getZone());
+        Clock fixedClockBeforeExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(sessionTtl - 1), DEFAULT_CLOCK.getZone());
+        Clock fixedClockAfterExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(sessionTtl + 1), DEFAULT_CLOCK.getZone());
 
         // Then
         assertTrue(sessionOptional.get().isValid(fixedClockBeforeExpiration));

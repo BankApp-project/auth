@@ -1,17 +1,17 @@
 package bankapp.auth.application.verification_complete;
 
+import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
-import bankapp.auth.application.shared.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
+import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubChallengeRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubHasher;
 import bankapp.auth.application.shared.port.out.stubs.StubOtpRepository;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
-import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
-import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.verification_complete.port.out.stubs.StubChallengeGenerator;
 import bankapp.auth.application.verification_complete.port.out.stubs.StubCredentialOptionsService;
 import bankapp.auth.application.verification_complete.port.out.stubs.StubUserRepository;

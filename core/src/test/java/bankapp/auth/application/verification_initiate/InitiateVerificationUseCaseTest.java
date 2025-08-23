@@ -1,12 +1,12 @@
 package bankapp.auth.application.verification_initiate;
 
-import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
-import bankapp.auth.application.shared.port.out.HashingPort;
-import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
-import bankapp.auth.application.verification_initiate.port.out.events.EmailVerificationOtpGeneratedEvent;
 import bankapp.auth.application.shared.port.out.EventPublisherPort;
+import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.NotificationPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
+import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
+import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
+import bankapp.auth.application.verification_initiate.port.out.events.EmailVerificationOtpGeneratedEvent;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;
@@ -341,8 +341,3 @@ public class InitiateVerificationUseCaseTest {
         ));
     }
 }
-// next tests:
-// - ???
-/*
-notes: email will be sent to user even if publishing event `EmailVerificationOtpGeneratedEvent` fails.
- */
