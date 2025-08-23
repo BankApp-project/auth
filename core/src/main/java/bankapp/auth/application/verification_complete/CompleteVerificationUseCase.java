@@ -74,7 +74,7 @@ public class CompleteVerificationUseCase {
         log.debug("challenge generated");
 
         saveChallenge(challenge);
-        log.debug("Session saved successfully");
+        log.debug("Challenge saved successfully");
 
         CompleteVerificationResponse response = prepareResponse(user, challenge);
         log.info("Verification completion successful for user: {}, response type: {}",
