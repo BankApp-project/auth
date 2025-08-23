@@ -1,21 +1,21 @@
 package bankapp.auth.application.shared.port.out.persistance;
 
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
-import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.domain.model.Passkey;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CredentialRepository {
 
-    CredentialRecord load(byte[] credentialId);
+    Passkey load(byte[] credentialId);
 
     /**
      * Loads credential records for the given ID.
      * @param userId the User ID to search for
      * @return a list of credential records, may be empty if no records found
      */
-    List<CredentialRecord> loadForUserId(UUID userId);
+    List<Passkey> loadForUserId(UUID userId);
 
-    void save(CredentialRecord credentialRecord) throws CredentialAlreadyExistsException;
+    void save(Passkey passkey) throws CredentialAlreadyExistsException;
 }

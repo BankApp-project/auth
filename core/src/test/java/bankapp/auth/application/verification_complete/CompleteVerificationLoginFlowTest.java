@@ -4,7 +4,7 @@ import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
-import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,20 +48,20 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
     @Test
     void should_find_and_pass_user_credentials_to_service_when_user_exists() {
         // Given
-        // Create a realistic dummy CredentialRecord for testing purposes
-        var credential = new CredentialRecord(
+        // Create a realistic dummy Passkey for testing purposes
+        var credential = new Passkey(
                 new byte[]{1, 2, 3, 4}, // credentialId
                 defaultUser.getId(),
-                "public-key", // type
+                // type
                 new byte[]{5, 6, 7, 8}, // publicKey
                 1L, // signatureCount
                 true, // uvInitialized
-                true, // backupEligible
+                // backupEligible
                 true, // backupState
-                null, // attestationObject
-                null, // clientDataJson
-                null, // transports
-                null  // attestationType
+                null // attestationObject
+                // clientDataJson
+                // transports
+                // attestationType
         );
         var credentials = List.of(credential);
 

@@ -1,15 +1,15 @@
 package bankapp.auth.application.shared.port.out;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.domain.model.Passkey;
 
 public interface WebAuthnPort {
 
-    CredentialRecord confirmRegistrationChallenge(String registrationResponseJSON, Challenge sessionData);
+    Passkey confirmRegistrationChallenge(String registrationResponseJSON, Challenge sessionData);
 
     /**
      *
-     * @return updated `CredentialRecord` with `signCount`++
+     * @return updated `Passkey` with `signCount`++
      */
-    CredentialRecord confirmAuthenticationChallenge(String authenticationResponseJSON, Challenge sessionData, CredentialRecord credentialRecord);
+    Passkey confirmAuthenticationChallenge(String authenticationResponseJSON, Challenge sessionData, Passkey passkey);
 }

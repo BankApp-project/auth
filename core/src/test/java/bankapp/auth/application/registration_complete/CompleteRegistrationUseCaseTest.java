@@ -7,7 +7,7 @@ import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
@@ -35,7 +35,7 @@ class CompleteRegistrationUseCaseTest {
             5L,
                 Clock.systemUTC()
         );
-    CredentialRecord stubCredentialRecord;
+    Passkey stubPasskey;
     User testUser;
 
     private ChallengeRepository sessionRepo;
@@ -64,22 +64,17 @@ class CompleteRegistrationUseCaseTest {
         when(sessionRepo.load(sessionId)).thenReturn(Optional.of(testChallenge));
 
         testUser = new User(new EmailAddress("test@bankapp.online"));
-        stubCredentialRecord = new CredentialRecord(
+        stubPasskey = new Passkey(
                 null,
                 testUser.getId(),
-                null,
                 null,
                 0L,
                 false,
                 false,
-                false,
-                null,
-                null,
-                null,
                 null
         );
 
-        when(webAuthnPort.confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), any())).thenReturn(stubCredentialRecord);
+        when(webAuthnPort.confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), any())).thenReturn(stubPasskey);
         when(userRepository.findById(any())).thenReturn(Optional.of(testUser));
     }
 
@@ -127,7 +122,7 @@ class CompleteRegistrationUseCaseTest {
 
         useCase.handle(command);
 
-        verify(credentialRepository).save(stubCredentialRecord);
+        verify(credentialRepository).save(stubPasskey);
     }
 
     @Test

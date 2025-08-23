@@ -8,7 +8,7 @@ import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
@@ -46,7 +46,7 @@ public class CompleteRegistrationUseCase {
     public CompleteRegistrationResponse handle(@NonNull CompleteRegistrationCommand command) {
         var session = getSession(command);
 
-        CredentialRecord credential = verifyAndExtractCredentialRecord(command, session);
+        Passkey credential = verifyAndExtractCredentialRecord(command, session);
 
         saveCredentialRecord(credential);
 
@@ -83,8 +83,8 @@ public class CompleteRegistrationUseCase {
         return session.get();
     }
 
-    private CredentialRecord verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge session) {
-        CredentialRecord credential;
+    private Passkey verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge session) {
+        Passkey credential;
         try {
             credential = webAuthnPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), session);
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class CompleteRegistrationUseCase {
         return credential;
     }
 
-    private void saveCredentialRecord(CredentialRecord credential) {
+    private void saveCredentialRecord(Passkey credential) {
         try {
             credentialRepository.save(credential);
         } catch (CredentialAlreadyExistsException e) {

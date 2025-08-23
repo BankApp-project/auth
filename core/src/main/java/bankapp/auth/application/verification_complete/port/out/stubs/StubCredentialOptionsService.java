@@ -1,7 +1,7 @@
 package bankapp.auth.application.verification_complete.port.out.stubs;
 
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
-import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
@@ -33,7 +33,7 @@ public class StubCredentialOptionsService implements CredentialOptionsPort {
     }
 
     @Override
-    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(List<CredentialRecord> userCredentials, byte[] challenge) {
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(List<Passkey> userCredentials, byte[] challenge) {
         return null;
     }
 }

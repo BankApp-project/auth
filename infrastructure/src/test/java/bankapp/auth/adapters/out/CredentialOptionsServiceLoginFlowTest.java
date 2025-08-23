@@ -1,7 +1,7 @@
 package bankapp.auth.adapters.out;
 
 import bankapp.auth.application.shared.enums.AuthMode;
-import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
@@ -22,20 +22,15 @@ public class CredentialOptionsServiceLoginFlowTest {
     private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
     private static final EmailAddress DEFAULT_EMAIL_ADDRESS = new EmailAddress("test@bankapp.online");
     private static final User DEFAULT_USER = new User(DEFAULT_EMAIL_ADDRESS);
-    private static final List<CredentialRecord> DEFAULT_USER_CREDENTIALS = List.of(new CredentialRecord(
+    private static final List<Passkey> DEFAULT_USER_CREDENTIALS = List.of(new Passkey(
                 ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
                 DEFAULT_USER.getId(),
-                null,
-                null,
+            null,
                 0L,
                 false,
-                false,
-                false,
-                null,
-                null,
-                null,
-            null
-        ));
+            false,
+                null
+    ));
     private static final byte[] DEFAULT_CHALLENGE = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
 
     CredentialOptionsService passkeyOptionsService;
@@ -84,7 +79,6 @@ public class CredentialOptionsServiceLoginFlowTest {
 
         assertNotNull(allowedCredentials);
         assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getId() ,allowedCredentials.getFirst().id());
-        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getType(), allowedCredentials.getFirst().type());
         assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getTransports(),allowedCredentials.getFirst().transports());
     }
 

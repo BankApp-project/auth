@@ -4,7 +4,7 @@ import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
-import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubChallengeRepository;
@@ -29,7 +29,7 @@ public class CompleteAuthenticationUseCaseTest {
    private final Instant expirationTime = Instant.now(clock).plusSeconds(DEFAULT_TTL);
 
    private byte[] credentialId;
-   private CredentialRecord credentialRecord;
+   private Passkey passkey;
    private final UUID sessionId = UUID.randomUUID();
    private final UUID userId = UUID.randomUUID();
    private final byte[] challenge = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
@@ -59,14 +59,14 @@ public class CompleteAuthenticationUseCaseTest {
        webAuthnPort = mock(WebAuthnPort.class);
        credentialRepository = mock(CredentialRepository.class);
 
-        credentialRecord = getCredentialRecord(userId);
-        credentialId = credentialRecord.getId();
-        when(credentialRepository.load(credentialId)).thenReturn(credentialRecord);
+        passkey = getCredentialRecord(userId);
+        credentialId = passkey.getId();
+        when(credentialRepository.load(credentialId)).thenReturn(passkey);
         when(webAuthnPort.confirmAuthenticationChallenge(
                 authenticationResponseJSON,
                 testSession,
-                credentialRecord
-        )).thenReturn(credentialRecord.signCountIncrement());
+                passkey
+        )).thenReturn(passkey.signCountIncrement());
 
         tokenIssuingPort = mock(TokenIssuingPort.class);
 
@@ -74,20 +74,15 @@ public class CompleteAuthenticationUseCaseTest {
        command = new CompleteAuthenticationCommand(sessionId, authenticationResponseJSON, credentialId);
    }
 
-    private CredentialRecord getCredentialRecord(UUID userId) {
+    private Passkey getCredentialRecord(UUID userId) {
         var credentialId = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
-        return new CredentialRecord(
+        return new Passkey(
                 credentialId,
                 userId,
-                null,
                 null,
                 0L,
                 false,
                 false,
-                false,
-                null,
-                null,
-                null,
                 null
         );
     }
@@ -146,8 +141,8 @@ public class CompleteAuthenticationUseCaseTest {
     @Test
     void should_save_updated_credentialRecord() {
         // When
-        var updatedCredential = credentialRecord.signCountIncrement();
-        when(webAuthnPort.confirmAuthenticationChallenge(eq(authenticationResponseJSON), any(), eq(credentialRecord)))
+        var updatedCredential = passkey.signCountIncrement();
+        when(webAuthnPort.confirmAuthenticationChallenge(eq(authenticationResponseJSON), any(), eq(passkey)))
                 .thenReturn(updatedCredential);
         useCase.handle(command);
         // Then
@@ -192,13 +187,13 @@ public class CompleteAuthenticationUseCaseTest {
     @Test
     void should_issue_tokens() {
        useCase.handle(command);
-        verify(tokenIssuingPort).issueTokensForUser(credentialRecord.getUserHandle());
+        verify(tokenIssuingPort).issueTokensForUser(passkey.getUserHandle());
     }
 
     @Test
     void should_return_tokens() {
         AuthTokens authTokens = new AuthTokens("accessToken", "refreshToken");
-        when(tokenIssuingPort.issueTokensForUser(credentialRecord.getUserHandle())).thenReturn(authTokens);
+        when(tokenIssuingPort.issueTokensForUser(passkey.getUserHandle())).thenReturn(authTokens);
         var res = useCase.handle(command);
         assertEquals(res.authTokens(), authTokens);
     }

@@ -1,7 +1,7 @@
 package bankapp.auth.adapters.out;
 
 import bankapp.auth.application.shared.enums.AuthMode;
-import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.application.shared.enums.UserVerificationRequirement;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
@@ -19,6 +19,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
     private final AuthMode authMode;
     private final String rpId;
     private final long timeout;
+    private final String passkeyType = "public-key";
 
     public CredentialOptionsService(
             AuthMode authMode,
@@ -30,7 +31,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         this.timeout = timeout;
     }
 
-    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(List<CredentialRecord> userCredentials, byte[] challenge) {
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(List<Passkey> userCredentials, byte[] challenge) {
         return new PublicKeyCredentialRequestOptions(
                 challenge,
                 timeout,
@@ -41,11 +42,11 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         );
     }
 
-    private List<PublicKeyCredentialDescriptor> getAllowedCredentials(List<CredentialRecord> userCredentials) {
+    private List<PublicKeyCredentialDescriptor> getAllowedCredentials(List<Passkey> userCredentials) {
         List<PublicKeyCredentialDescriptor> res = new ArrayList<>();
         for (var credential : userCredentials) {
             var credentialDescriptor = new PublicKeyCredentialDescriptor(
-                    credential.getType(),
+                    passkeyType,
                     credential.getId(),
                     credential.getTransports()
             );

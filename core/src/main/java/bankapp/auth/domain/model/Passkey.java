@@ -1,11 +1,10 @@
-package bankapp.auth.application.shared.port.out.dto;
+package bankapp.auth.domain.model;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -21,7 +20,7 @@ import java.util.UUID;
  */
 @Getter
 @EqualsAndHashCode
-public class CredentialRecord {
+public class Passkey {
 
     // === Core Fields Required for Authentication ===
 
@@ -36,11 +35,6 @@ public class CredentialRecord {
      * Corresponding User ID as a byte array
      */
     private final UUID userHandle;
-
-    /*
-     * The credential type. For WebAuthn, this MUST be the string "public-key".
-     */
-    private final String type;
 
     /*
      * The COSE-formatted public key of the credential. The Relying Party uses
@@ -66,12 +60,6 @@ public class CredentialRecord {
 
     /*
      * A flag indicating if the authenticator reported that the credential is
-     * "backup eligible".
-     */
-    private final boolean backupEligible;
-
-    /*
-     * A flag indicating if the authenticator reported that the credential is
      * currently "backed up".
      */
     private final boolean backupState;
@@ -82,61 +70,29 @@ public class CredentialRecord {
      */
     private final List<AuthenticatorTransport> transports;
 
-    /*
-     * The client extension outputs created by the authenticator for this
-     * credential during the original registration ceremony. Can be null.
-     */
-    private final Map<String, Object> extensions;
-
-    // === Attestation Data for Auditing and Verification ===
-
-    /*
-     * The raw `attestationObject` received from the authenticator during registration.
-     * This is a CBOR-encoded byte array. Storing this allows the Relying Party to
-     * inspect the credential's attestation statement at any time for auditing,
-     * such as to verify the authenticator's model or certification level.
-     */
-    private final byte[] attestationObject;
-
-    /*
-     * The raw `clientDataJSON` received during registration. This is a UTF-8 encoded
-     * byte array. Storing this, along with the attestationObject, allows the
-     * Relying Party to re-verify the original attestation signature at a later date.
-     */
-    private final byte[] attestationClientDataJSON;
 
     /**
      * Constructor to initialize all fields.
      */
-    public CredentialRecord(
+    public Passkey(
             byte[] id,
             UUID userHandle,
-            String type,
             byte[] publicKey,
             long signCount,
             boolean uvInitialized,
-            boolean backupEligible,
             boolean backupState,
-            List<AuthenticatorTransport> transports,
-            Map<String, Object> extensions,
-            byte[] attestationObject,
-            byte[] attestationClientDataJSON
+            List<AuthenticatorTransport> transports
     ) {
         this.id = id;
         this.userHandle = userHandle;
-        this.type = type;
         this.publicKey = publicKey;
         this.signCount = signCount;
         this.uvInitialized = uvInitialized;
-        this.backupEligible = backupEligible;
         this.backupState = backupState;
         this.transports = transports;
-        this.extensions = extensions;
-        this.attestationObject = attestationObject;
-        this.attestationClientDataJSON = attestationClientDataJSON;
     }
 
-    public CredentialRecord signCountIncrement() {
+    public Passkey signCountIncrement() {
         this.signCount++;
         return this;
     }

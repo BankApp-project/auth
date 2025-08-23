@@ -4,7 +4,7 @@ import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
-import bankapp.auth.application.shared.port.out.dto.CredentialRecord;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 
@@ -39,7 +39,7 @@ public class CompleteAuthenticationUseCase {
         return new CompleteAuthenticationResponse(tokens);
     }
 
-    private CredentialRecord verifyChallengeAndUpdateCredentialRecord(CompleteAuthenticationCommand command, Challenge session) {
+    private Passkey verifyChallengeAndUpdateCredentialRecord(CompleteAuthenticationCommand command, Challenge session) {
         try {
             var credentialRecord = credentialRepository.load(command.credentialId());
             return webAuthnPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session, credentialRecord);
