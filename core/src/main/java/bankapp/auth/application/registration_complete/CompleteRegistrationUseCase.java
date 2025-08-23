@@ -44,13 +44,13 @@ public class CompleteRegistrationUseCase {
 
     //deleted logs for now. it was hard to read flow.
     public AuthenticationGrant handle(@NonNull CompleteRegistrationCommand command) {
-        var session = getSession(command);
+        var challenge = getChallenge(command);
 
-        Passkey credential = verifyAndExtractCredentialRecord(command, session);
+        Passkey credential = verifyAndExtractCredentialRecord(command, challenge);
 
         saveCredentialRecord(credential);
 
-        challengeRepository.delete(command.sessionId());
+        challengeRepository.delete(command.challengeId());
 
         User user = fetchUser(credential.getUserHandle());
 
@@ -75,18 +75,18 @@ public class CompleteRegistrationUseCase {
         return userOpt.get();
     }
 
-    private Challenge getSession(CompleteRegistrationCommand command) {
-        var session = challengeRepository.load(command.sessionId());
-        if (session.isEmpty()) {
-            throw new CompleteRegistrationException("No such session with ID: " + command.sessionId());
+    private Challenge getChallenge(CompleteRegistrationCommand command) {
+        var challenge = challengeRepository.load(command.challengeId());
+        if (challenge.isEmpty()) {
+            throw new CompleteRegistrationException("No such challenge with ID: " + command.challengeId());
         }
-        return session.get();
+        return challenge.get();
     }
 
-    private Passkey verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge session) {
+    private Passkey verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge challenge) {
         Passkey credential;
         try {
-            credential = webAuthnPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), session);
+            credential = webAuthnPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), challenge);
         } catch (Exception e) {
             throw new CompleteRegistrationException("Failed to confirm new credential registration: " + e.getMessage(), e);
         }
