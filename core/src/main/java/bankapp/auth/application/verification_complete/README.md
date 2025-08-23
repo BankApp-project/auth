@@ -12,9 +12,9 @@ The `handle` method orchestrates the verification completion process through the
     *   If a user with the given email already exists, their information is retrieved.
     *   If no user is found, a new user account is created and saved to the database.
 
-3.  **Session Management**:
-    *   A secure, random challenge and a unique session ID are generated.
-    *   A new authentication session is created containing the user ID, challenge, and a configured Time-To-Live (TTL), then stored.
+3.  **Challenge and Session Management**:
+    *   A secure, random challenge is generated.
+    *   This challenge is stored alongside a session ID and a configured Time-To-Live (TTL).
 
 4.  **Prepare Response**: Based on the user's status, it prepares the appropriate response:
     *   **For New Users** (or users without credentials): It generates options for creating a new passkey, returning a `RegistrationResponse`.
@@ -31,9 +31,9 @@ This use case relies on a set of interfaces (Ports) and repositories to interact
     *   `HashingPort`: To securely verify the OTP.
 *   **Repositories**:
     *   `OtpRepository`: Manages the storage and retrieval of OTPs.
-    *   `SessionRepository`: Manages authentication session data.
+    *   `ChallengeRepository`: Manages authentication challenge data.
     *   `UserRepository`: Handles user data persistence.
     *   `CredentialRepository`: Manages user's passkey credentials.
 *   **Other**:
-    *   `Clock`: Provides the current time to check for OTP and session expiration.
-    *   `sessionTtl`: A configuration parameter specifying the duration for which a session is valid.
+    *   `Clock`: Provides the current time to check for OTP expiration.
+    *   `challengeTtl`: A configuration parameter specifying the duration for which a challenge is valid.
