@@ -16,7 +16,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
 @Slf4j
-@RestController("/verify")
+@RestController("/verification")
 @RequiredArgsConstructor
 public class VerificationController {
 
@@ -24,8 +24,8 @@ public class VerificationController {
 
     private final InitiateVerificationUseCase initiateVerificationUseCase;
 
-    @PostMapping("/email/")
-    public Mono<ResponseEntity<Void>> verifyEmail(@RequestBody InitiateVerificationCommand command) {
+    @PostMapping("/initiate/email/")
+    public Mono<ResponseEntity<Void>> initiateEmailVerification(@RequestBody InitiateVerificationCommand command) {
 
         // The background task is defined and subscribed to, kicking it off.
         Mono.fromRunnable(() -> initiateVerificationUseCase.handle(command))
