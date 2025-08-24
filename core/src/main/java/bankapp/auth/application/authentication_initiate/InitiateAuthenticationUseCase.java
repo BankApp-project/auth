@@ -5,27 +5,23 @@ import bankapp.auth.application.verification_complete.port.out.ChallengeGenerati
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
 
-import java.time.Clock;
-
 public class InitiateAuthenticationUseCase {
-
-    private final Clock clock;
-    private final long challengeTtl;
 
     private final ChallengeGenerationPort challengeGenerator;
     private final ChallengeRepository challengeRepository;
     private final CredentialOptionsPort credentialOptionsService;
 
-    public InitiateAuthenticationUseCase(Clock clock, long challengeTtl, ChallengeGenerationPort challengeGenerator, ChallengeRepository challengeRepository, CredentialOptionsPort credentialOptionsService) {
-        this.clock = clock;
-        this.challengeTtl = challengeTtl;
+    public InitiateAuthenticationUseCase(
+            ChallengeGenerationPort challengeGenerator,
+            ChallengeRepository challengeRepository,
+            CredentialOptionsPort credentialOptionsService) {
         this.challengeGenerator = challengeGenerator;
         this.challengeRepository = challengeRepository;
         this.credentialOptionsService = credentialOptionsService;
     }
 
     LoginResponse handle(InitiateAuthenticationCommand command) {
-        var challenge = challengeGenerator.generate(clock, challengeTtl);
+        var challenge = challengeGenerator.generate();
 
         challengeRepository.save(challenge);
 

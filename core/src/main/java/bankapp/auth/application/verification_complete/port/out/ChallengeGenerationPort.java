@@ -2,8 +2,7 @@ package bankapp.auth.application.verification_complete.port.out;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 
-import java.time.Clock;
-
+//ttl and clock should be injected into implementation
 public interface ChallengeGenerationPort {
-    Challenge generate(Clock clock, long ttl);
+    Challenge generate();
 }

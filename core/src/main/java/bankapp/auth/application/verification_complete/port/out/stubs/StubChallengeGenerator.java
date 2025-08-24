@@ -8,8 +8,17 @@ import java.time.Clock;
 import java.util.UUID;
 
 public class StubChallengeGenerator implements ChallengeGenerationPort {
+
+    private final long ttl;
+    private final Clock clock;
+
+    public StubChallengeGenerator(long ttl, Clock clock) {
+        this.ttl = ttl;
+        this.clock = clock;
+    }
+
     @Override
-    public Challenge generate(Clock clock, long ttl) {
+    public Challenge generate() {
         var sessionId = UUID.randomUUID();
         var challenge = UUID.randomUUID();
         byte[] challengeBytes = ByteArrayUtil.uuidToBytes(challenge);

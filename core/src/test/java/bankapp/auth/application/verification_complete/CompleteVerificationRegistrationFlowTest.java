@@ -69,10 +69,10 @@ public class CompleteVerificationRegistrationFlowTest extends CompleteVerificati
         // Given
         var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
         var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
-        when(mockChallengeGenerator.generate(DEFAULT_CLOCK, challengeTtl)).thenReturn(challenge);
+        when(mockChallengeGenerator.generate()).thenReturn(challenge);
 
         var useCase = new CompleteVerificationUseCase(
-                challengeTtl, log, DEFAULT_CLOCK, otpRepository, challengeRepository, credentialRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator, hasher
+                log, DEFAULT_CLOCK, otpRepository, challengeRepository, credentialRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator, hasher
         );
 
         // When

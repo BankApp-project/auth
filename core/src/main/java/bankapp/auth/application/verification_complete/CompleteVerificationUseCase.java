@@ -22,8 +22,6 @@ import java.util.Optional;
 
 public class CompleteVerificationUseCase {
 
-    private final long challengeTtl;
-
     private final LoggerPort log;
     private final Clock clock;
 
@@ -37,7 +35,6 @@ public class CompleteVerificationUseCase {
     private final HashingPort hasher;
 
     public CompleteVerificationUseCase(
-            long challengeTtl,
             @NotNull LoggerPort log,
             @NotNull Clock clock,
             @NotNull OtpRepository otpRepository,
@@ -48,7 +45,6 @@ public class CompleteVerificationUseCase {
             @NotNull ChallengeGenerationPort challengeGenerator,
             @NotNull HashingPort hasher
     ) {
-        this.challengeTtl = challengeTtl;
         this.log = log;
         this.clock = clock;
         this.otpRepository = otpRepository;
@@ -70,7 +66,7 @@ public class CompleteVerificationUseCase {
         User user = findOrCreateUser(command.key());
         log.debug("User found/created with ID: {}", user.getId());
 
-        var challenge = challengeGenerator.generate(clock, challengeTtl);
+        var challenge = challengeGenerator.generate();
         log.debug("challenge generated");
 
         saveChallenge(challenge);
@@ -94,11 +90,11 @@ public class CompleteVerificationUseCase {
         otpRepository.delete(email.getValue());
     }
 
-    private void verifyOtp(String otpValue, Otp persistedOtp) {
-        if (!persistedOtp.isValid(clock)) {
+    private void verifyOtp(String otpValue, Otp otp) {
+        if (!otp.isValid(clock)) {
             throw new CompleteVerificationException("Otp has expired");
         }
-        if (!hasher.verify(persistedOtp.getValue(), otpValue)) {
+        if (!hasher.verify(otp.getValue(), otpValue)) {
             throw new CompleteVerificationException("Otp does not match");
         }
     }

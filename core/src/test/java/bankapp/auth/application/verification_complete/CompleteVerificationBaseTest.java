@@ -61,7 +61,7 @@ public abstract class CompleteVerificationBaseTest {
         userRepository = new StubUserRepository();
         credentialOptionsPort = new StubCredentialOptionsService();
         credentialRepository = mock(CredentialRepository.class);
-        challengeGenerator = new StubChallengeGenerator();
+        challengeGenerator = new StubChallengeGenerator(DEFAULT_TTL, DEFAULT_CLOCK);
         challengeRepository = new StubChallengeRepository();
         log = mock(LoggerPort.class);
 
@@ -73,7 +73,7 @@ public abstract class CompleteVerificationBaseTest {
         // Prepare the default command and use case instance
         defaultCommand = new CompleteVerificationCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
         defaultUseCase = new CompleteVerificationUseCase(
-                challengeTtl, log,
+                log,
                 DEFAULT_CLOCK,
                 otpRepository,
                 challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher

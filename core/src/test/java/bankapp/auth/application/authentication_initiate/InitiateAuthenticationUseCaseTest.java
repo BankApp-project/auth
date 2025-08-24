@@ -46,9 +46,9 @@ public class InitiateAuthenticationUseCaseTest {
         MockitoAnnotations.openMocks(this);
 
 
-        when(challengeGenerator.generate(DEFAULT_CLOCK, DEFAULT_CHALLENGE_TTL)).thenReturn(DEFAULT_CHALLENGE);
+        when(challengeGenerator.generate()).thenReturn(DEFAULT_CHALLENGE);
 
-        useCase = new InitiateAuthenticationUseCase(DEFAULT_CLOCK, DEFAULT_CHALLENGE_TTL, challengeGenerator, challengeRepository, credentialOptionsService);
+        useCase = new InitiateAuthenticationUseCase(challengeGenerator, challengeRepository, credentialOptionsService);
         command = new InitiateAuthenticationCommand();
     }
 
@@ -56,7 +56,7 @@ public class InitiateAuthenticationUseCaseTest {
     void should_generate_challenge() {
         useCase.handle(command);
 
-        verify(challengeGenerator).generate(DEFAULT_CLOCK, DEFAULT_CHALLENGE_TTL);
+        verify(challengeGenerator).generate();
     }
 
     @Test
