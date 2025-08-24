@@ -56,7 +56,7 @@ class CompleteRegistrationUseCaseTest {
         LoggerPort log = mock(LoggerPort.class);
 
         command = new CompleteRegistrationCommand(DEFAULT_CHALLENGE_ID, "blob");
-        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository, userRepository, tokenIssuingPort, log);
+        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository, userRepository, tokenIssuingPort);
 
 
         when(sessionRepo.load(DEFAULT_CHALLENGE_ID)).thenReturn(Optional.of(DEFAULT_CHALLENGE));

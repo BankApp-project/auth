@@ -6,7 +6,6 @@ import bankapp.auth.application.registration_complete.port.in.CompleteRegistrati
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
-import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
@@ -24,22 +23,19 @@ public class CompleteRegistrationUseCase {
     private final CredentialRepository credentialRepository;
     private final UserRepository userRepository;
     private final TokenIssuingPort tokenIssuer;
-    private final LoggerPort log;
 
     public CompleteRegistrationUseCase(
             ChallengeRepository challengeRepository,
             WebAuthnPort webAuthnPort,
             CredentialRepository credentialRepository,
             UserRepository userRepository,
-            TokenIssuingPort tokenIssuingPort,
-            LoggerPort log
+            TokenIssuingPort tokenIssuingPort
     ) {
         this.challengeRepository = challengeRepository;
         this.webAuthnPort = webAuthnPort;
         this.credentialRepository = credentialRepository;
         this.userRepository = userRepository;
         this.tokenIssuer = tokenIssuingPort;
-        this.log = log;
     }
 
     //deleted logs for now. it was hard to read flow.
