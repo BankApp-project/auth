@@ -46,7 +46,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
         // Given
         Clock fixedClock = Clock.fixed(Instant.now().plusSeconds(DEFAULT_TTL + 1), ZoneId.of("Z"));
         // Re-create use case with the clock that is in the future
-        var useCaseWithFutureClock = new CompleteVerificationUseCase(log, fixedClock, otpRepository, challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher);
+        var useCaseWithFutureClock = new CompleteVerificationUseCase(fixedClock, otpRepository, challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher);
 
         // When / Then
         var exception = assertThrows(CompleteVerificationException.class, () -> useCaseWithFutureClock.handle(defaultCommand));
@@ -73,7 +73,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        var useCase = new CompleteVerificationUseCase(log, DEFAULT_CLOCK, otpRepository, challengeRepository, credentialRepository, userRepositoryMock, credentialOptionsPort, challengeGenerator, hasher);
+        var useCase = new CompleteVerificationUseCase(DEFAULT_CLOCK, otpRepository, challengeRepository, credentialRepository, userRepositoryMock, credentialOptionsPort, challengeGenerator, hasher);
 
         // When
         useCase.handle(defaultCommand);
@@ -119,7 +119,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
     void should_make_session_valid_for_defaultTtl_value_in_seconds() {
         // Given
         var useCase = new CompleteVerificationUseCase(
-                log, DEFAULT_CLOCK,
+                DEFAULT_CLOCK,
                 otpRepository,
                 challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher
         );

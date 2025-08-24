@@ -1,15 +1,14 @@
 package bankapp.auth.application.verification_complete;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
-import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
+import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
+import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
+import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
-import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
-import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
 import bankapp.auth.application.verification_complete.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.Otp;
@@ -22,7 +21,6 @@ import java.util.Optional;
 
 public class CompleteVerificationUseCase {
 
-    private final LoggerPort log;
     private final Clock clock;
 
     private final OtpRepository otpRepository;
@@ -35,7 +33,6 @@ public class CompleteVerificationUseCase {
     private final HashingPort hasher;
 
     public CompleteVerificationUseCase(
-            @NotNull LoggerPort log,
             @NotNull Clock clock,
             @NotNull OtpRepository otpRepository,
             @NotNull ChallengeRepository challengeRepository,
@@ -45,7 +42,6 @@ public class CompleteVerificationUseCase {
             @NotNull ChallengeGenerationPort challengeGenerator,
             @NotNull HashingPort hasher
     ) {
-        this.log = log;
         this.clock = clock;
         this.otpRepository = otpRepository;
         this.challengeRepository = challengeRepository;
@@ -58,25 +54,20 @@ public class CompleteVerificationUseCase {
 
     //TODO THINK ABOUT DIVIDING IT TO VERIFICATION_COMPLETE AND REGISTRATION_INITIATE / AUTHENTICATION_INITIATE
     public CompleteVerificationResponse handle(CompleteVerificationCommand command) {
-        log.info("Starting verification completion for email: {}", command.key().getValue());
 
         verifyAndConsumeOtp(command.key(), command.value());
-        log.debug("OTP verified and consumed successfully");
 
         User user = findOrCreateUser(command.key());
-        log.debug("User found/created with ID: {}", user.getId());
 
+        var challenge = generateAndSaveChallenge();
+
+        return prepareResponse(user, challenge);
+    }
+
+    private Challenge generateAndSaveChallenge() {
         var challenge = challengeGenerator.generate();
-        log.debug("challenge generated");
-
-        saveChallenge(challenge);
-        log.debug("Challenge saved successfully");
-
-        CompleteVerificationResponse response = prepareResponse(user, challenge);
-        log.info("Verification completion successful for user: {}, response type: {}",
-                user.getId(), response.getClass().getSimpleName());
-
-        return response;
+        challengeRepository.save(challenge);
+        return challenge;
     }
 
     private void verifyAndConsumeOtp(EmailAddress email, String otpValue) {
@@ -110,23 +101,11 @@ public class CompleteVerificationUseCase {
         return user;
     }
 
-    private void saveChallenge(Challenge challenge) {
-        try {
-            challengeRepository.save(challenge);
-        } catch (RuntimeException e) {
-            throw new CompleteVerificationException("Failed to save session", e);
-        }
-    }
-
     private CompleteVerificationResponse prepareResponse(User user, Challenge challenge) {
-        try {
-            if (user.isEnabled()) {
-                return getLoginResponse(user, challenge);
-            } else {
-                return getRegistrationResponse(user, challenge);
-            }
-        } catch (RuntimeException e) {
-            throw new CompleteVerificationException("Failed to prepare response", e);
+        if (user.isEnabled()) {
+            return getLoginResponse(user, challenge);
+        } else {
+            return getRegistrationResponse(user, challenge);
         }
     }
 
