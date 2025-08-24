@@ -19,7 +19,6 @@ import org.mockito.InOrder;
 import java.time.Clock;
 import java.time.Instant;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
