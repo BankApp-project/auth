@@ -60,7 +60,7 @@ public class CompleteVerificationUseCase {
         this.hasher = hasher;
     }
 
-    //TODO DIVIDE IT TO VERIFICATION_COMPLETE AND REGISTRATION_INITIATE / AUTHENTICATION_INITIATE
+    //TODO THINK ABOUT DIVIDING IT TO VERIFICATION_COMPLETE AND REGISTRATION_INITIATE / AUTHENTICATION_INITIATE
     public CompleteVerificationResponse handle(CompleteVerificationCommand command) {
         log.info("Starting verification completion for email: {}", command.key().getValue());
 
@@ -85,31 +85,33 @@ public class CompleteVerificationUseCase {
 
     private void verifyAndConsumeOtp(EmailAddress email, String otpValue) {
         Optional<Otp> persistedOtpOptional = otpRepository.load(email.getValue());
-        if (persistedOtpOptional.isEmpty()) {
-            throw new CompleteVerificationException("No such OTP in the system");
-        }
 
-        var persistedOtp = persistedOtpOptional.get();
+        var persistedOtp = persistedOtpOptional
+                .orElseThrow(() -> new CompleteVerificationException("No such OTP in the system"));
 
+        verifyOtp(otpValue, persistedOtp);
+
+        otpRepository.delete(email.getValue());
+    }
+
+    private void verifyOtp(String otpValue, Otp persistedOtp) {
         if (!persistedOtp.isValid(clock)) {
             throw new CompleteVerificationException("Otp has expired");
         }
         if (!hasher.verify(persistedOtp.getValue(), otpValue)) {
             throw new CompleteVerificationException("Otp does not match");
         }
-
-        otpRepository.delete(persistedOtp.getKey());
     }
 
     private User findOrCreateUser(EmailAddress email) {
         var userOptional = userRepository.findByEmail(email);
-        User user;
-        if (userOptional.isEmpty()) {
-            user = new User(email);
-            userRepository.save(user);
-            return user;
-        }
-        return userOptional.get();
+        return userOptional.orElseGet(() -> createAndSaveUser(email));
+    }
+
+    private User createAndSaveUser(EmailAddress email) {
+        User user = new User(email);
+        userRepository.save(user);
+        return user;
     }
 
     private void saveChallenge(Challenge challenge) {
@@ -123,14 +125,23 @@ public class CompleteVerificationUseCase {
     private CompleteVerificationResponse prepareResponse(User user, Challenge challenge) {
         try {
             if (user.isEnabled()) {
-                var userCredentials = credentialRepository.loadForUserId(user.getId());
-                var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge);
-                return new LoginResponse(passkeyOptions, challenge.sessionId());
+                return getLoginResponse(user, challenge);
+            } else {
+                return getRegistrationResponse(user, challenge);
             }
-            var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user, challenge);
-            return new RegistrationResponse(passkeyOptions, challenge.sessionId());
         } catch (RuntimeException e) {
             throw new CompleteVerificationException("Failed to prepare response", e);
         }
+    }
+
+    private LoginResponse getLoginResponse(User user, Challenge challenge) {
+        var userCredentials = credentialRepository.loadForUserId(user.getId());
+        var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge);
+        return new LoginResponse(passkeyOptions, challenge.sessionId());
+    }
+
+    private RegistrationResponse getRegistrationResponse(User user, Challenge challenge) {
+        var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user, challenge);
+        return new RegistrationResponse(passkeyOptions, challenge.sessionId());
     }
 }
