@@ -6,6 +6,7 @@ import bankapp.auth.application.verification_complete.port.in.CompleteVerificati
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
 import bankapp.auth.application.verification_initiate.InitiateVerificationUseCase;
 import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
+import bankapp.auth.rest.exception.GlobalExceptionHandler;
 import bankapp.auth.rest.verification.dto.CompleteVerificationRequest;
 import bankapp.auth.rest.verification.dto.InitiateVerificationRequest;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @WebFluxTest
-@ContextConfiguration(classes = VerificationController.class)
+@ContextConfiguration(classes = { VerificationController.class, GlobalExceptionHandler.class })
 class VerificationControllerTest {
+
+    public static final String VERIFICATION_INITIATE_ENDPOINT = "/verification/initiate/email/";
+    public static final String VERIFICATION_COMPLETE_ENDPOINT = "/verification/complete/email/";
 
     @Autowired
     private WebTestClient webTestClient; // The main tool for testing
@@ -35,23 +39,39 @@ class VerificationControllerTest {
     private CompleteVerificationUseCase completeVerificationUseCase;
 
     @Test
-    void initiateEmailVerification() {
+    void should_return_202_when_provided_valid_email() {
         var command = new InitiateVerificationRequest("test@bankapp.online");
 
         // Use doNothing() for void-returning methods
         doNothing().when(initiateVerificationUseCase).handle(any(InitiateVerificationCommand.class));
 
         // Act & Assert
-        webTestClient.post().uri("/verification/initiate/email/")
+        webTestClient.post().uri(VERIFICATION_INITIATE_ENDPOINT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(command)
+                .exchange()
+                .expectStatus().isAccepted()
+                .expectBody().isEmpty();
+
+        verify(initiateVerificationUseCase, timeout(1000)).handle(any(InitiateVerificationCommand.class));
+    }
+
+    @Test
+    void should_return_4XX_when_provided_invalid_email() {
+        var command = new InitiateVerificationRequest("test-bankapp.online");
+
+        // Use doNothing() for void-returning methods
+        doNothing().when(initiateVerificationUseCase).handle(any(InitiateVerificationCommand.class));
+
+        // Act & Assert
+        webTestClient.post().uri(VERIFICATION_INITIATE_ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(command)
                 .exchange() // Executes the request
-                .expectStatus().isAccepted()     // 1. Verify we get HTTP 202 ACCEPTED immediately
-                .expectBody().isEmpty(); // Verify the body is empty
+                .expectStatus().is4xxClientError()
+                .expectBody(); // Verify the body is not empty
 
-        // 2. Verify that the handle method was called on the background thread.
-        // We wait up to 1000ms for the async operation to complete.
-        verify(initiateVerificationUseCase, timeout(1000)).handle(any(InitiateVerificationCommand.class));
+        verifyNoInteractions(initiateVerificationUseCase);
     }
 
     @Test
@@ -75,7 +95,7 @@ class VerificationControllerTest {
                 .thenReturn(mockResponse);
 
         // Act & Assert
-        webTestClient.post().uri("/verification/complete/email/")
+        webTestClient.post().uri(VERIFICATION_COMPLETE_ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .accept(MediaType.APPLICATION_JSON)

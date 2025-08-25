@@ -35,7 +35,6 @@ public class VerificationController {
 
     @PostMapping("/initiate/email/")
     public Mono<ResponseEntity<Void>> initiateEmailVerification(@RequestBody InitiateVerificationRequest request) {
-
         var command = new InitiateVerificationCommand(new EmailAddress(request.email()));
 
         // The background task is defined and subscribed to, kicking it off.
@@ -77,4 +76,5 @@ public class VerificationController {
     private void logApplicationException(Throwable e, EmailAddress email) {
         log.error("Failed to process email verification for email: {}", email.getValue(), e);
     }
+
 }
