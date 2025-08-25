@@ -1,4 +1,6 @@
 ## Rules
+
+### EmailAddress VO
 We use VO `EmailAddress` for all email addresses at whole application level. 
 Security and data integrity measures.
 
@@ -6,6 +8,38 @@ Security and data integrity measures.
 ```
 outside world format -> Adapter -> EmailAddress email -> IN -> 
 some bussiness logic -> OUT -> outside world format
+```
+
+### @RequiredArgsConstructor usage
+We use `@RequiredArgsConstructor` in favor of `@Autowired` or writing constructors if it is feasible.
+
+#### GOOD
+
+```java
+@RequiredArgsConstructor
+public class VerificationController {
+
+    private final InitiateVerificationUseCase initiateVerificationUseCase;
+    private final CompleteVerificationUseCase completeVerificationUseCase;
+//(...)
+}
+```
+
+#### BAD
+```java
+public class VerificationController {
+
+    private final InitiateVerificationUseCase initiateVerificationUseCase;
+    private final CompleteVerificationUseCase completeVerificationUseCase;
+
+    public VerificationController(
+            @Autowired InitiateVerificationUseCase initiateVerificationUseCase, 
+            @Autowired CompleteVerificationUseCase completeVerificationUseCase) {
+        this.initiateVerificationUseCase = initiateVerificationUseCase;
+        this.completeVerificationUseCase = completeVerificationUseCase;
+    }
+//(...)
+}
 ```
 
 ## Configuration
