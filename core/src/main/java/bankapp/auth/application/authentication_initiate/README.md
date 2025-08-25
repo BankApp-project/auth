@@ -21,6 +21,3 @@ This use case relies on a set of interfaces (Ports) and repositories to perform 
     *   `CredentialOptionsPort`: To generate the FIDO2/WebAuthn-compliant passkey request options.
 *   **Repositories**:
     *   `ChallengeRepository`: Manages the storage and retrieval of authentication challenges.
-*   **Other**:
-    *   `Clock`: Provides the current time for setting the challenge's expiration.
-    *   `challengeTtl`: A configuration parameter specifying the duration for which the challenge is valid.

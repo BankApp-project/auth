@@ -1,14 +1,19 @@
-### Feature Description: Email Verification Initiation
+# `InitiateVerificationUseCase`
 
-This feature introduces the capability for users to initiate an email verification process.
-When a user provides their email address, the system generates a secure One-Time Password (OTP).
-This OTP is then sent to the user's email address.
+This use case is responsible for initiating the email-based verification flow. It is triggered when a user provides their email address, typically during new user registration or when logging in from an unrecognized device. Its primary function is to generate a secure One-Time Password (OTP), dispatch it to the user, and prepare the system for the subsequent verification step.
 
-For security and data management, the generated OTP is not stored in its original form.
-Instead, it is securely hashed and then saved to a repository with a defined **Time-To-Live (TTL)**.
-This TTL ensures the OTP is automatically purged from the system after a specific period,
-preventing the accumulation of expired tokens and reducing the long-term attack surface.
+## Process Flow
 
-Once the OTP has been generated, hashed, stored with a TTL, and sent to the user, an `EmailVerificationOtpGeneratedEvent` is published within the system.
-This event allows other parts of the application to react to the successful initiation of the verification process.
-The entire process is designed to be transactional; if any step fails, the process is halted to prevent inconsistent states.
+The `handle` method orchestrates the verification initiation process through the following steps:
+
+1.  **Generate Secure OTP Data**: It delegates the core logic to the `OtpService`. This service:
+    *   Generates a cryptographically secure, raw OTP code of a configured length.
+    *   Securely hashes the raw OTP code for storage.
+    *   Calculates an expiration time based on a configured Time-To-Live (TTL).
+    *   Returns both the raw OTP (for the user) and the hashed OTP object (for persistence).
+
+2.  **Persist Hashed OTP**: The use case takes the hashed OTP object and saves it to the `OtpRepository`. Storing only the hash, along with its expiration time, is a critical security measure that prevents direct token theft from the database.
+
+3.  **Notify User**: It calls the `NotificationPort` to send the original, **raw** OTP code to the user's provided email address. This is the code the user will need to enter in the application to prove ownership of the email account.
+
+4.  **Publish Event**: Upon successful persistence and notification, it publishes an `EmailVerificationOtpGeneratedEvent` via the `EventPublisherPort`. This allows other decoupled parts of the system (e.g., auditing, analytics) to react to the event without creating tight coupling with the verification flow.
