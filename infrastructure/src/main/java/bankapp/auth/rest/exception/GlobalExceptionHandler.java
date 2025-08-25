@@ -16,4 +16,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgumentException(IllegalArgumentException e) {
+        var status = HttpStatus.BAD_REQUEST;
+        var err = new ApiError(status, e.getMessage());
+
+        return ResponseEntity.status(status).body(err);
+    }
 }
