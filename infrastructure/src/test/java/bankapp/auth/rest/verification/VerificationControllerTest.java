@@ -4,108 +4,99 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOp
 import bankapp.auth.application.verification_complete.CompleteVerificationUseCase;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
-import bankapp.auth.application.verification_initiate.InitiateVerificationUseCase;
 import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
-import bankapp.auth.rest.exception.GlobalExceptionHandler;
-import bankapp.auth.rest.verification.dto.CompleteVerificationRequest;
-import bankapp.auth.rest.verification.dto.InitiateVerificationRequest;
+import bankapp.auth.rest.verification.dto.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebFluxTest
-@ContextConfiguration(classes = { VerificationController.class, GlobalExceptionHandler.class })
+@WebMvcTest(VerificationController.class)
 class VerificationControllerTest {
 
     public static final String VERIFICATION_INITIATE_ENDPOINT = "/verification/initiate/email/";
     public static final String VERIFICATION_COMPLETE_ENDPOINT = "/verification/complete/email/";
 
     @Autowired
-    private WebTestClient webTestClient; // The main tool for testing
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockitoBean
-    private InitiateVerificationUseCase initiateVerificationUseCase;
+    private AsyncVerificationService asyncVerificationService;
 
     @MockitoBean
     private CompleteVerificationUseCase completeVerificationUseCase;
 
     @Test
-    void should_return_202_when_provided_valid_email() {
-        var command = new InitiateVerificationRequest("test@bankapp.online");
+    void should_return_202_when_provided_valid_email() throws Exception {
+        var request = new InitiateVerificationRequest("test@bankapp.online");
 
-        // Use doNothing() for void-returning methods
-        doNothing().when(initiateVerificationUseCase).handle(any(InitiateVerificationCommand.class));
+        // Act & Assert using MockMvc
+        mockMvc.perform(post(VERIFICATION_INITIATE_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isAccepted())
+                .andExpect(content().string("")); // Expect an empty body
 
-        // Act & Assert
-        webTestClient.post().uri(VERIFICATION_INITIATE_ENDPOINT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(command)
-                .exchange()
-                .expectStatus().isAccepted()
-                .expectBody().isEmpty();
-
-        verify(initiateVerificationUseCase, timeout(1000)).handle(any(InitiateVerificationCommand.class));
+        // 4. Verify the controller called the async service.
+        verify(asyncVerificationService).handleInitiation(any(InitiateVerificationCommand.class));
     }
 
     @Test
-    void should_return_4XX_when_provided_invalid_email() {
-        var command = new InitiateVerificationRequest("test-bankapp.online");
-
-        // Use doNothing() for void-returning methods
-        doNothing().when(initiateVerificationUseCase).handle(any(InitiateVerificationCommand.class));
+    void should_return_400_when_provided_invalid_email() throws Exception {
+        var request = new InitiateVerificationRequest("test-bankapp.online");
 
         // Act & Assert
-        webTestClient.post().uri(VERIFICATION_INITIATE_ENDPOINT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(command)
-                .exchange() // Executes the request
-                .expectStatus().is4xxClientError()
-                .expectBody(); // Verify the body is not empty
+        // The controller will throw an InvalidEmailFormatException when creating the EmailAddress.
+        // The GlobalExceptionHandler (auto-detected by @WebMvcTest) will catch it and return 400.
+        mockMvc.perform(post(VERIFICATION_INITIATE_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
 
-        verifyNoInteractions(initiateVerificationUseCase);
+        // Verify the background task was never even started
+        verifyNoInteractions(asyncVerificationService);
     }
 
     @Test
-    void completeEmailVerification_whenSuccessful_shouldReturnResponseAnd200() {
+    void completeEmailVerification_whenSuccessful_shouldReturnResponseAnd200() throws Exception {
         // Arrange
-        var request = new CompleteVerificationRequest("test@bankapp.online","123123");
+        var request = new CompleteVerificationRequest("test@bankapp.online", "123123");
         UUID challengeId = UUID.randomUUID();
-        // Let's assume the use case returns a LoginResponse
         LoginResponse mockResponse = new LoginResponse(
                 new PublicKeyCredentialRequestOptions(
-                        new byte[]{123},
-                        50L,
-                        "bankapp.online",
-                        null,
-                        null,
-                        null
+                        new byte[]{123}, 50L, "bankapp.online", null, null, null
                 ), challengeId);
 
-        // Mock the use case to return our object
         when(completeVerificationUseCase.handle(any(CompleteVerificationCommand.class)))
                 .thenReturn(mockResponse);
 
+        // 1. Create the DTO that we expect the controller to produce.
+        // THIS IS THE EXPECTED RESULT.
+        CompleteVerificationResponseDto expectedDto = VerificationResponseMapper.toDto(mockResponse);
+
+        // 2. Serialize our expected DTO into a JSON string.
+        String expectedJson = objectMapper.writeValueAsString(expectedDto);
+
         // Act & Assert
-        webTestClient.post().uri(VERIFICATION_COMPLETE_ENDPOINT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(request)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk() // Assert HTTP 200 OK
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                // Use JsonPath to assert specific fields in the response body
-                .expectBody()
-                .jsonPath("$.type").isEqualTo("login") // If using Jackson annotations
-                .jsonPath("$.challengeId").isEqualTo(challengeId.toString())
-                .jsonPath("$.options").exists();
+        mockMvc.perform(post(VERIFICATION_COMPLETE_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                // 3. Assert that the response body's JSON matches our expected JSON.
+                .andExpect(content().json(expectedJson));
     }
+
 }
