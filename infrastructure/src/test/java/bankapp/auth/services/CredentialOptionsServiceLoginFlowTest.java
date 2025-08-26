@@ -37,7 +37,7 @@ public class CredentialOptionsServiceLoginFlowTest {
     ));
     private static final Challenge DEFAULT_CHALLENGE = new Challenge(
             UUID.randomUUID(),
-            new byte[]{123},
+            ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
             DEFAULT_TIMEOUT / 1000,
             DEFAULT_CLOCK
     );

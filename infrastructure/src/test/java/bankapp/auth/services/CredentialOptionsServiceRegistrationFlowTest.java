@@ -25,7 +25,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     public static final User TEST_USER = new User(DEFAULT_EMAIL);
     private static final Challenge DEFAULT_CHALLENGE = new Challenge(
             UUID.randomUUID(),
-            new byte[]{123},
+            new byte[]{123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123},
             DEFAULT_TIMEOUT / 1000,
             DEFAULT_CLOCK
     );
