@@ -2,3 +2,14 @@ spring:
   threads:
     virtual:
       enabled: true
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+
+app:
+  amqp:
+    publisher:
+      notifications:
+        otp:
+          exchange: notifications.commands.v1.exchange
+          routing-key: send.otp.email

@@ -1,0 +1,26 @@
+services:
+  bankapp-auth:
+    build: .
+    image: bankapp-auth:latest
+    container_name: bankapp-auth
+    restart: unless-stopped
+    environment:
+      ## THIS VALUES ARE PLACEHOLDERS ##
+      # The hostname 'postgres-db' will resolve correctly because
+      # both containers are on the same external network.
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      # Example environment variables for other services
+      - SPRING_REDIS_HOST=redis
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    ports:
+      - "8080:8080"
+    networks:
+      - bankapp-infra
+
+# It tells Docker Compose to use an existing network
+# and not to create a new one.
+networks:
+  bankapp-infra:
+    external: true
