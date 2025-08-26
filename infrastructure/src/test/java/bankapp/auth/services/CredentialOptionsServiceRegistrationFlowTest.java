@@ -1,4 +1,4 @@
-package bankapp.auth.adapters.out;
+package bankapp.auth.services;
 
 import bankapp.auth.application.shared.enums.AuthMode;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
