@@ -1,4 +1,4 @@
-package bankapp.auth.rest.registration;
+package bankapp.auth.rest.shared.dto;
 
 public record AuthenticationGrantResponse(
         String accessToken,

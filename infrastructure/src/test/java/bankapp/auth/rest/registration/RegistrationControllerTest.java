@@ -4,6 +4,7 @@ import bankapp.auth.application.registration_complete.CompleteRegistrationUseCas
 import bankapp.auth.application.registration_complete.port.in.CompleteRegistrationCommand;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
+import bankapp.auth.rest.shared.dto.AuthenticationGrantResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

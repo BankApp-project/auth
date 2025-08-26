@@ -2,6 +2,7 @@ package bankapp.auth.rest.registration;
 
 import bankapp.auth.application.registration_complete.CompleteRegistrationUseCase;
 import bankapp.auth.application.registration_complete.port.in.CompleteRegistrationCommand;
+import bankapp.auth.rest.shared.dto.AuthenticationGrantResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
