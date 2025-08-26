@@ -6,7 +6,7 @@ import lombok.Getter;
 
 //TODO: delete otp from this event. it shouldnt be published.
 @Getter
-public class EmailVerificationOtpGeneratedEvent extends EventTemplate {
+public class  EmailVerificationOtpGeneratedEvent extends EventTemplate {
     private final String otpValue;
     private final String email;
 

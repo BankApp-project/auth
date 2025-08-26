@@ -31,7 +31,7 @@ public class InitiateVerificationUseCase {
 
             otpRepository.save(data.otpToPersist());
 
-            notificator.sendOtpToUserEmail(command.email().getValue(), data.rawOtpCode());
+            notificator.sendOtpToUserEmail(command.email(), data.rawOtpCode());
 
             eventPublisher.publish(new EmailVerificationOtpGeneratedEvent(data.otpToPersist()));
     }

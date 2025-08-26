@@ -95,11 +95,11 @@ public class InitiateVerificationUseCaseTest {
     }
 
     @Test
-    void should_send_otp_via_commandBusPort() {
+    void should_send_otp_via_notificationPort() {
         useCase.handle(command);
 
         verify(notificationPort).sendOtpToUserEmail(argThat(email ->
-                email.equals(VALID_EMAIL.getValue())), argThat(otpValue ->
+                email.equals(VALID_EMAIL)), argThat(otpValue ->
                 otpValue.equals(DEFAULT_VALUE)));
     }
 
@@ -114,7 +114,7 @@ public class InitiateVerificationUseCaseTest {
         assertThrows(RuntimeException.class, () -> useCase.handle(command));
 
         // Then: No email should be sent to the user
-        verify(notificationPort, never()).sendOtpToUserEmail(anyString(), anyString());
+        verify(notificationPort, never()).sendOtpToUserEmail(any(), anyString());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class InitiateVerificationUseCaseTest {
         assertThrows(RuntimeException.class, () -> useCase.handle(command));
 
         // Then: No email should be sent to the user
-        verify(notificationPort, never()).sendOtpToUserEmail(anyString(), anyString());
+        verify(notificationPort, never()).sendOtpToUserEmail(any(), anyString());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class InitiateVerificationUseCaseTest {
         assertThrows(RuntimeException.class, () -> useCase.handle(command));
 
         // Then: No email should be sent to the user
-        verify(notificationPort, never()).sendOtpToUserEmail(anyString(), anyString());
+        verify(notificationPort, never()).sendOtpToUserEmail(any(), anyString());
     }
 
 
@@ -153,7 +153,7 @@ public class InitiateVerificationUseCaseTest {
         assertThrows(RuntimeException.class, () -> useCase.handle(command));
 
         // Then: No email should be sent to the user
-        verify(notificationPort, never()).sendOtpToUserEmail(anyString(), anyString());
+        verify(notificationPort, never()).sendOtpToUserEmail(any(), anyString());
     }
 
     @Test
