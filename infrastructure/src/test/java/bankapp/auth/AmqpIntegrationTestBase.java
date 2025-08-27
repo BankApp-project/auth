@@ -1,9 +1,8 @@
 package bankapp.auth;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 
@@ -12,13 +11,7 @@ import org.testcontainers.junit.jupiter.Container;
 public class AmqpIntegrationTestBase {
 
     @Container
+    @ServiceConnection
     protected final static RabbitMQContainer rabbitmqContainer = new RabbitMQContainer("rabbitmq:4.1.3-management");
 
-    @DynamicPropertySource
-    public static void configure(DynamicPropertyRegistry registry) {
-        registry.add("spring.rabbitmq.host", rabbitmqContainer::getHost);
-        registry.add("spring.rabbitmq.port", rabbitmqContainer::getAmqpPort);
-        registry.add("spring.rabbitmq.username", rabbitmqContainer::getAdminUsername);
-        registry.add("spring.rabbitmq.password", rabbitmqContainer::getAdminPassword);
-    }
 }
