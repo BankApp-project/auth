@@ -34,12 +34,21 @@ public class Otp {
         }
     }
 
-    public Otp(String key, String value, @NonNull Clock clock, long ttlInSeconds) {
-        this(
+    public static Otp createNew(String key, String value, @NonNull Clock clock, long ttlInSeconds) {
+        return new Otp(
                 key,
                 value,
                 Instant.now(clock).plusSeconds(ttlInSeconds),
                 Duration.ofSeconds(ttlInSeconds)
+        );
+    }
+
+    public static Otp reconstitute(String key, String value, Instant expirationTime, Duration ttl) {
+        return new Otp(
+                key,
+                value,
+                expirationTime,
+                ttl
         );
     }
 

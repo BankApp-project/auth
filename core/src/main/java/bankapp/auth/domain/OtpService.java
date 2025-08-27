@@ -33,7 +33,7 @@ public class OtpService {
 
         String hashedOtpCode = hasher.hashSecurely(rawOtpCode);
 
-        Otp otpToPersist = new Otp(email.getValue(), hashedOtpCode, clock, config.getTtlInSeconds());
+        Otp otpToPersist = Otp.createNew(email.getValue(), hashedOtpCode, clock, config.getTtlInSeconds());
 
         return new VerificationData(otpToPersist, rawOtpCode);
     }

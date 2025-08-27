@@ -67,7 +67,7 @@ public abstract class CompleteVerificationBaseTest {
 
         // Create and save a valid OTP
         hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);
-        Otp validOtp = new Otp(DEFAULT_OTP_KEY, hashedOtpValue, DEFAULT_CLOCK, DEFAULT_TTL);
+        Otp validOtp = Otp.createNew(DEFAULT_OTP_KEY, hashedOtpValue, DEFAULT_CLOCK, DEFAULT_TTL);
         otpRepository.save(validOtp);
 
         // Prepare the default command and use case instance
