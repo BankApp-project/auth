@@ -29,7 +29,7 @@ public class InitiateVerificationUseCaseTest {
     private final static String DEFAULT_VALUE = "123456";
     private final static String DEFAULT_HASHED_VALUE = DEFAULT_VALUE + "-hashed";
     private final static int DEFAULT_OTP_LEN = 6;
-    private final static int DEFAULT_TTL = 10;
+    private final static int DEFAULT_TTL = 150;
     private final static Clock DEFAULT_CLOCK = Clock.systemUTC();
 
     private EventPublisherPort eventPublisher;

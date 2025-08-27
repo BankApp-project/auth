@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,8 +15,9 @@ class OtpTest {
 
     private static final String DEFAULT_VALUE = "123456";
     private static final String DEFAULT_KEY = "test@bankapp.online";
-    private static final Clock clock = Clock.systemUTC();
-    private static final Instant DEFAULT_EXPIRATION_TIME = Instant.now(clock).plusSeconds(60);
+    private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
+    private static final long TTL_IN_SECONDS = 60L;
+    private static final Instant DEFAULT_EXPIRATION_TIME = Instant.now(DEFAULT_CLOCK).plusSeconds(TTL_IN_SECONDS);
     private static Otp DEFAULT_OTP;
 
 
@@ -28,7 +30,7 @@ class OtpTest {
 
     @BeforeEach
     void setup() {
-        DEFAULT_OTP = new Otp(DEFAULT_VALUE, DEFAULT_KEY, DEFAULT_EXPIRATION_TIME);
+        DEFAULT_OTP = new Otp(DEFAULT_VALUE, DEFAULT_KEY, DEFAULT_CLOCK, TTL_IN_SECONDS);
     }
 
     @Test
@@ -54,14 +56,14 @@ class OtpTest {
     @Test
     void should_throw_exception_when_value_is_null() {
         //when & then
-        assertThrows(NullPointerException.class, () -> new Otp(null, DEFAULT_KEY, DEFAULT_EXPIRATION_TIME),
+        assertThrows(NullPointerException.class, () -> new Otp(null, DEFAULT_KEY, DEFAULT_CLOCK, TTL_IN_SECONDS),
                 "Should throw OtpFormatException when value is null");
     }
 
     @Test
     void should_throw_exception_when_key_is_null() {
         //when & then
-        assertThrows(NullPointerException.class, () -> new Otp(DEFAULT_VALUE, null, DEFAULT_EXPIRATION_TIME),
+        assertThrows(NullPointerException.class, () -> new Otp(DEFAULT_VALUE, null, DEFAULT_CLOCK, TTL_IN_SECONDS),
                 "Should throw OtpFormatException when key is null");
     }
 
@@ -69,7 +71,7 @@ class OtpTest {
     void should_throw_exception_when_value_is_empty() {
 
         //when & then
-        assertThrows(OtpFormatException.class, () -> new Otp("", DEFAULT_KEY, DEFAULT_EXPIRATION_TIME),
+        assertThrows(OtpFormatException.class, () -> new Otp("", DEFAULT_KEY, DEFAULT_CLOCK, TTL_IN_SECONDS),
                 "Should throw OtpFormatException when value is empty");
     }
 
@@ -78,14 +80,14 @@ class OtpTest {
         //given
 
         //when & then
-        assertThrows(OtpFormatException.class, () -> new Otp(DEFAULT_VALUE, "", DEFAULT_EXPIRATION_TIME),
+        assertThrows(OtpFormatException.class, () -> new Otp(DEFAULT_VALUE, "", DEFAULT_CLOCK, TTL_IN_SECONDS),
                 "Should throw OtpFormatException when key is empty");
     }
 
     @Test
     void should_be_equals_when_same_value_and_key() {
 
-        Otp otp2 = new Otp(DEFAULT_VALUE, DEFAULT_KEY, DEFAULT_EXPIRATION_TIME);
+        Otp otp2 = new Otp(DEFAULT_VALUE, DEFAULT_KEY, DEFAULT_CLOCK, TTL_IN_SECONDS);
 
         assertEquals(DEFAULT_OTP, otp2);
     }
@@ -93,36 +95,43 @@ class OtpTest {
     @Test
     void should_not_be_equals_when_different_key_but_same_value() {
 
-        Otp otp2 = new Otp(DEFAULT_VALUE, "differentKey", DEFAULT_EXPIRATION_TIME);
+        Otp otp2 = new Otp(DEFAULT_VALUE, "differentKey", DEFAULT_CLOCK, TTL_IN_SECONDS);
 
         assertNotEquals(DEFAULT_OTP, otp2);
     }
 
     @Test
     void should_not_be_equals_when_same_key_but_different_value() {
-        Otp otp2 = new Otp("9999", DEFAULT_KEY, DEFAULT_EXPIRATION_TIME);
+        Otp otp2 = new Otp("9999", DEFAULT_KEY, DEFAULT_CLOCK, TTL_IN_SECONDS);
 
         assertNotEquals(DEFAULT_OTP, otp2);
     }
 
     @Test
     void should_be_able_to_set_expiration_time_in_minutes() {
-        Otp otp = new Otp(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_EXPIRATION_TIME);
+        Otp otp = new Otp(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_CLOCK, TTL_IN_SECONDS);
 
         assertNotNull(otp.getExpirationTime());
     }
 
     @Test
     void should_not_be_expired_if_clock_is_just_before_expiration_time() {
-        Otp otp = new Otp(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_EXPIRATION_TIME);
+        Otp otp = new Otp(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_CLOCK, TTL_IN_SECONDS);
         Clock justBeforeExpirationClock = Clock.fixed(DEFAULT_EXPIRATION_TIME.minusSeconds(1), ZoneId.of("Z"));
         assertTrue(otp.isValid(justBeforeExpirationClock));
     }
 
     @Test
     void should_be_expired_if_clock_is_just_after_expiration_time() {
-        Otp otp = new Otp(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_EXPIRATION_TIME);
+        Otp otp = new Otp(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_CLOCK, TTL_IN_SECONDS);
         Clock justAfterExpirationClock = Clock.fixed(DEFAULT_EXPIRATION_TIME.plusSeconds(1), ZoneId.of("Z"));
         assertFalse(otp.isValid(justAfterExpirationClock));
+    }
+
+    @Test
+    void should_set_ttl_as_duration() {
+        Otp otp = new Otp(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_CLOCK, TTL_IN_SECONDS);
+
+        assertEquals(TTL_IN_SECONDS, otp.getTtl().get(ChronoUnit.SECONDS));
     }
 }

@@ -49,12 +49,12 @@ class OtpServiceTest {
         String rawOtp = "123456";
         String hashedOtp = "hashed123456";
         int otpSize = 6;
-        int ttlInMinutes = 10;
+        int ttlInSeconds = 150;
         Instant now = Instant.now();
-        Instant expirationTime = now.plus(ttlInMinutes, ChronoUnit.MINUTES);
+        Instant expirationTime = now.plus(ttlInSeconds, ChronoUnit.SECONDS);
 
         when(config.getOtpSize()).thenReturn(otpSize);
-        when(config.getTtlInMinutes()).thenReturn(ttlInMinutes);
+        when(config.getTtlInSeconds()).thenReturn(ttlInSeconds);
         when(otpGenerator.generate(otpSize)).thenReturn(rawOtp);
         when(hasher.hashSecurely(rawOtp)).thenReturn(hashedOtp);
         when(clock.instant()).thenReturn(now);

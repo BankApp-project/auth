@@ -9,8 +9,6 @@ import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.port.out.OtpConfigPort;
 
 import java.time.Clock;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 public class OtpService {
 
@@ -35,9 +33,7 @@ public class OtpService {
 
         String hashedOtpCode = hasher.hashSecurely(rawOtpCode);
 
-        Instant expirationTime = clock.instant().plus(config.getTtlInMinutes(), ChronoUnit.MINUTES);
-
-        Otp otpToPersist = new Otp(email.getValue(), hashedOtpCode, expirationTime);
+        Otp otpToPersist = new Otp(email.getValue(), hashedOtpCode, clock, config.getTtlInSeconds());
 
         return new VerificationData(otpToPersist, rawOtpCode);
     }

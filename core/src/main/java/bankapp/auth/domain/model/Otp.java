@@ -2,8 +2,10 @@ package bankapp.auth.domain.model;
 
 import bankapp.auth.domain.model.exception.OtpFormatException;
 import lombok.Getter;
+import lombok.NonNull;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -13,12 +15,15 @@ public class Otp {
     private final String key;
     private final String value;
 
-    private Instant expirationTime;
+    private final Instant expirationTime;
+    private final Duration ttl;
 
-    @Deprecated
-    public Otp(String value, String key) {
+    private Otp(String key, String value, Instant expirationTime, Duration ttl) {
+
         this.value = Objects.requireNonNull(value, "OTP value cannot be null");
         this.key = Objects.requireNonNull(key, "OTP key cannot be null");
+        this.expirationTime = Objects.requireNonNull(expirationTime, "Expiration time cannot be null");
+        this.ttl = Objects.requireNonNull(ttl, "TTL cannot be null");
 
         if (value.trim().isEmpty()) {
             throw new OtpFormatException("OTP value cannot be empty");
@@ -29,16 +34,13 @@ public class Otp {
         }
     }
 
-    public Otp(String key, String value, Instant expirationTime) {
-        this(value, key);
-        if (expirationTime == null) {
-            throw new NullPointerException("Expiration time cannot be null");
-        }
-        this.expirationTime = expirationTime;
-    }
-
-    public Otp(String key, String value, Clock clock, Long ttl) {
-        this(key, value, Instant.now(clock).plusSeconds(ttl));
+    public Otp(String key, String value, @NonNull Clock clock, long ttlInSeconds) {
+        this(
+                key,
+                value,
+                Instant.now(clock).plusSeconds(ttlInSeconds),
+                Duration.ofSeconds(ttlInSeconds)
+        );
     }
 
     @Override

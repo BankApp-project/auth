@@ -5,11 +5,11 @@ import bankapp.auth.domain.port.out.OtpConfigPort;
 public class OtpConfig implements OtpConfigPort {
 
     private final int otpSize;
-    private final int ttlInMinutes;
+    private final int ttlInSeconds;
 
-    public OtpConfig(Integer otpSize, Integer ttlInMinutes) {
+    public OtpConfig(Integer otpSize, Integer ttlInSeconds) {
         this.otpSize = (otpSize == null || otpSize <= 0) ? 6 : otpSize;
-        this.ttlInMinutes = (ttlInMinutes == null || ttlInMinutes <= 0) ? 10 : ttlInMinutes;
+        this.ttlInSeconds = (ttlInSeconds == null || ttlInSeconds <= 0) ? 150 : ttlInSeconds;
     }
 
     @Override
@@ -18,7 +18,7 @@ public class OtpConfig implements OtpConfigPort {
     }
 
     @Override
-    public int getTtlInMinutes() {
-        return ttlInMinutes;
+    public int getTtlInSeconds() {
+        return ttlInSeconds;
     }
 }
