@@ -1,4 +1,4 @@
-package bankapp.auth.services;
+package bankapp.auth.services.notification;
 
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.Test;

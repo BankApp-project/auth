@@ -1,4 +1,4 @@
-package bankapp.auth.services;
+package bankapp.auth.services.notification;
 
 import org.springframework.stereotype.Component;
 

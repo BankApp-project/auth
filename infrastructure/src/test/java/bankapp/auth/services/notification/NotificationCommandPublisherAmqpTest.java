@@ -1,4 +1,4 @@
-package bankapp.auth.services;
+package bankapp.auth.services.notification;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

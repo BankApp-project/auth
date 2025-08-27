@@ -1,4 +1,4 @@
-package bankapp.auth.services;
+package bankapp.auth.services.notification;
 
 public interface NotificationCommandPublisher {
 
