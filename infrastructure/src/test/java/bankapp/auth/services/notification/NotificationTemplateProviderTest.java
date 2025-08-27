@@ -1,6 +1,5 @@
 package bankapp.auth.services.notification;
 
-import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
@@ -13,7 +12,6 @@ class NotificationTemplateProviderTest {
         //When
         var notificationTemplateProvider = new NotificationTemplateProvider();
 
-        var email = new EmailAddress("test@bankapp.online");
         var otp = "123123";
         var res = notificationTemplateProvider.getOtpEmailTemplate(otp);
 
