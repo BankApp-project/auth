@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class NotificationAdapterTest {
@@ -17,21 +18,48 @@ class NotificationAdapterTest {
     @Mock
     private NotificationTemplateProvider templateProvider;
 
+    @Mock
+    private NotificationCommandPublisher notificationCommandPublisher;
+
+    private NotificationPort notificationAdapter;
+
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
+        notificationAdapter = new NotificationAdapter(templateProvider, notificationCommandPublisher);
     }
 
-    // make template
-    // add data to template
     @Test
     void should_load_template_for_given_method() {
-        NotificationPort notificationAdapter = new NotificationAdapter(templateProvider);
         notificationAdapter.sendOtpToUserEmail(EMAIL, OTP);
         verify(templateProvider).getOtpEmailTemplate(eq(OTP));
     }
 
-    // NEXT STEPS
-    // save data as json payload
-    // send payload as command to notification-service (amqp? but as command, not on the queue)
+    @Test
+    void should_publish_msg_with_valid_data() {
+        var template = "Welcome! Your OTP: " + OTP;
+        when(templateProvider.getOtpEmailTemplate(eq(OTP))).thenReturn(template);
+        notificationAdapter.sendOtpToUserEmail(EMAIL, OTP);
+
+        verify(notificationCommandPublisher).publishSendEmailCommand(argThat(cmd -> {
+            boolean param1 = cmd.recipientEmail().equals(EMAIL.getValue());
+            boolean param2 = cmd.htmlBody().equals(template);
+
+            return param1 && param2;
+        }));
+    }
+
+    @Test
+    void should_throw_null_pointer_exception_when_email_is_null() {
+
+        // Given & When & Then
+        assertThrows(NullPointerException.class, () -> notificationAdapter.sendOtpToUserEmail(null, OTP));
+    }
+
+    @Test
+    void should_throw_null_pointer_exception_when_otp_is_null() {
+
+        // Given & When & Then
+        assertThrows(NullPointerException.class, () -> notificationAdapter.sendOtpToUserEmail(EMAIL, null));
+    }
 }
