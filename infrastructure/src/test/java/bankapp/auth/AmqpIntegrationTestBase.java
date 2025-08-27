@@ -12,7 +12,7 @@ import org.testcontainers.junit.jupiter.Container;
 public class AmqpIntegrationTestBase {
 
     @Container
-    protected final static RabbitMQContainer rabbitmqContainer = new RabbitMQContainer("rabbitmq:3.11-management");
+    protected final static RabbitMQContainer rabbitmqContainer = new RabbitMQContainer("rabbitmq:4.1.3-management");
 
     @DynamicPropertySource
     public static void configure(DynamicPropertyRegistry registry) {
