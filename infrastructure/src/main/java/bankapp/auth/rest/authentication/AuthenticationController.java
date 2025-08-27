@@ -7,15 +7,21 @@ import bankapp.auth.application.authentication_initiate.InitiateAuthenticationUs
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.rest.shared.dto.AuthenticationGrantResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+
+@ConditionalOnProperty(
+        name = "app.feature.authentication.enabled",
+        havingValue = "true"
+)
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/authentication")
-@RequiredArgsConstructor
 public class AuthenticationController {
 
     private final InitiateAuthenticationUseCase initiateAuthenticationUseCase;

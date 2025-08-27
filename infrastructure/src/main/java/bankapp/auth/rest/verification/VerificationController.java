@@ -10,16 +10,21 @@ import bankapp.auth.rest.verification.dto.InitiateVerificationRequest;
 import bankapp.auth.rest.verification.dto.VerificationResponseMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@ConditionalOnProperty(
+        name = "app.feature.verification.enabled",
+        havingValue = "true"
+)
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/verification")
-@RequiredArgsConstructor
 public class VerificationController {
 
     private final AsyncVerificationService asyncVerificationService;
@@ -49,3 +54,5 @@ public class VerificationController {
     }
 
 }
+
+

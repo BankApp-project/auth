@@ -5,9 +5,15 @@ import bankapp.auth.application.verification_initiate.port.in.InitiateVerificati
 import bankapp.auth.domain.model.vo.EmailAddress;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+
+@ConditionalOnProperty(
+        name = "app.feature.verification.enabled",
+        havingValue = "true"
+)
 @Slf4j
 @Service
 @RequiredArgsConstructor
