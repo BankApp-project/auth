@@ -34,7 +34,6 @@ public class RedisOtpRepositoryIT extends RedisIntegrationTestBase {
         //noinspection OptionalGetWithoutIsPresent
         var resultOtp = resultOtpOptional.get();
         assertThat(resultOtp)
-                .usingRecursiveComparison()
                 .isEqualTo(testOtp);
     }
 
