@@ -1,0 +1,33 @@
+name: "🚀 Epic"
+description: "A high-level business goal or large user story."
+title: "🚀 Epic: [Your Title Here]"
+labels: ["epic"]
+body:
+  - type: textarea
+    id: business-goal
+    attributes:
+      label: "🎯 Business Goal"
+      description: "Describe the high-level objective. What business value will this deliver? How will we measure success?"
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: "📦 Scope"
+      description: "List the features that are in and out of scope for this epic."
+      value: |
+        ### In Scope:
+        - [ ] Feature: 
+        
+        ### Out of Scope:
+        -
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: "🔗 Context & Related Documents"
+      description: "Add links to product briefs, design files, research, etc."
+      value: |
+        - **Product Brief:** [Link]
+        - **Figma User Journey:** [Link]

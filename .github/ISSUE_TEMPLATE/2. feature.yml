@@ -1,0 +1,68 @@
+name: "✨ Feature"
+description: "A specific, shippable piece of functionality."
+title: "✨ Feature: [Your Title Here]"
+labels: ["feature"]
+body:
+  - type: input
+    id: epic-link
+    attributes:
+      label: "🔗 Part of Epic"
+      description: "Link to the parent Epic issue (e.g., #123)."
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "📖 High-Level Description"
+      description: "Use the user story format."
+      value: |
+        - **As a...** 
+        - **I want to...** 
+        - **So that...**
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: "✅ Acceptance Criteria"
+      description: "A checklist of what must be true for this feature to be considered done from a user's perspective."
+      value: |
+        - [ ]
+    validations:
+      required: true
+  - type: input
+    id: design-link
+    attributes:
+      label: "🎨 Design & UX"
+      description: "Provide a direct link to the specific Figma screen or component."
+  - type: textarea
+    id: implementation-tasks
+    attributes:
+      label: "🛠️ Implementation Tasks"
+      description: "Brainstorm the technical tasks needed. These can be converted into separate issues later."
+      value: |
+        - [ ]
+  - type: textarea
+    id: testing-strategy
+    attributes:
+      label: "🧪 Testing Strategy"
+      description: "How will you ensure the quality of this feature? (Unit, Integration, E2E tests)"
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: "🛑 Dependencies & Blockers"
+      description: "List any issues or external factors blocking this work."
+      value: |
+        - [ ] Blocked by: 
+        - [ ] Waiting for:
+  - type: checkboxes
+    id: definition-of-done
+    attributes:
+      label: "📚 Documentation & Definition of Done"
+      options:
+        - label: "**Update README:** Project `README.md` is updated."
+        - label: "**Add Javadoc/Comments:** Public APIs and complex logic are documented."
+        - label: "**Update Wiki:** Project Wiki is updated with relevant guides."
+        - label: "**Update CHANGELOG:** A note is added summarizing the new feature."

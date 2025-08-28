@@ -1,0 +1,26 @@
+name: "✅ Sub-task"
+description: "A small, specific task that is part of a larger feature."
+title: "✅ Task: "
+labels: ["task"]
+body:
+  - type: input
+    id: parent-feature
+    attributes:
+      label: "🔗 Parent Feature"
+      description: "Link to the parent Feature issue this task belongs to (e.g., #123)."
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: "A clear and concise description of the technical work to be done."
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: "Acceptance Criteria"
+      description: "A checklist of what must be true for this task to be considered complete."
+      value: |
+        - [ ] 

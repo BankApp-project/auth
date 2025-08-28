@@ -1,0 +1,33 @@
+name: "🛠️ Technical Task"
+description: "A technical task, chore, or refactoring effort."
+title: "🛠️ Task: [Short, descriptive title of the task]"
+labels: ["chore"]
+body:
+  - type: textarea
+    id: task-description
+    attributes:
+      label: "What needs to be done?"
+      description: "Provide a clear and concise description of the technical task."
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: "Why is this task necessary?"
+      description: "Explain the motivation. Is it to reduce tech debt, improve performance, or enable future features?"
+    validations:
+      required: true
+  - type: input
+    id: feature-link
+    attributes:
+      label: "🔗 Related Feature (if applicable)"
+      description: "If this task supports or is required by a specific feature, link to it here (e.g., #123)."
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: "Acceptance Criteria"
+      description: "Provide a clear checklist of what must be true for this task to be considered complete."
+      value: |
+        - [ ]
+    validations:
+      required: true

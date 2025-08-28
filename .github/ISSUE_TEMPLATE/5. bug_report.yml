@@ -1,0 +1,72 @@
+name: "🐛 Bug Report"
+description: "Create a report to help us improve."
+title: "🐛 Bug: [Short, descriptive title of the bug]"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thank you for taking the time to fill out this bug report!**
+        
+        Please provide as much detail as possible. A well-documented bug is much faster to fix.
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: "Describe the Bug"
+      description: "A clear and concise description of what the bug is. What's going wrong?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: "Steps to Reproduce"
+      description: "How can we make this bug happen? Be very specific."
+      value: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: "Expected Behavior"
+      description: "What did you expect to happen when you performed the steps above?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: "Actual Behavior & Screenshots"
+      description: "What actually happened? If applicable, add screenshots, GIFs, or logs to help explain your problem."
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: "Environment Details"
+      description: "Please provide details about the environment where you experienced the bug."
+      value: |
+        - **OS:** [e.g., macOS, Windows 11]
+        - **Browser:** [e.g., Chrome, Firefox, Safari]
+        - **App Version:** [e.g., v2.1.0]
+        - **Device:** [e.g., Desktop, iPhone 14]
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "Severity"
+      description: "How critical is this bug?"
+      options:
+        - "🔴 Critical: The application is crashing, data loss, or a security vulnerability."
+        - "🟠 High: A major feature is completely broken or unusable."
+        - "🟡 Medium: A feature is not working as expected, but there is a workaround."
+        - "🟢 Low: A cosmetic issue, typo, or minor UI glitch."
+    validations:
+      required: true
