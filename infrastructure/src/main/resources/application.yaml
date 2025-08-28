@@ -7,6 +7,10 @@ spring:
     port: 5672
 
 app:
+  config:
+    otp:
+      size: 6
+      ttlInSeconds: 120
   feature:
     verification:
       enabled: false

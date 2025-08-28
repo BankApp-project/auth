@@ -23,7 +23,7 @@ public class OtpConfig implements OtpConfigPort {
     }
 
     @Override
-    public int getTtlInSeconds() {
+    public long getTtlInSeconds() {
         return ttlInSeconds;
     }
 

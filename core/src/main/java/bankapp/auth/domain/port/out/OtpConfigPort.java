@@ -4,6 +4,6 @@ import java.time.Clock;
 
 public interface OtpConfigPort {
     int getOtpSize();
-    int getTtlInSeconds();
+    long getTtlInSeconds();
     Clock getClock();
 }
