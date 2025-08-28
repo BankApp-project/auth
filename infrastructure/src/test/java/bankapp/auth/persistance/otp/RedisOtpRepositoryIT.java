@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RedisOtpRepositoryIT extends RedisIntegrationTestBase {
 
@@ -30,6 +31,7 @@ public class RedisOtpRepositoryIT extends RedisIntegrationTestBase {
 
         var resultOtpOptional = redisOtpRepository.load(DEFAULT_KEY);
         assertThat(resultOtpOptional).isPresent();
+        //noinspection OptionalGetWithoutIsPresent
         var resultOtp = resultOtpOptional.get();
         assertThat(resultOtp)
                 .usingRecursiveComparison()
@@ -56,5 +58,14 @@ public class RedisOtpRepositoryIT extends RedisIntegrationTestBase {
         var res = redisOtpRepository.load(DEFAULT_KEY);
 
         assertThat(res).isEmpty();
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    @Test
+    void should_throw_exception_when_null_values_passed_to_any_method() {
+
+        assertThrows(NullPointerException.class, () -> redisOtpRepository.save(null));
+        assertThrows(NullPointerException.class, () -> redisOtpRepository.load(null));
+        assertThrows(NullPointerException.class, () -> redisOtpRepository.delete(null));
     }
 }

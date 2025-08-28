@@ -33,7 +33,7 @@ public class RedisOtpRepository implements OtpRepository {
     }
 
     @Override
-    public void delete(String key) {
+    public void delete(@NonNull String key) {
         redisTemplate.delete(key);
     }
 }
