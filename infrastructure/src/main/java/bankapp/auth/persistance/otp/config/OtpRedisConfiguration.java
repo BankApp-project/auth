@@ -1,4 +1,4 @@
-package bankapp.auth.config;
+package bankapp.auth.persistance.otp.config;
 
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.persistance.otp.OtpMixin;
@@ -11,8 +11,19 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-public class RedisConfiguration {
+public class OtpRedisConfiguration {
 
+
+    /// Creates and configures a RedisTemplate for OTP operations.
+    /// <p>
+    /// This template is specifically configured to handle OTP (One-Time Password) objects
+    /// with String keys. It uses Jackson JSON serialization for values and String serialization
+    /// for keys, with custom OTP mixing applied for proper JSON handling.
+    /// </p>
+    ///
+    /// @param connectionFactory the Redis connection factory for establishing connections
+    /// @param objectMapper the Jackson ObjectMapper for JSON serialization configuration
+    /// @return a configured RedisTemplate for String keys and OTP values
     @Bean
     public RedisTemplate<String, Otp> otpRedisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
         RedisTemplate<String, Otp> template = new RedisTemplate<>();
