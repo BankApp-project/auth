@@ -3,6 +3,7 @@ package bankapp.auth.domain.port.out.stubs;
 import bankapp.auth.domain.port.out.OtpConfigPort;
 
 import java.time.Clock;
+import java.time.Duration;
 
 public class OtpConfig implements OtpConfigPort {
 
@@ -23,8 +24,8 @@ public class OtpConfig implements OtpConfigPort {
     }
 
     @Override
-    public long getTtlInSeconds() {
-        return ttlInSeconds;
+    public Duration getTtl() {
+        return Duration.ofSeconds(ttlInSeconds);
     }
 
     @Override

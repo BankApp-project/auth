@@ -28,7 +28,7 @@ public class OtpService {
 
         String hashedOtpCode = hasher.hashSecurely(rawOtpCode);
 
-        Otp otpToPersist = Otp.createNew(email.getValue(), hashedOtpCode, config.getClock(), config.getTtlInSeconds());
+        Otp otpToPersist = Otp.createNew(email.getValue(), hashedOtpCode, config.getClock(), config.getTtl().getSeconds());
 
         return new VerificationData(otpToPersist, rawOtpCode);
     }

@@ -9,13 +9,13 @@ import java.time.Clock;
 import java.time.Duration;
 
 @Component
-public class OtpConfiguration implements OtpConfigPort {
+public class OtpProperties implements OtpConfigPort {
 
     private final int otpSize;
     private final Duration ttl;
     private final Clock clock;
 
-    public OtpConfiguration(
+    public OtpProperties(
             @Value("${app.config.otp.size}") int otpSize,
             @Value("${app.config.otp.ttlInSeconds}") long ttlInSeconds,
             @Autowired Clock clock) {
@@ -31,8 +31,8 @@ public class OtpConfiguration implements OtpConfigPort {
     }
 
     @Override
-    public long getTtlInSeconds() {
-        return ttl.toSeconds();
+    public Duration getTtl() {
+        return ttl;
     }
 
     @Override
