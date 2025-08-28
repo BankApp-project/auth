@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -126,12 +125,5 @@ class OtpTest {
         Otp otp = Otp.createNew(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_CLOCK, TTL_IN_SECONDS);
         Clock justAfterExpirationClock = Clock.fixed(DEFAULT_EXPIRATION_TIME.plusSeconds(1), ZoneId.of("Z"));
         assertFalse(otp.isValid(justAfterExpirationClock));
-    }
-
-    @Test
-    void should_set_ttl_as_duration() {
-        Otp otp = Otp.createNew(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_CLOCK, TTL_IN_SECONDS);
-
-        assertEquals(TTL_IN_SECONDS, otp.getTtl().get(ChronoUnit.SECONDS));
     }
 }

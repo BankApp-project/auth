@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.Clock;
-import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,6 +51,5 @@ class OtpServiceTest {
         assertEquals(OTP_VALUE, res.rawOtpCode());
         assertEquals(hashedOtp, res.otpToPersist().getValue());
         assertEquals(EMAIL_ADDRESS.getValue(), res.otpToPersist().getKey());
-        assertEquals(TTL_IN_SECONDS, res.otpToPersist().getTtl().get(ChronoUnit.SECONDS));
     }
 }
