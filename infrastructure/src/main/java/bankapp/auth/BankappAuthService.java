@@ -1,6 +1,6 @@
 package bankapp.auth;
 
-import bankapp.auth.config.OtpProperties;
+import bankapp.auth.persistance.otp.config.OtpProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

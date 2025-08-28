@@ -1,4 +1,4 @@
-package bankapp.auth.config;
+package bankapp.auth.persistance.otp.config;
 
 import bankapp.auth.domain.port.out.OtpConfigPort;
 import lombok.RequiredArgsConstructor;

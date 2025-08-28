@@ -1,4 +1,4 @@
-package bankapp.auth.config;
+package bankapp.auth.persistance.otp.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

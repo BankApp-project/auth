@@ -1,5 +1,7 @@
 package bankapp.auth.config;
 
+import bankapp.auth.persistance.otp.config.OtpConfiguration;
+import bankapp.auth.persistance.otp.config.OtpProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
