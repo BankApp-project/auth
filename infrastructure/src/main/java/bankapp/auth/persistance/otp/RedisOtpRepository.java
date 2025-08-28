@@ -34,6 +34,6 @@ public class RedisOtpRepository implements OtpRepository {
 
     @Override
     public void delete(String key) {
-        throw new UnsupportedOperationException();
+        redisTemplate.delete(key);
     }
 }
