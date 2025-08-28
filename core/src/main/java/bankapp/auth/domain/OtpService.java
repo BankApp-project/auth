@@ -8,24 +8,19 @@ import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.port.out.OtpConfigPort;
 
-import java.time.Clock;
-
 public class OtpService {
 
     private final OtpGenerationPort otpGenerator;
     private final HashingPort hasher;
-    private final Clock clock;
     private final OtpConfigPort config;
 
     public OtpService(
             @NotNull OtpGenerationPort otpGenerator,
             @NotNull HashingPort hasher,
-            @NotNull Clock clock,
             @NotNull OtpConfigPort config
     ) {
         this.otpGenerator = otpGenerator;
         this.hasher = hasher;
-        this.clock = clock;
         this.config = config;
     }
     public VerificationData createVerificationOtp(EmailAddress email) {
@@ -33,7 +28,7 @@ public class OtpService {
 
         String hashedOtpCode = hasher.hashSecurely(rawOtpCode);
 
-        Otp otpToPersist = Otp.createNew(email.getValue(), hashedOtpCode, clock, config.getTtlInSeconds());
+        Otp otpToPersist = Otp.createNew(email.getValue(), hashedOtpCode, config.getClock(), config.getTtlInSeconds());
 
         return new VerificationData(otpToPersist, rawOtpCode);
     }

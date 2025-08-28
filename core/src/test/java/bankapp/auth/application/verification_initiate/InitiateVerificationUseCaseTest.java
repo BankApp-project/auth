@@ -48,8 +48,8 @@ public class InitiateVerificationUseCaseTest {
         eventPublisher = mock(EventPublisherPort.class);
         otpSaver = mock(OtpRepository.class);
         notificationPort = mock(NotificationPort.class);
-        OtpConfigPort otpConfig = new OtpConfig(DEFAULT_OTP_LEN, DEFAULT_TTL);
-        OtpService otpService = new OtpService(otpGenerator, hasher, DEFAULT_CLOCK, otpConfig);
+        OtpConfigPort otpConfig = new OtpConfig(DEFAULT_OTP_LEN, DEFAULT_TTL, DEFAULT_CLOCK);
+        OtpService otpService = new OtpService(otpGenerator, hasher, otpConfig);
 
         command = new InitiateVerificationCommand(VALID_EMAIL);
         useCase = new InitiateVerificationUseCase(eventPublisher, otpSaver, notificationPort, otpService);
