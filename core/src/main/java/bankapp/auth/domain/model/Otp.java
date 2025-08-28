@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -16,14 +15,12 @@ public class Otp {
     private final String value;
 
     private final Instant expirationTime;
-    private final Duration ttl;
 
-    private Otp(String key, String value, Instant expirationTime, Duration ttl) {
+    private Otp(String key, String value, Instant expirationTime) {
 
         this.value = Objects.requireNonNull(value, "OTP value cannot be null");
         this.key = Objects.requireNonNull(key, "OTP key cannot be null");
         this.expirationTime = Objects.requireNonNull(expirationTime, "Expiration time cannot be null");
-        this.ttl = Objects.requireNonNull(ttl, "TTL cannot be null");
 
         if (value.trim().isEmpty()) {
             throw new OtpFormatException("OTP value cannot be empty");
@@ -38,17 +35,15 @@ public class Otp {
         return new Otp(
                 key,
                 value,
-                Instant.now(clock).plusSeconds(ttlInSeconds),
-                Duration.ofSeconds(ttlInSeconds)
+                Instant.now(clock).plusSeconds(ttlInSeconds)
         );
     }
 
-    public static Otp reconstitute(String key, String value, Instant expirationTime, Duration ttl) {
+    public static Otp reconstitute(String key, String value, Instant expirationTime) {
         return new Otp(
                 key,
                 value,
-                expirationTime,
-                ttl
+                expirationTime
         );
     }
 

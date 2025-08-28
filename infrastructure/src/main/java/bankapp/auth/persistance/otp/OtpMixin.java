@@ -4,7 +4,6 @@ import bankapp.auth.domain.model.Otp;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.Duration;
 import java.time.Instant;
 
 public abstract class OtpMixin {
@@ -18,8 +17,7 @@ public abstract class OtpMixin {
     public static Otp reconstitute(
             @JsonProperty("key") String key,
             @JsonProperty("value") String value,
-            @JsonProperty("expirationTime") Instant expirationTime,
-            @JsonProperty("ttl") Duration ttl
+            @JsonProperty("expirationTime") Instant expirationTime
     ) {
         return null;
     }
