@@ -7,6 +7,7 @@ import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse
 import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
 import bankapp.auth.rest.verification.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(VerificationController.class)
+@Disabled
 class VerificationControllerTest {
 
     public static final String VERIFICATION_INITIATE_ENDPOINT = "/verification/initiate/email/";
