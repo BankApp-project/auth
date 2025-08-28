@@ -34,4 +34,12 @@ public class RedisOtpRepositoryIT extends RedisIntegrationTestBase {
                 .usingRecursiveComparison()
                 .isEqualTo(testOtp);
     }
+
+    @Test
+    void should_return_empty_optional_when_otp_doesnt_exists() {
+        String nonExistingKey = "nonExistingKey";
+        var resOtp = redisOtpRepository.load(nonExistingKey);
+
+        assertThat(resOtp).isEmpty();
+    }
 }
