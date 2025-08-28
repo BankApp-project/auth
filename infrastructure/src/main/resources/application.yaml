@@ -10,7 +10,7 @@ app:
   config:
     otp:
       size: 6
-      ttlInSeconds: 120
+      ttl: 120s
   feature:
     verification:
       enabled: false
