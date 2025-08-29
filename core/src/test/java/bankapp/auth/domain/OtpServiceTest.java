@@ -1,7 +1,9 @@
 package bankapp.auth.domain;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubHasher;
+import bankapp.auth.application.shared.port.out.stubs.StubOtpRepository;
 import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.port.out.OtpConfigPort;
@@ -14,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.Clock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +30,7 @@ class OtpServiceTest {
 
     private final HashingPort hasher = new StubHasher();
     private final OtpConfigPort config = new OtpConfig(OTP_SIZE, TTL_IN_SECONDS, CLOCK);
+    private final OtpRepository otpRepository = new StubOtpRepository();
 
     @Mock
     private OtpGenerationPort otpGenerator;
@@ -37,19 +41,21 @@ class OtpServiceTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
 
-        otpService = new OtpService(otpGenerator, hasher, config);
+        otpService = new OtpService(otpGenerator, hasher, config, otpRepository);
 
         when(otpGenerator.generate(eq(OTP_SIZE))).thenReturn(OTP_VALUE);
     }
 
     @Test
-    void createVerificationOtp_shouldReturnVerificationData() {
+    void createVerificationOtp_shouldReturnAndPersistVerificationData() {
 
         var hashedOtp = hasher.hashSecurely(OTP_VALUE);
         var res = otpService.createVerificationOtp(EMAIL_ADDRESS);
+        var persistedOtp = otpRepository.load(EMAIL_ADDRESS.getValue());
 
         assertEquals(OTP_VALUE, res.rawOtpCode());
-        assertEquals(hashedOtp, res.otpToPersist().getValue());
-        assertEquals(EMAIL_ADDRESS.getValue(), res.otpToPersist().getKey());
+        assertTrue(persistedOtp.isPresent());
+        assertEquals(hashedOtp, persistedOtp.get().getValue());
+        assertEquals(EMAIL_ADDRESS.getValue(), persistedOtp.get().getKey());
     }
 }

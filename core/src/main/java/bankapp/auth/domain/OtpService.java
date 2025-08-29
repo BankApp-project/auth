@@ -1,6 +1,7 @@
 package bankapp.auth.domain;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.verification_initiate.VerificationData;
 import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
 import bankapp.auth.domain.model.Otp;
@@ -13,15 +14,18 @@ public class OtpService {
     private final OtpGenerationPort otpGenerator;
     private final HashingPort hasher;
     private final OtpConfigPort config;
+    private final OtpRepository otpRepository;
 
     public OtpService(
             @NotNull OtpGenerationPort otpGenerator,
             @NotNull HashingPort hasher,
-            @NotNull OtpConfigPort config
+            @NotNull OtpConfigPort config,
+            @NotNull OtpRepository otpRepository
     ) {
         this.otpGenerator = otpGenerator;
         this.hasher = hasher;
         this.config = config;
+        this.otpRepository = otpRepository;
     }
     public VerificationData createVerificationOtp(EmailAddress email) {
         String rawOtpCode = otpGenerator.generate(config.getOtpSize());
@@ -30,6 +34,9 @@ public class OtpService {
 
         Otp otpToPersist = Otp.createNew(email.getValue(), hashedOtpCode, config.getClock(), config.getTtl().getSeconds());
 
-        return new VerificationData(otpToPersist, rawOtpCode);
+        otpRepository.save(otpToPersist);
+
+        return new VerificationData(rawOtpCode);
     }
+
 }

@@ -44,10 +44,10 @@ public class InitiateVerificationUseCaseTest {
         otpSaver = mock(OtpRepository.class);
         notificationPort = mock(NotificationPort.class);
         OtpConfigPort otpConfig = new OtpConfig(DEFAULT_OTP_LEN, DEFAULT_TTL, DEFAULT_CLOCK);
-        OtpService otpService = new OtpService(otpGenerator, hasher, otpConfig);
+        OtpService otpService = new OtpService(otpGenerator, hasher, otpConfig, otpSaver);
 
         command = new InitiateVerificationCommand(VALID_EMAIL);
-        useCase = new InitiateVerificationUseCase(otpSaver, notificationPort, otpService);
+        useCase = new InitiateVerificationUseCase(notificationPort, otpService);
 
         when(otpGenerator.generate(anyInt())).thenReturn(DEFAULT_VALUE);
         when(hasher.hashSecurely(anyString())).thenReturn(DEFAULT_HASHED_VALUE);
