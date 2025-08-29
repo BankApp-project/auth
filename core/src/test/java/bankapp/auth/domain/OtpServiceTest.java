@@ -4,7 +4,9 @@ import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubHasher;
 import bankapp.auth.application.shared.port.out.stubs.StubOtpRepository;
+import bankapp.auth.application.verification_complete.OtpVerificationException;
 import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
+import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.port.out.OtpConfigPort;
 import bankapp.auth.domain.port.out.stubs.OtpConfig;
@@ -14,9 +16,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -26,7 +31,8 @@ class OtpServiceTest {
     private static final int TTL_IN_SECONDS = 60;
     private static final Clock CLOCK = Clock.systemUTC();
     private static final String OTP_VALUE = "123456";
-    private static final EmailAddress EMAIL_ADDRESS = new EmailAddress("test@bankapp.online");
+    private static final String EMAIL_VALUE = "test@bankapp.online";
+    private static final EmailAddress EMAIL_ADDRESS = new EmailAddress(EMAIL_VALUE);
 
     private final HashingPort hasher = new StubHasher();
     private final OtpConfigPort config = new OtpConfig(OTP_SIZE, TTL_IN_SECONDS, CLOCK);
@@ -57,5 +63,73 @@ class OtpServiceTest {
         assertTrue(persistedOtp.isPresent());
         assertEquals(hashedOtp, persistedOtp.get().getValue());
         assertEquals(EMAIL_ADDRESS.getValue(), persistedOtp.get().getKey());
+    }
+
+    @Test
+    void verifyAndConsumeOtp_should_delete_otp_when_verification_completed() {
+
+        var hashedOtp = hashAndPersistDefaultOtp();
+
+        var persistedOtp = otpRepository.load(EMAIL_VALUE);
+        assertTrue(persistedOtp.isPresent());
+        assertEquals(hashedOtp, persistedOtp.get().getValue());
+
+        otpService.verifyAndConsumeOtp(EMAIL_ADDRESS,OTP_VALUE);
+
+        var otpAfterVerification = otpRepository.load(EMAIL_VALUE);
+        assertTrue(otpAfterVerification.isEmpty());
+    }
+
+    @Test
+    void should_throw_exception_when_otp_is_expired() {
+        // Given
+        hashAndPersistDefaultOtp();
+
+        Clock fixedClock = getClockAfterExpirationTime();
+        var testConfig = new OtpConfig(OTP_SIZE,TTL_IN_SECONDS,fixedClock);
+        var testOtpService = new OtpService(otpGenerator, hasher, testConfig, otpRepository);
+
+        // When / Then
+        var exception = assertThrows(OtpVerificationException.class, () -> testOtpService.verifyAndConsumeOtp(EMAIL_ADDRESS,OTP_VALUE));
+        assertThat(exception).hasMessageContaining("has expired");
+    }
+
+    private Clock getClockAfterExpirationTime() {
+        return Clock.fixed(Instant.now().plusSeconds(TTL_IN_SECONDS + 1), ZoneId.of("Z"));
+    }
+
+    @Test
+    void should_throw_exception_when_otp_value_does_not_match() {
+        // Given
+        hashAndPersistDefaultOtp();
+        var persistedOtp = otpRepository.load(EMAIL_VALUE);
+        assertTrue(persistedOtp.isPresent());
+
+        var invalidOtpValue = "654321";
+
+        // When / Then
+        var exception = assertThrows(
+                OtpVerificationException.class,
+                () -> otpService.verifyAndConsumeOtp(EMAIL_ADDRESS, invalidOtpValue));
+
+        assertThat(exception).hasMessageContaining("Otp does not match");
+    }
+
+    @Test
+    void should_throw_exception_when_otp_for_given_email_does_not_exist() {
+        // Given
+        var invalidEmail = new EmailAddress("invalid@bankapp.online");
+
+        // When / Then
+        var exception = assertThrows(OtpVerificationException.class, () -> otpService.verifyAndConsumeOtp(invalidEmail, OTP_VALUE));
+        assertThat(exception).hasMessageContaining("No such OTP in the system");
+    }
+
+
+    private String hashAndPersistDefaultOtp() {
+        var hashedOtp = hasher.hashSecurely(OTP_VALUE);
+        var otp = Otp.createNew(EMAIL_VALUE,hashedOtp,CLOCK,TTL_IN_SECONDS);
+        otpRepository.save(otp);
+        return hashedOtp;
     }
 }

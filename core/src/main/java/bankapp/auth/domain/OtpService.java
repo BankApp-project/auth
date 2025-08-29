@@ -2,12 +2,15 @@ package bankapp.auth.domain;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
+import bankapp.auth.application.verification_complete.OtpVerificationException;
 import bankapp.auth.application.verification_initiate.VerificationData;
 import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.port.out.OtpConfigPort;
+
+import java.util.Optional;
 
 public class OtpService {
 
@@ -37,6 +40,26 @@ public class OtpService {
         otpRepository.save(otpToPersist);
 
         return new VerificationData(rawOtpCode);
+    }
+
+    public void verifyAndConsumeOtp(EmailAddress email, String otpValue) {
+        Optional<Otp> persistedOtpOptional = otpRepository.load(email.getValue());
+
+        var persistedOtp = persistedOtpOptional
+                .orElseThrow(() -> new OtpVerificationException("No such OTP in the system"));
+
+        verifyOtp(otpValue, persistedOtp);
+
+        otpRepository.delete(email.getValue());
+    }
+
+    private void verifyOtp(String otpValue, Otp otp) {
+        if (!otp.isValid(config.getClock())) {
+            throw new OtpVerificationException("Otp has expired");
+        }
+        if (!hasher.verify(otp.getValue(), otpValue)) {
+            throw new OtpVerificationException("Otp does not match");
+        }
     }
 
 }

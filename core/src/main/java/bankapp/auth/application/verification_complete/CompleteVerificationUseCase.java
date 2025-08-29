@@ -1,55 +1,44 @@
 package bankapp.auth.application.verification_complete;
 
-import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
-import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
 import bankapp.auth.application.verification_complete.port.out.dto.RegistrationResponse;
-import bankapp.auth.domain.model.Otp;
+import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.vo.EmailAddress;
 
-import java.time.Clock;
-import java.util.Optional;
-
 public class CompleteVerificationUseCase {
 
-    private final Clock clock;
+    private final OtpService otpService;
 
-    private final OtpRepository otpRepository;
     private final ChallengeRepository challengeRepository;
     private final UserRepository userRepository;
     private final CredentialRepository credentialRepository;
 
     private final CredentialOptionsPort credentialOptionsPort;
     private final ChallengeGenerationPort challengeGenerator;
-    private final HashingPort hasher;
 
     public CompleteVerificationUseCase(
-            @NotNull Clock clock,
-            @NotNull OtpRepository otpRepository,
             @NotNull ChallengeRepository challengeRepository,
             @NotNull CredentialRepository credentialRepository,
             @NotNull UserRepository userRepository,
             @NotNull CredentialOptionsPort credentialOptionsPort,
             @NotNull ChallengeGenerationPort challengeGenerator,
-            @NotNull HashingPort hasher
+            @NotNull OtpService otpService
     ) {
-        this.clock = clock;
-        this.otpRepository = otpRepository;
         this.challengeRepository = challengeRepository;
         this.credentialRepository = credentialRepository;
         this.userRepository = userRepository;
         this.credentialOptionsPort = credentialOptionsPort;
         this.challengeGenerator = challengeGenerator;
-        this.hasher = hasher;
+        this.otpService = otpService;
     }
 
     //TODO THINK ABOUT DIVIDING IT TO VERIFICATION_COMPLETE AND REGISTRATION_INITIATE / AUTHENTICATION_INITIATE
@@ -64,31 +53,16 @@ public class CompleteVerificationUseCase {
         return prepareResponse(user, challenge);
     }
 
+    private void verifyAndConsumeOtp(EmailAddress key, String value) {
+        otpService.verifyAndConsumeOtp(key,value);
+    }
+
     private Challenge generateAndSaveChallenge() {
         var challenge = challengeGenerator.generate();
         challengeRepository.save(challenge);
         return challenge;
     }
 
-    private void verifyAndConsumeOtp(EmailAddress email, String otpValue) {
-        Optional<Otp> persistedOtpOptional = otpRepository.load(email.getValue());
-
-        var persistedOtp = persistedOtpOptional
-                .orElseThrow(() -> new CompleteVerificationException("No such OTP in the system"));
-
-        verifyOtp(otpValue, persistedOtp);
-
-        otpRepository.delete(email.getValue());
-    }
-
-    private void verifyOtp(String otpValue, Otp otp) {
-        if (!otp.isValid(clock)) {
-            throw new CompleteVerificationException("Otp has expired");
-        }
-        if (!hasher.verify(otp.getValue(), otpValue)) {
-            throw new CompleteVerificationException("Otp does not match");
-        }
-    }
 
     private User findOrCreateUser(EmailAddress email) {
         var userOptional = userRepository.findByEmail(email);

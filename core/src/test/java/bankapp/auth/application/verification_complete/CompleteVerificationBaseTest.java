@@ -15,6 +15,7 @@ import bankapp.auth.application.verification_complete.port.out.CredentialOptions
 import bankapp.auth.application.verification_complete.port.out.stubs.StubChallengeGenerator;
 import bankapp.auth.application.verification_complete.port.out.stubs.StubCredentialOptionsService;
 import bankapp.auth.application.verification_complete.port.out.stubs.StubUserRepository;
+import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,7 @@ public abstract class CompleteVerificationBaseTest {
 
     // --- SHARED DEPENDENCIES & MOCKS ---
     // Use stubs for predictable behavior and mocks for verification
+    protected OtpService otpService;
     protected OtpRepository otpRepository;
     protected HashingPort hasher;
     protected UserRepository userRepository;
@@ -64,6 +66,7 @@ public abstract class CompleteVerificationBaseTest {
         challengeGenerator = new StubChallengeGenerator(DEFAULT_TTL, DEFAULT_CLOCK);
         challengeRepository = new StubChallengeRepository();
         log = mock(LoggerPort.class);
+        otpService = mock(OtpService.class);
 
         // Create and save a valid OTP
         hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);
@@ -73,9 +76,7 @@ public abstract class CompleteVerificationBaseTest {
         // Prepare the default command and use case instance
         defaultCommand = new CompleteVerificationCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
         defaultUseCase = new CompleteVerificationUseCase(
-                DEFAULT_CLOCK,
-                otpRepository,
-                challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator, hasher
-        );
+                challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator,
+                otpService);
     }
 }
