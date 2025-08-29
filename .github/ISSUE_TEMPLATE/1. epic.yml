@@ -4,6 +4,18 @@ title: "🚀 Epic: [Your Title Here]"
 labels: ["epic"]
 body:
   - type: textarea
+    id: current-status
+    attributes:
+      label: "📈 Current Status"
+      description: "Provide a brief, high-level summary of the epic's current state. This helps stakeholders get a quick overview without reading the full details."
+      value: |
+        **Overall Progress:** Not Started ⚪️ | In-Flight 🟡 | Blocked 🔴 | Done ✅
+
+        *   **Backend:** [Describe backend status]
+        *   **Frontend:** [Describe frontend status]
+        *   **Next Steps:**
+            1. [Next immediate action]
+  - type: textarea
     id: business-goal
     attributes:
       label: "🎯 Business Goal"
