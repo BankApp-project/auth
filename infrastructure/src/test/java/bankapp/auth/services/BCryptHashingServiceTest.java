@@ -40,6 +40,26 @@ class BCryptHashingServiceTest {
     @Test
     void hashSecurely_should_throw_exception_when_null_input() {
 
+        //noinspection DataFlowIssue
         assertThrows(NullPointerException.class, () -> hashingService.hashSecurely(null));
+    }
+
+    @Test
+    void verify_should_return_false_if_values_doesnt_match() {
+
+        var hasher = new BCryptPasswordEncoder();
+        var hashedValue = hasher.encode(DEFAULT_VALUE);
+
+        assertFalse(hashingService.verify(hashedValue,"123123"));
+    }
+
+    @Test
+    void verify_should_return_true_if_Values_does_match() {
+
+        var hasher = new BCryptPasswordEncoder();
+        var hashedValue = hasher.encode(DEFAULT_VALUE);
+
+        var result = hashingService.verify(hashedValue,DEFAULT_VALUE);
+        assertTrue(result);
     }
 }
