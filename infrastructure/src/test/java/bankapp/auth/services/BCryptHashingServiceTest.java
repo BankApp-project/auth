@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,9 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class BCryptHashingServiceTest {
 
     String DEFAULT_VALUE = "123456";
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private BCryptHashingService hashingService;
@@ -41,4 +37,9 @@ class BCryptHashingServiceTest {
         assertTrue(valueMatches);
     }
 
+    @Test
+    void hashSecurely_should_throw_exception_when_null_input() {
+
+        assertThrows(NullPointerException.class, () -> hashingService.hashSecurely(null));
+    }
 }
