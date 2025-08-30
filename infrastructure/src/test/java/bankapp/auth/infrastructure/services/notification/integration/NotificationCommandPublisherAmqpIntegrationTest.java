@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.services.notification.integration;
 
-import bankapp.auth.infrastructure.AmqpIntegrationTestBase;
+import bankapp.auth.infrastructure.WithRabbitMQContainer;
 import bankapp.auth.infrastructure.services.notification.NotificationCommandPublisher;
 import bankapp.auth.infrastructure.services.notification.SendEmailNotificationCommand;
 import org.junit.jupiter.api.Test;
@@ -8,14 +8,16 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Testcontainers
-public class NotificationCommandPublisherAmqpIntegrationTest extends AmqpIntegrationTestBase {
+@SpringBootTest
+@ActiveProfiles("test")
+public class NotificationCommandPublisherAmqpIntegrationTest implements WithRabbitMQContainer {
 
     @Autowired
     private NotificationCommandPublisher commandPublisher;
@@ -61,7 +63,7 @@ public class NotificationCommandPublisherAmqpIntegrationTest extends AmqpIntegra
         );
 
         commandPublisher.publishSendEmailCommand(command);
-        var receivedPayload = rabbitTemplate.receiveAndConvert(testQueue.getActualName(),500L);
+        var receivedPayload = rabbitTemplate.receiveAndConvert(testQueue.getActualName(), 500L);
 
         assertThat(receivedPayload)
                 .isNotNull()
