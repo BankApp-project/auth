@@ -1,6 +1,5 @@
 package bankapp.auth.application.verification_complete;
 
-import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
@@ -15,7 +14,6 @@ import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.vo.EmailAddress;
 
-@UseCase
 public class CompleteVerificationUseCase {
 
     private final OtpService otpService;

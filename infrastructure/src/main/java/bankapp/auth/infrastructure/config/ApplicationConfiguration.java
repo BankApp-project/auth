@@ -19,7 +19,7 @@ import org.springframework.context.annotation.FilterType;
         includeFilters = @ComponentScan.Filter(
                 type = FilterType.ANNOTATION,
                 value = {
-                        UseCase.class,
+                        UseCase.class
                 }
         )
 )

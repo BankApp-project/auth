@@ -1,6 +1,5 @@
 package bankapp.auth.application.registration_complete;
 
-import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.registration_complete.port.in.CompleteRegistrationCommand;
@@ -17,7 +16,6 @@ import lombok.NonNull;
 
 import java.util.UUID;
 
-@UseCase
 public class CompleteRegistrationUseCase {
 
     private final ChallengeRepository challengeRepository;
