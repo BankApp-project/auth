@@ -5,14 +5,14 @@ import bankapp.auth.domain.port.out.OtpConfigPort;
 import java.time.Clock;
 import java.time.Duration;
 
-public class OtpConfig implements OtpConfigPort {
+public class StubOtpConfig implements OtpConfigPort {
 
     private final int otpSize;
     private final int ttlInSeconds;
     private final Clock clock;
 
-    public OtpConfig(Integer otpSize,
-                     Integer ttlInSeconds, Clock clock) {
+    public StubOtpConfig(Integer otpSize,
+                         Integer ttlInSeconds, Clock clock) {
         this.otpSize = (otpSize == null || otpSize <= 0) ? 6 : otpSize;
         this.ttlInSeconds = (ttlInSeconds == null || ttlInSeconds <= 0) ? 150 : ttlInSeconds;
         this.clock = clock;

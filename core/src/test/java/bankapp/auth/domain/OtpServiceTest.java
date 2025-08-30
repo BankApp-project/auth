@@ -9,7 +9,7 @@ import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.port.out.OtpConfigPort;
-import bankapp.auth.domain.port.out.stubs.OtpConfig;
+import bankapp.auth.domain.port.out.stubs.StubOtpConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -35,7 +35,7 @@ class OtpServiceTest {
     private static final EmailAddress EMAIL_ADDRESS = new EmailAddress(EMAIL_VALUE);
 
     private final HashingPort hasher = new StubHasher();
-    private final OtpConfigPort config = new OtpConfig(OTP_SIZE, TTL_IN_SECONDS, CLOCK);
+    private final OtpConfigPort config = new StubOtpConfig(OTP_SIZE, TTL_IN_SECONDS, CLOCK);
     private final OtpRepository otpRepository = new StubOtpRepository();
 
     @Mock
@@ -86,7 +86,7 @@ class OtpServiceTest {
         hashAndPersistDefaultOtp();
 
         Clock fixedClock = getClockAfterExpirationTime();
-        var testConfig = new OtpConfig(OTP_SIZE,TTL_IN_SECONDS,fixedClock);
+        var testConfig = new StubOtpConfig(OTP_SIZE,TTL_IN_SECONDS,fixedClock);
         var testOtpService = new OtpService(otpGenerator, hasher, testConfig, otpRepository);
 
         // When / Then

@@ -9,7 +9,7 @@ import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.domain.port.out.OtpConfigPort;
-import bankapp.auth.domain.port.out.stubs.OtpConfig;
+import bankapp.auth.domain.port.out.stubs.StubOtpConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +43,7 @@ public class InitiateVerificationUseCaseTest {
         hasher = mock(HashingPort.class);
         otpSaver = mock(OtpRepository.class);
         notificationPort = mock(NotificationPort.class);
-        OtpConfigPort otpConfig = new OtpConfig(DEFAULT_OTP_LEN, DEFAULT_TTL, DEFAULT_CLOCK);
+        OtpConfigPort otpConfig = new StubOtpConfig(DEFAULT_OTP_LEN, DEFAULT_TTL, DEFAULT_CLOCK);
         OtpService otpService = new OtpService(otpGenerator, hasher, otpConfig, otpSaver);
 
         command = new InitiateVerificationCommand(VALID_EMAIL);

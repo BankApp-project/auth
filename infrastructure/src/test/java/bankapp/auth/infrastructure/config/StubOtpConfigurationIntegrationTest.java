@@ -18,12 +18,12 @@ import java.time.ZoneId;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @EnableConfigurationProperties(OtpProperties.class)
-@SpringBootTest(classes = {OtpConfiguration.class, OtpConfigurationIntegrationTest.TestConfig.class})
+@SpringBootTest(classes = {OtpConfiguration.class, StubOtpConfigurationIntegrationTest.TestConfig.class})
 @TestPropertySource(properties = {
         "app.config.otp.size=8",
         "app.config.otp.ttl=300s"
 })
-class OtpConfigurationIntegrationTest {
+class StubOtpConfigurationIntegrationTest {
 
     @Configuration
     static class TestConfig {
