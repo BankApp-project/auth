@@ -22,7 +22,7 @@ public class AsyncInitiateVerificationService {
     private final InitiateVerificationUseCase initiateVerificationUseCase;
 
     @Async
-    public void handleInitiation(InitiateVerificationCommand command) {
+    public void handle(InitiateVerificationCommand command) {
         try {
             initiateVerificationUseCase.handle(command);
         } catch (Exception e) {

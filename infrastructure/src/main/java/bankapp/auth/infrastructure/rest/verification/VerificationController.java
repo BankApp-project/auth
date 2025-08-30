@@ -35,7 +35,7 @@ public class VerificationController {
         var command = new InitiateVerificationCommand(new EmailAddress(request.email()));
 
         // Call the async method. This call returns immediately.
-        asyncInitiateVerificationService.handleInitiation(command);
+        asyncInitiateVerificationService.handle(command);
 
         // Immediately return 202 Accepted to the client.
         return ResponseEntity.accepted().build();

@@ -56,7 +56,7 @@ class VerificationControllerTest {
                 .andExpect(content().string("")); // Expect an empty body
 
         // 4. Verify the controller called the async service.
-        verify(asyncInitiateVerificationService).handleInitiation(any(InitiateVerificationCommand.class));
+        verify(asyncInitiateVerificationService).handle(any(InitiateVerificationCommand.class));
     }
 
     @Test
