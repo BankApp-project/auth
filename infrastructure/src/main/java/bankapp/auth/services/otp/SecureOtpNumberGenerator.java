@@ -12,6 +12,15 @@ public class SecureOtpNumberGenerator implements OtpGenerationPort {
 
     private final SecureRandom secureRandom;
 
+    /**
+     * Generates a random numeric OTP (One-Time Password) string of the specified length.
+     * The method ensures that the generated OTP has the exact requested length, and throws
+     * an exception if the length is invalid (less than or equal to zero or greater than 9).
+     *
+     * @param len the desired length of the OTP; must be a positive integer between 1 and 9 (inclusive)
+     * @return a string representing the generated OTP of the specified length
+     * @throws OtpGenerationException if the specified length is invalid
+     */
     @Override
     public String generate(int len) {
         verify(len);
