@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 
 @ConditionalOnProperty(
-        name = "app.feature.verification.enabled",
+        name = "app.feature.verification.initiate.enabled",
         havingValue = "true"
 )
 @Slf4j

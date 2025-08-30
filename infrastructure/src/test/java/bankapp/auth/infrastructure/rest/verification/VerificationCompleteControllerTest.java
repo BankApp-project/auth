@@ -4,10 +4,8 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOp
 import bankapp.auth.application.verification_complete.CompleteVerificationUseCase;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
-import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
 import bankapp.auth.infrastructure.rest.verification.dto.CompleteVerificationRequest;
 import bankapp.auth.infrastructure.rest.verification.dto.CompleteVerificationResponseDto;
-import bankapp.auth.infrastructure.rest.verification.dto.InitiateVerificationRequest;
 import bankapp.auth.infrastructure.rest.verification.dto.VerificationResponseMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Disabled;
@@ -26,10 +24,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Disabled
-@WebMvcTest(VerificationController.class)
-class VerificationControllerTest {
+@WebMvcTest(VerificationCompleteController.class)
+class VerificationCompleteControllerTest {
 
-    public static final String VERIFICATION_INITIATE_ENDPOINT = "/verification/initiate/email/";
     public static final String VERIFICATION_COMPLETE_ENDPOINT = "/verification/complete/email/";
 
     @Autowired
@@ -39,41 +36,7 @@ class VerificationControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private AsyncInitiateVerificationService asyncInitiateVerificationService;
-
-    @MockitoBean
     private CompleteVerificationUseCase completeVerificationUseCase;
-
-    @Test
-    void should_return_202_when_provided_valid_email() throws Exception {
-        var request = new InitiateVerificationRequest("test@bankapp.online");
-
-        // Act & Assert using MockMvc
-        mockMvc.perform(post(VERIFICATION_INITIATE_ENDPOINT)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isAccepted())
-                .andExpect(content().string("")); // Expect an empty body
-
-        // 4. Verify the controller called the async service.
-        verify(asyncInitiateVerificationService).handle(any(InitiateVerificationCommand.class));
-    }
-
-    @Test
-    void should_return_400_when_provided_invalid_email() throws Exception {
-        var request = new InitiateVerificationRequest("test-bankapp.online");
-
-        // Act & Assert
-        // The controller will throw an InvalidEmailFormatException when creating the EmailAddress.
-        // The GlobalExceptionHandler (auto-detected by @WebMvcTest) will catch it and return 400.
-        mockMvc.perform(post(VERIFICATION_INITIATE_ENDPOINT)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-
-        // Verify the background task was never even started
-        verifyNoInteractions(asyncInitiateVerificationService);
-    }
 
     @Test
     void completeEmailVerification_whenSuccessful_shouldReturnResponseAnd200() throws Exception {
@@ -103,5 +66,4 @@ class VerificationControllerTest {
                 // 3. Assert that the response body's JSON matches our expected JSON.
                 .andExpect(content().json(expectedJson));
     }
-
 }

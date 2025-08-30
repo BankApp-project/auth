@@ -17,7 +17,10 @@ app:
       ttl: 120s
   feature:
     verification:
-      enabled: false
+      initiate:
+        enabled: true
+      complete:
+        enabled: false
     registration:
       enabled: false
     authentication:
