@@ -1,9 +1,11 @@
 package bankapp.auth.infrastructure.persistance.otp;
 
-import bankapp.auth.infrastructure.RedisIntegrationTestBase;
+import bankapp.auth.infrastructure.WithRedisContainer;
 import bankapp.auth.domain.model.Otp;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -12,7 +14,9 @@ import java.time.ZoneId;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class RedisOtpRepositoryIT extends RedisIntegrationTestBase {
+@SpringBootTest
+@ActiveProfiles("test")
+public class WithRedisOtpRepositoryIT implements WithRedisContainer {
 
 
     public static final Clock CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
