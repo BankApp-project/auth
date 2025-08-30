@@ -12,7 +12,6 @@ import bankapp.auth.domain.port.out.OtpConfigPort;
 
 import java.util.Optional;
 
-@DomainService
 public class OtpService {
 
     private final OtpGenerationPort otpGenerator;
