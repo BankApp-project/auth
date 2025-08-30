@@ -1,4 +1,4 @@
-package bankapp.auth.services;
+package bankapp.auth.services.otp;
 
 import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
 import lombok.RequiredArgsConstructor;

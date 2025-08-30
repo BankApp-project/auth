@@ -1,4 +1,4 @@
-package bankapp.auth.services;
+package bankapp.auth.services.otp;
 
 import bankapp.auth.config.SecurityConfiguration;
 import org.junit.jupiter.api.RepeatedTest;
