@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/verification")
 public class VerificationController {
 
-    private final AsyncVerificationService asyncVerificationService;
+    private final AsyncInitiateVerificationService asyncInitiateVerificationService;
     private final CompleteVerificationUseCase completeVerificationUseCase;
 
     @PostMapping("/initiate/email/")
@@ -35,7 +35,7 @@ public class VerificationController {
         var command = new InitiateVerificationCommand(new EmailAddress(request.email()));
 
         // Call the async method. This call returns immediately.
-        asyncVerificationService.handleInitiation(command);
+        asyncInitiateVerificationService.handleInitiation(command);
 
         // Immediately return 202 Accepted to the client.
         return ResponseEntity.accepted().build();

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AsyncVerificationService {
+public class AsyncInitiateVerificationService {
 
     private final InitiateVerificationUseCase initiateVerificationUseCase;
 

@@ -7,7 +7,6 @@ import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse
 import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
 import bankapp.auth.rest.verification.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,7 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(VerificationController.class)
-@Disabled
 class VerificationControllerTest {
 
     public static final String VERIFICATION_INITIATE_ENDPOINT = "/verification/initiate/email/";
@@ -36,7 +34,7 @@ class VerificationControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private AsyncVerificationService asyncVerificationService;
+    private AsyncInitiateVerificationService asyncInitiateVerificationService;
 
     @MockitoBean
     private CompleteVerificationUseCase completeVerificationUseCase;
@@ -53,7 +51,7 @@ class VerificationControllerTest {
                 .andExpect(content().string("")); // Expect an empty body
 
         // 4. Verify the controller called the async service.
-        verify(asyncVerificationService).handleInitiation(any(InitiateVerificationCommand.class));
+        verify(asyncInitiateVerificationService).handleInitiation(any(InitiateVerificationCommand.class));
     }
 
     @Test
@@ -69,7 +67,7 @@ class VerificationControllerTest {
                 .andExpect(status().isBadRequest());
 
         // Verify the background task was never even started
-        verifyNoInteractions(asyncVerificationService);
+        verifyNoInteractions(asyncInitiateVerificationService);
     }
 
     @Test
