@@ -1,10 +1,12 @@
 package bankapp.auth.application.verification_initiate;
 
+import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
 import bankapp.auth.application.shared.port.out.*;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.annotations.NotNull;
 
+@UseCase
 public class InitiateVerificationUseCase {
 
     private final OtpService otpService;

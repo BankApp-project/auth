@@ -1,5 +1,6 @@
 package bankapp.auth.application.authentication_complete;
 
+import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
@@ -11,6 +12,7 @@ import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 
 import java.util.UUID;
 
+@UseCase
 public class CompleteAuthenticationUseCase {
 
     private final ChallengeRepository challengeRepository;
