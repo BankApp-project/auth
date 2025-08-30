@@ -2,7 +2,6 @@ package bankapp.auth.infrastructure.rest.authentication;
 
 import bankapp.auth.application.authentication_complete.CompleteAuthenticationCommand;
 import bankapp.auth.application.authentication_complete.CompleteAuthenticationUseCase;
-import bankapp.auth.application.authentication_initiate.InitiateAuthenticationCommand;
 import bankapp.auth.application.authentication_initiate.InitiateAuthenticationUseCase;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.infrastructure.rest.shared.dto.AuthenticationGrantResponse;
@@ -29,8 +28,7 @@ public class AuthenticationController {
 
     @GetMapping("/initiate")
     public ResponseEntity<InitiateAuthenticationResponse> initiateAuthentication() {
-        var command = new InitiateAuthenticationCommand();
-        var useCaseResponse = initiateAuthenticationUseCase.handle(command);
+        var useCaseResponse = initiateAuthenticationUseCase.handle();
 
         var response = new InitiateAuthenticationResponse(useCaseResponse.options(), useCaseResponse.challengeId().toString());
         return ResponseEntity.status(HttpStatus.OK).body(response);

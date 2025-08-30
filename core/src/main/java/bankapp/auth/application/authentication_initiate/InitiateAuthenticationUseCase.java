@@ -20,7 +20,7 @@ public class InitiateAuthenticationUseCase {
         this.credentialOptionsService = credentialOptionsService;
     }
 
-    public LoginResponse handle(InitiateAuthenticationCommand command) {
+    public LoginResponse handle() {
         var challenge = challengeGenerator.generate();
 
         challengeRepository.save(challenge);

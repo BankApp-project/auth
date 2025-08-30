@@ -30,7 +30,6 @@ public class InitiateAuthenticationUseCaseTest {
     );
 
     private InitiateAuthenticationUseCase useCase;
-    private InitiateAuthenticationCommand command;
 
     @Mock
     ChallengeGenerationPort challengeGenerator;
@@ -49,33 +48,32 @@ public class InitiateAuthenticationUseCaseTest {
         when(challengeGenerator.generate()).thenReturn(DEFAULT_CHALLENGE);
 
         useCase = new InitiateAuthenticationUseCase(challengeGenerator, challengeRepository, credentialOptionsService);
-        command = new InitiateAuthenticationCommand();
     }
 
     @Test
     void should_generate_challenge() {
-        useCase.handle(command);
+        useCase.handle();
 
         verify(challengeGenerator).generate();
     }
 
     @Test
     void should_persist_generated_challenge() {
-        useCase.handle(command);
+        useCase.handle();
 
         verify(challengeRepository).save(DEFAULT_CHALLENGE);
     }
 
     @Test
     void should_generate_LoginResponse_for_given_challenge() {
-        useCase.handle(command);
+        useCase.handle();
 
         verify(credentialOptionsService).getPasskeyRequestOptions(eq(DEFAULT_CHALLENGE));
     }
 
     @Test
     void should_return_response_with_newly_generated_challenge() {
-        var res = useCase.handle(command);
+        var res = useCase.handle();
 
         assertEquals(DEFAULT_CHALLENGE.sessionId(), res.challengeId());
     }
