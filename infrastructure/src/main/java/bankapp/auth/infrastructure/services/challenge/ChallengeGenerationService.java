@@ -20,17 +20,30 @@ public class ChallengeGenerationService implements ChallengeGenerationPort {
 
     @Override
     public Challenge generate() {
-        var sessionId = UUID.randomUUID();
+        var sessionId = getSessionId();
 
-        byte[] value = new byte[properties.length()];
-        secureRandom.nextBytes(value);
+        byte[] value = getRandomChallengeValue();
 
-        Instant expTime = Instant.now(clock).plus(properties.ttl());
+        Instant expTime = getExpirationTime();
 
         return new Challenge(
                 sessionId,
                 value,
                 expTime
         );
+    }
+
+    private UUID getSessionId() {
+        return UUID.randomUUID();
+    }
+
+    private byte[] getRandomChallengeValue() {
+        byte[] value = new byte[properties.length()];
+        secureRandom.nextBytes(value);
+        return value;
+    }
+
+    private Instant getExpirationTime() {
+        return Instant.now(clock).plus(properties.ttl());
     }
 }
