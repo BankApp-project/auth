@@ -1,70 +1,65 @@
 package bankapp.auth.infrastructure.persistance.challenge;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.infrastructure.WithRedisContainer;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 
 import java.time.Clock;
-import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-class RedisChallengeRepositoryTest {
+@SpringBootTest
+class RedisChallengeRepositoryTest implements WithRedisContainer {
 
-    @Mock
+    public static final int TTL_IN_SECONDS = 60;
+    private final static Clock FIXED_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
+
+    @Autowired
     private RedisTemplate<String, Challenge> redisTemplate;
-
-    @Mock
-    private ValueOperations<String, Challenge> valueOperations;
 
     private RedisChallengeRepository redisChallengeRepository;
 
-    @Captor
-    private ArgumentCaptor<Duration> durationCaptor;
-
-    private final Clock clock = Clock.systemUTC();
 
     @BeforeEach
     void setUp() {
-        redisChallengeRepository = new RedisChallengeRepository(redisTemplate);
+        redisChallengeRepository = new RedisChallengeRepository(redisTemplate, FIXED_CLOCK);
+        // Clean up Redis before each test
+        Assertions.assertNotNull(redisTemplate.getConnectionFactory());
+        redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();
     }
 
     @Test
     void shouldSaveChallengeAndSetTtl() {
         // given
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-        // given
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), 60, clock);
-        var key = "challenge:" + challenge.sessionId().toString();
+        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL_IN_SECONDS, FIXED_CLOCK);
+        var key = "challenge:" + challenge.sessionId();
 
         // when
         redisChallengeRepository.save(challenge);
 
         // then
-        verify(valueOperations).set(eq(key), eq(challenge), any(Duration.class));
+        var savedChallenge = redisTemplate.opsForValue().get(key);
+        assertThat(savedChallenge).isEqualTo(challenge);
+
+        var ttl = redisTemplate.getExpire(key);
+        assertThat(ttl).isPositive().isLessThanOrEqualTo(TTL_IN_SECONDS);
+        assertThat(ttl).isEqualTo(TTL_IN_SECONDS);
     }
 
     @Test
     void shouldLoadChallenge() {
         // given
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), 60, clock);
-        var key = "challenge:" + challenge.sessionId().toString();
-        when(valueOperations.get(key)).thenReturn(challenge);
+        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL_IN_SECONDS, FIXED_CLOCK);
+        var key = "challenge:" + challenge.sessionId();
+        redisTemplate.opsForValue().set(key, challenge);
 
         // when
         var result = redisChallengeRepository.load(challenge.sessionId());
@@ -76,13 +71,28 @@ class RedisChallengeRepositoryTest {
     @Test
     void shouldDeleteChallenge() {
         // given
-        var sessionId = UUID.randomUUID();
-        var key = "challenge:" + sessionId.toString();
+        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL_IN_SECONDS, FIXED_CLOCK);
+        var sessionId = challenge.sessionId();
+        var key = "challenge:" + sessionId;
+        redisTemplate.opsForValue().set(key, challenge);
 
         // when
         redisChallengeRepository.delete(sessionId);
 
         // then
-        verify(redisTemplate).delete(key);
+        var result = redisTemplate.opsForValue().get(key);
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void shouldReturnEmptyWhenLoadingNonExistentChallenge() {
+        // given
+        var nonExistentSessionId = UUID.randomUUID();
+
+        // when
+        var result = redisChallengeRepository.load(nonExistentSessionId);
+
+        // then
+        assertThat(result).isEmpty();
     }
 }

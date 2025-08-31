@@ -89,5 +89,7 @@
     </dependencies>
     <properties>
         <test.containers.version>1.21.3</test.containers.version>
+        <spring.boot.version>3.5.5</spring.boot.version>
+
     </properties>
 </project>
