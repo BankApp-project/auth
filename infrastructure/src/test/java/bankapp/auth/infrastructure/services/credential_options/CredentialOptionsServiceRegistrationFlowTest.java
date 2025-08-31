@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.services;
+package bankapp.auth.infrastructure.services.credential_options;
 
 import bankapp.auth.application.shared.enums.AuthMode;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
