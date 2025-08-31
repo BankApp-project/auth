@@ -6,8 +6,6 @@ import bankapp.auth.infrastructure.services.notification.NotificationCommandPubl
 import bankapp.auth.infrastructure.services.notification.SendEmailNotificationCommand;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.Queue;
-import org.junit.jupiter.api.Disabled;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@Disabled
 @Import(AmqpOtpTestConfig.class)
 @SpringBootTest
 @ActiveProfiles("test")
