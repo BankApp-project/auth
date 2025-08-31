@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.security.SecureRandom;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -15,6 +19,11 @@ class ChallengeGenerationServiceTest {
 
     @Autowired
     ChallengeGenerationService challengeGenerationService;
+
+    @Autowired
+    ChallengeProperties properties;
+
+    Clock FIXED_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
 
     @Test
     void generate_should_return_challenge() {
@@ -58,6 +67,19 @@ class ChallengeGenerationServiceTest {
         var res = challengeGenerationService.generate();
 
         assertThat(res.value()).hasSizeGreaterThanOrEqualTo(32);
+    }
+
+    @Test
+    void generate_should_return_challenge_with_ttl_as_in_properties() {
+
+        challengeGenerationService = new ChallengeGenerationService(properties,new SecureRandom(), FIXED_CLOCK);
+
+        var res = challengeGenerationService.generate();
+
+        var resultExpirationTime = res.expirationTime();
+        var expectedExpTime = Instant.now(FIXED_CLOCK).plus(properties.ttl());
+
+        assertEquals(expectedExpTime, resultExpirationTime);
     }
 
 }

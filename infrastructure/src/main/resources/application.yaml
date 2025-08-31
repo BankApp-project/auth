@@ -17,6 +17,7 @@ app:
       ttl: 120s
     challenge:
       length: 32 #in bytes
+      ttl: 60s
   feature:
     verification:
       initiate:
