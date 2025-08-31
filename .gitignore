@@ -32,5 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 
-### IntelliJ ###
-.idea/
+### LLMs ###
+CLAUDE.md
