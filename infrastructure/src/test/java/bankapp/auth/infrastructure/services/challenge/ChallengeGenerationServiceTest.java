@@ -59,4 +59,11 @@ class ChallengeGenerationServiceTest {
         assertFalse(Arrays.equals(res.value(), res2.value()));
     }
 
+    @Test
+    void generate_should_return_challenge_with_32byte_long_value() {
+
+        var res = challengeGenerationService.generate();
+
+        assertThat(res.value()).hasSizeGreaterThanOrEqualTo(32);
+    }
 }

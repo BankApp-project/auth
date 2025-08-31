@@ -13,12 +13,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChallengeGenerationService implements ChallengeGenerationPort {
 
+    private final static int CHALLENGE_LENGTH = 32;
     private final SecureRandom secureRandom;
 
     @Override
     public Challenge generate() {
         var sessionId = UUID.randomUUID();
-        byte[] value = new byte[1];
+        byte[] value = new byte[CHALLENGE_LENGTH];
         secureRandom.nextBytes(value);
 
         return new Challenge(
