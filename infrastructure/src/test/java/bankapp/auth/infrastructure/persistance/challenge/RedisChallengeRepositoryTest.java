@@ -10,16 +10,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class RedisChallengeRepositoryTest implements WithRedisContainer {
 
-    public static final int TTL_IN_SECONDS = 60;
+    public static final Duration TTL = Duration.ofSeconds(60);
     private final static Clock FIXED_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
 
     @Autowired
@@ -39,7 +41,7 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     @Test
     void shouldSaveChallengeAndSetTtl() {
         // given
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL_IN_SECONDS, FIXED_CLOCK);
+        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK);
         var key = "challenge:" + challenge.sessionId();
 
         // when
@@ -50,14 +52,13 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
         assertThat(savedChallenge).isEqualTo(challenge);
 
         var ttl = redisTemplate.getExpire(key);
-        assertThat(ttl).isPositive().isLessThanOrEqualTo(TTL_IN_SECONDS);
-        assertThat(ttl).isEqualTo(TTL_IN_SECONDS);
+        assertEquals(TTL.getSeconds(), ttl);
     }
 
     @Test
     void shouldLoadChallenge() {
         // given
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL_IN_SECONDS, FIXED_CLOCK);
+        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK);
         var key = "challenge:" + challenge.sessionId();
         redisTemplate.opsForValue().set(key, challenge);
 
@@ -71,7 +72,7 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     @Test
     void shouldDeleteChallenge() {
         // given
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL_IN_SECONDS, FIXED_CLOCK);
+        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK);
         var sessionId = challenge.sessionId();
         var key = "challenge:" + sessionId;
         redisTemplate.opsForValue().set(key, challenge);
