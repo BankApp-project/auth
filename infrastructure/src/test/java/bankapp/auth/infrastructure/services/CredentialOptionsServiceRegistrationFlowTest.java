@@ -19,7 +19,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
 
     private static final AuthMode DEFAULT_AUTH_MODE = AuthMode.SMARTPHONE;
     private static final String DEFAULT_RPID = "bankapp.online";
-    private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
+    private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(30);
     private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
 
     private static final EmailAddress DEFAULT_EMAIL = new EmailAddress("test@bankapp.online");
@@ -27,7 +27,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     private static final Challenge DEFAULT_CHALLENGE = new Challenge(
             UUID.randomUUID(),
             new byte[]{123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123},
-            Duration.ofMillis(DEFAULT_TIMEOUT),
+            DEFAULT_TIMEOUT,
             DEFAULT_CLOCK
     );
 
@@ -126,7 +126,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         var timeout = res.timeout();
 
         assertNotNull(timeout);
-        assertEquals(DEFAULT_TIMEOUT, timeout);
+        assertEquals(DEFAULT_TIMEOUT.toMillis(), timeout);
     }
 
     @Test

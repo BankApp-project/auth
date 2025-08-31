@@ -24,7 +24,7 @@ public class CredentialOptionsServiceLoginFlowTest {
     private static final AuthMode DEFAULT_AUTH_MODE = AuthMode.SMARTPHONE;
     private static final String DEFAULT_RPID = "bankapp.online";
     private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
-    private static final long DEFAULT_TIMEOUT = 30000; //30s in ms
+    private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(30);
     private static final EmailAddress DEFAULT_EMAIL_ADDRESS = new EmailAddress("test@bankapp.online");
     private static final User DEFAULT_USER = new User(DEFAULT_EMAIL_ADDRESS);
     private static final List<Passkey> DEFAULT_USER_CREDENTIALS = List.of(new Passkey(
@@ -39,7 +39,7 @@ public class CredentialOptionsServiceLoginFlowTest {
     private static final Challenge DEFAULT_CHALLENGE = new Challenge(
             UUID.randomUUID(),
             ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
-            Duration.ofMillis(DEFAULT_TIMEOUT),
+            DEFAULT_TIMEOUT,
             DEFAULT_CLOCK
     );
 
@@ -71,7 +71,7 @@ public class CredentialOptionsServiceLoginFlowTest {
         var timeout = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE).timeout();
 
         assertNotNull(timeout);
-        assertEquals(DEFAULT_TIMEOUT, timeout);
+        assertEquals(DEFAULT_TIMEOUT.toMillis(), timeout);
     }
 
     @Test

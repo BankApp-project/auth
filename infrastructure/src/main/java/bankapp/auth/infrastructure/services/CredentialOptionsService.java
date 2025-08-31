@@ -12,6 +12,7 @@ import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import bankapp.auth.domain.model.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,13 +21,13 @@ public class CredentialOptionsService implements CredentialOptionsPort {
 
     private final AuthMode authMode;
     private final String rpId;
-    private final long timeout;
+    private final Duration timeout;
     private final static String PASSKEY_TYPE = "public-key";
 
     public CredentialOptionsService(
             AuthMode authMode,
             String rpId,
-            long timeout
+            Duration timeout
     ) {
         this.authMode = authMode;
         this.rpId = rpId;
@@ -42,7 +43,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, Challenge challenge) {
         return new PublicKeyCredentialRequestOptions(
                 challenge.value(),
-                timeout,
+                timeout.toMillis(),
                 rpId,
                 getAllowedCredentials(userCredentials),
                 UserVerificationRequirement.REQUIRED,
@@ -77,7 +78,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
                         getUserEntity(userHandle, userDisplayName),
                         challenge.value(),
                         getPublicKeyCredentialParametersList(),
-                        timeout,
+                        timeout.toMillis(),
                         new ArrayList<>(),
                         getAuthenticatorSelectionCriteria(),
                         getHints(),
