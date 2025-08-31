@@ -33,13 +33,16 @@ class CredentialOptionsServiceRegistrationFlowTest {
 
     CredentialOptionsService passkeyOptionsService;
 
-
     @BeforeEach
     void setup() {
-        passkeyOptionsService = new CredentialOptionsService(
-                DEFAULT_AUTH_MODE,
+        var passkeyOptionsProperties = new CredentialOptionsProperties(
                 DEFAULT_RPID,
-                DEFAULT_TIMEOUT
+                DEFAULT_TIMEOUT,
+                DEFAULT_AUTH_MODE
+        );
+
+        passkeyOptionsService = new CredentialOptionsService(
+                passkeyOptionsProperties
         );
     }
 
@@ -151,10 +154,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = new User(DEFAULT_EMAIL);
 
         // When
-        passkeyOptionsService = new CredentialOptionsService(
-                AuthMode.SMARTPHONE,
-                DEFAULT_RPID,
-                DEFAULT_TIMEOUT);
+
         var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 
         // Then
@@ -169,10 +169,13 @@ class CredentialOptionsServiceRegistrationFlowTest {
     void should_return_response_with_default_settings_when_DEFAULT_AUTH_MODE_flag_is_default() {
         //Given
         User testUser = new User(DEFAULT_EMAIL);
-        var passkeyOptionsService = new CredentialOptionsService(
-                AuthMode.STANDARD,
+        var passkeyOptionsProperties = new CredentialOptionsProperties(
                 DEFAULT_RPID,
-                DEFAULT_TIMEOUT
+                DEFAULT_TIMEOUT,
+                AuthMode.STANDARD
+        );
+        var passkeyOptionsService = new CredentialOptionsService(
+                passkeyOptionsProperties
         );
 
         // When

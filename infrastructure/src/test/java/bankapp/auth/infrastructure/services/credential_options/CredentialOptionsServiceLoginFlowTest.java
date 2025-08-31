@@ -47,10 +47,14 @@ public class CredentialOptionsServiceLoginFlowTest {
 
     @BeforeEach
     void setup() {
-        passkeyOptionsService = new CredentialOptionsService(
-                DEFAULT_AUTH_MODE,
+        var passkeyOptionsProperties = new CredentialOptionsProperties(
                 DEFAULT_RPID,
-                DEFAULT_TIMEOUT
+                DEFAULT_TIMEOUT,
+                DEFAULT_AUTH_MODE
+        );
+
+        passkeyOptionsService = new CredentialOptionsService(
+                passkeyOptionsProperties
         );
     }
 
