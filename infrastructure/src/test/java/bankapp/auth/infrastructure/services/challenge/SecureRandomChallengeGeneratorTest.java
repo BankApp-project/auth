@@ -15,10 +15,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class ChallengeGenerationServiceTest {
+class SecureRandomChallengeGeneratorTest {
 
     @Autowired
-    ChallengeGenerationService challengeGenerationService;
+    SecureRandomChallengeGenerator secureRandomChallengeGenerator;
 
     @Autowired
     ChallengeProperties properties;
@@ -28,7 +28,7 @@ class ChallengeGenerationServiceTest {
     @Test
     void generate_should_return_challenge() {
 
-        var res = challengeGenerationService.generate();
+        var res = secureRandomChallengeGenerator.generate();
 
         assertNotNull(res);
         assertInstanceOf(Challenge.class, res);
@@ -37,7 +37,7 @@ class ChallengeGenerationServiceTest {
     @Test
     void generate_should_return_challenge_with_not_null_values() {
 
-        var res = challengeGenerationService.generate();
+        var res = secureRandomChallengeGenerator.generate();
 
         assertThat(res)
                 .hasNoNullFieldsOrProperties();
@@ -46,8 +46,8 @@ class ChallengeGenerationServiceTest {
     @Test
     void generate_should_return_challenge_with_unique_sessionId() {
 
-        var res = challengeGenerationService.generate();
-        var res2 = challengeGenerationService.generate();
+        var res = secureRandomChallengeGenerator.generate();
+        var res2 = secureRandomChallengeGenerator.generate();
 
         assertNotEquals(res.sessionId(), res2.sessionId());
     }
@@ -55,8 +55,8 @@ class ChallengeGenerationServiceTest {
     @Test
     void generate_should_return_challenge_with_unique_value() {
 
-        var res = challengeGenerationService.generate();
-        var res2 = challengeGenerationService.generate();
+        var res = secureRandomChallengeGenerator.generate();
+        var res2 = secureRandomChallengeGenerator.generate();
 
         assertFalse(Arrays.equals(res.value(), res2.value()));
     }
@@ -64,7 +64,7 @@ class ChallengeGenerationServiceTest {
     @Test
     void generate_should_return_challenge_with_32byte_long_value() {
 
-        var res = challengeGenerationService.generate();
+        var res = secureRandomChallengeGenerator.generate();
 
         assertThat(res.value()).hasSizeGreaterThanOrEqualTo(32);
     }
@@ -72,9 +72,9 @@ class ChallengeGenerationServiceTest {
     @Test
     void generate_should_return_challenge_with_ttl_as_in_properties() {
 
-        challengeGenerationService = new ChallengeGenerationService(properties,new SecureRandom(), FIXED_CLOCK);
+        secureRandomChallengeGenerator = new SecureRandomChallengeGenerator(properties,new SecureRandom(), FIXED_CLOCK);
 
-        var res = challengeGenerationService.generate();
+        var res = secureRandomChallengeGenerator.generate();
 
         var resultExpirationTime = res.expirationTime();
         var expectedExpTime = Instant.now(FIXED_CLOCK).plus(properties.ttl());

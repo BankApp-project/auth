@@ -3,16 +3,16 @@ package bankapp.auth.infrastructure.services.challenge;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.UUID;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class ChallengeGenerationService implements ChallengeGenerationPort {
+public class SecureRandomChallengeGenerator implements ChallengeGenerationPort {
 
     private final ChallengeProperties properties;
     private final SecureRandom secureRandom;
