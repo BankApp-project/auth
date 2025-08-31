@@ -20,7 +20,7 @@ public class StubCredentialOptionsService implements CredentialOptionsPort {
                        user.getEmail().getValue(),
                        user.getEmail().getValue()
                 ),
-                challenge.challenge(),
+                challenge.value(),
                 null,
                 null,
                 null,

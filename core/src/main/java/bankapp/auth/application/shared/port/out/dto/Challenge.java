@@ -4,23 +4,21 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.UUID;
 
-//omfg. Session for auth with discoverable credential wont have userId. But for auth i will get userId as userHandle, so everything is fine.
-// I just need to store
 public record Challenge(
         UUID sessionId,          // The key for the cache
-        byte[] challenge,        // The cryptographic challenge
+        byte[] value,            // The cryptographic value
         Instant expirationTime   // When this context becomes invalid
 ) {
 
     public Challenge(
             UUID sessionId,
-            byte[] challenge,
+            byte[] value,
             long ttlInSeconds,
             Clock clock
     ) {
         this(
                 sessionId,
-                challenge,
+                value,
                 Instant.now(clock).plusSeconds(ttlInSeconds)
         );
     }

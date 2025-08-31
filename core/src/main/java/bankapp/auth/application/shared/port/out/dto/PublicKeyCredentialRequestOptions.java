@@ -16,7 +16,7 @@ import java.util.Map;
  * @see <a href="https://www.w3.org/TR/webauthn-3/#dictionary-assertion-options">W3C WebAuthn Level 3: PublicKeyCredentialRequestOptions</a>
  */
 public record PublicKeyCredentialRequestOptions(
-        // NOTE: For JSON serialization, any field of type byte[] (like 'challenge')
+        // NOTE: For JSON serialization, any field of type byte[] (like 'value')
         // MUST be Base64URL encoded.
 
         /*

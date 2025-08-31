@@ -38,10 +38,10 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         return getPasskeyRequestOptions(null, challenge);
     }
 
-    // TODO should calculate ttl based on challenge.expirationTime()
+    // TODO should calculate ttl based on value.expirationTime()
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, Challenge challenge) {
         return new PublicKeyCredentialRequestOptions(
-                challenge.challenge(),
+                challenge.value(),
                 timeout,
                 rpId,
                 getAllowedCredentials(userCredentials),
@@ -66,7 +66,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         return res;
     }
 
-    // TODO should calculate ttl based on challenge.expirationTime()
+    // TODO should calculate ttl based on value.expirationTime()
     public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Challenge challenge) {
         String userDisplayName = user.getEmail().getValue();
 
@@ -75,7 +75,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         return new PublicKeyCredentialCreationOptions(
                         getRpEntity(),
                         getUserEntity(userHandle, userDisplayName),
-                        challenge.challenge(),
+                        challenge.value(),
                         getPublicKeyCredentialParametersList(),
                         timeout,
                         new ArrayList<>(),

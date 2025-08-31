@@ -74,7 +74,7 @@ public class CompleteRegistrationUseCase {
     private Challenge getChallenge(CompleteRegistrationCommand command) {
         var challenge = challengeRepository.load(command.challengeId());
         if (challenge.isEmpty()) {
-            throw new CompleteRegistrationException("No such challenge with ID: " + command.challengeId());
+            throw new CompleteRegistrationException("No such value with ID: " + command.challengeId());
         }
         return challenge.get();
     }
