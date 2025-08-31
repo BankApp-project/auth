@@ -2,7 +2,6 @@ package bankapp.auth.application.registration_complete;
 
 import bankapp.auth.application.registration_complete.port.in.CompleteRegistrationCommand;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
-import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
@@ -53,8 +52,6 @@ class CompleteRegistrationUseCaseTest {
         credentialRepository = mock(CredentialRepository.class);
         userRepository = mock(UserRepository.class);
         tokenIssuingPort = mock(TokenIssuingPort.class);
-
-        LoggerPort log = mock(LoggerPort.class);
 
         command = new CompleteRegistrationCommand(DEFAULT_CHALLENGE_ID, "blob");
         useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository, userRepository, tokenIssuingPort);
