@@ -14,17 +14,22 @@ import bankapp.auth.domain.model.annotations.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+//todo read carefully this whole class
 public class CredentialOptionsService implements CredentialOptionsPort {
 
     private final static String PASSKEY_TYPE = "public-key";
 
     private final CredentialOptionsProperties properties;
+    private final Clock clock;
 
 
     @Override
@@ -32,11 +37,11 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         return getPasskeyRequestOptions(null, challenge);
     }
 
-    // TODO should calculate ttl based on value.expirationTime()
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, Challenge challenge) {
+        long timeoutMillis = getTimeoutMillis(challenge.expirationTime());
         return new PublicKeyCredentialRequestOptions(
                 challenge.value(),
-                properties.timeout().toMillis(),
+                timeoutMillis,
                 properties.rpId(),
                 getAllowedCredentials(userCredentials),
                 UserVerificationRequirement.REQUIRED,
@@ -60,8 +65,10 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         return res;
     }
 
-    // TODO should calculate ttl based on value.expirationTime()
     public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Challenge challenge) {
+
+        long timeoutMillis = getTimeoutMillis(challenge.expirationTime());
+
         String userDisplayName = user.getEmail().getValue();
 
         byte[] userHandle = getUserHandle(user.getId());
@@ -71,7 +78,7 @@ public class CredentialOptionsService implements CredentialOptionsPort {
                 getUserEntity(userHandle, userDisplayName),
                 challenge.value(),
                 getPublicKeyCredentialParametersList(),
-                properties.timeout().toMillis(),
+                timeoutMillis,
                 new ArrayList<>(),
                 getAuthenticatorSelectionCriteria(),
                 getHints(),
@@ -81,6 +88,10 @@ public class CredentialOptionsService implements CredentialOptionsPort {
         );
     }
 
+    private long getTimeoutMillis(Instant expirationTime) {
+        var timeout = Duration.between(Instant.now(clock), expirationTime);
+        return timeout.toMillis();
+    }
 
     private PublicKeyCredentialCreationOptions.PublicKeyCredentialRpEntity getRpEntity() {
         return new PublicKeyCredentialCreationOptions.PublicKeyCredentialRpEntity(properties.rpId(), properties.rpId());

@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,7 +22,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     private static final AuthMode DEFAULT_AUTH_MODE = AuthMode.SMARTPHONE;
     private static final String DEFAULT_RPID = "bankapp.online";
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(30);
-    private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
+    private static final Clock DEFAULT_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
 
     private static final EmailAddress DEFAULT_EMAIL = new EmailAddress("test@bankapp.online");
     public static final User TEST_USER = new User(DEFAULT_EMAIL);
@@ -37,12 +39,12 @@ class CredentialOptionsServiceRegistrationFlowTest {
     void setup() {
         var passkeyOptionsProperties = new CredentialOptionsProperties(
                 DEFAULT_RPID,
-                DEFAULT_TIMEOUT,
                 DEFAULT_AUTH_MODE
         );
 
         passkeyOptionsService = new CredentialOptionsService(
-                passkeyOptionsProperties
+                passkeyOptionsProperties,
+                DEFAULT_CLOCK
         );
     }
 
@@ -171,11 +173,11 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = new User(DEFAULT_EMAIL);
         var passkeyOptionsProperties = new CredentialOptionsProperties(
                 DEFAULT_RPID,
-                DEFAULT_TIMEOUT,
                 AuthMode.STANDARD
         );
         var passkeyOptionsService = new CredentialOptionsService(
-                passkeyOptionsProperties
+                passkeyOptionsProperties,
+                DEFAULT_CLOCK
         );
 
         // When

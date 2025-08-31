@@ -20,7 +20,6 @@ app:
       ttl: 60s
     credential-options:
       rp-id: "bankapp.online"
-      timeout: 60s
       auth-mode: smartphone
   feature:
     verification:

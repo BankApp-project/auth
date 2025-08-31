@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +25,7 @@ public class CredentialOptionsServiceLoginFlowTest {
 
     private static final AuthMode DEFAULT_AUTH_MODE = AuthMode.SMARTPHONE;
     private static final String DEFAULT_RPID = "bankapp.online";
-    private static final Clock DEFAULT_CLOCK = Clock.systemUTC();
+    private static final Clock DEFAULT_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(30);
     private static final EmailAddress DEFAULT_EMAIL_ADDRESS = new EmailAddress("test@bankapp.online");
     private static final User DEFAULT_USER = new User(DEFAULT_EMAIL_ADDRESS);
@@ -49,18 +51,17 @@ public class CredentialOptionsServiceLoginFlowTest {
     void setup() {
         var passkeyOptionsProperties = new CredentialOptionsProperties(
                 DEFAULT_RPID,
-                DEFAULT_TIMEOUT,
                 DEFAULT_AUTH_MODE
         );
 
         passkeyOptionsService = new CredentialOptionsService(
-                passkeyOptionsProperties
+                passkeyOptionsProperties,
+                DEFAULT_CLOCK
         );
     }
 
     @Test
     void should_return_response_with_at_least_16bytes_long_challenge() {
-        // Given
 
         // When
         var res = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE);
