@@ -25,7 +25,7 @@ public class VerificationInitiateController {
 
     private final AsyncInitiateVerificationService asyncInitiateVerificationService;
 
-    @PostMapping("/email/")
+    @PostMapping("/email")
     public ResponseEntity<Void> initiateEmailVerification(@RequestBody InitiateVerificationRequest request) {
         var command = new InitiateVerificationCommand(new EmailAddress(request.email()));
 

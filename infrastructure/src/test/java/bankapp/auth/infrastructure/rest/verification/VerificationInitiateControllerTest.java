@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(VerificationInitiateController.class)
 public class VerificationInitiateControllerTest {
 
-    public static final String VERIFICATION_INITIATE_ENDPOINT = "/verification/initiate/email/";
+    public static final String VERIFICATION_INITIATE_ENDPOINT = "/verification/initiate/email";
 
     @Autowired
     private MockMvc mockMvc;
