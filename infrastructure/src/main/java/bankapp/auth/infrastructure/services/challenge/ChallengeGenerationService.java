@@ -14,20 +14,21 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChallengeGenerationService implements ChallengeGenerationPort {
 
-    private final static int CHALLENGE_LENGTH = 32;
+    private final ChallengeProperties properties;
     private final SecureRandom secureRandom;
+    private final Clock clock;
 
     @Override
     public Challenge generate() {
         var sessionId = UUID.randomUUID();
-        byte[] value = new byte[CHALLENGE_LENGTH];
+        byte[] value = new byte[properties.length()];
         secureRandom.nextBytes(value);
 
         return new Challenge(
                 sessionId,
                 value,
                 Duration.ZERO,
-                Clock.systemUTC()
+                clock
         );
     }
 }
