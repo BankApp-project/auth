@@ -2,29 +2,29 @@ package bankapp.auth.infrastructure.persistance.challenge;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Repository
+@RequiredArgsConstructor
 public class RedisChallengeRepository implements ChallengeRepository {
 
-    private final RedisTemplate<String, Challenge> redisTemplate;
     private static final String KEY_PREFIX = "challenge:";
-
-    public RedisChallengeRepository(RedisTemplate<String, Challenge> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
+    
+    private final RedisTemplate<String, Challenge> redisTemplate;
+    private final Clock clock;
 
     @Override
     public void save(Challenge challenge) {
         var key = KEY_PREFIX + challenge.sessionId().toString();
-        var timeout = Duration.between(Instant.now(), challenge.expirationTime());
+        var timeout = Duration.between(Instant.now(clock), challenge.expirationTime());
         redisTemplate.opsForValue().set(key, challenge, timeout);
     }
 
