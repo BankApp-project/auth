@@ -66,4 +66,5 @@ class ChallengeGenerationServiceTest {
 
         assertThat(res.value()).hasSizeGreaterThanOrEqualTo(32);
     }
+
 }

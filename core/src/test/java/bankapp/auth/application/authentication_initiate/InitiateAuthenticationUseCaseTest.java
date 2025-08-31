@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.when;
 public class InitiateAuthenticationUseCaseTest {
 
     private final static Clock DEFAULT_CLOCK = Clock.systemUTC();
-    private final static long DEFAULT_CHALLENGE_TTL = 60; // In seconds
+    private final static Duration DEFAULT_CHALLENGE_TTL = Duration.ofSeconds(66); // In seconds
 
     private final static Challenge DEFAULT_CHALLENGE = new Challenge(
             UUID.randomUUID(),

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ class CompleteRegistrationUseCaseTest {
     private final static Challenge DEFAULT_CHALLENGE = new Challenge(
             DEFAULT_CHALLENGE_ID,
             new byte[]{111},
-            DEFAULT_TTL,
+            Duration.ofSeconds(DEFAULT_TTL),
             Clock.systemUTC()
     );
     private Passkey stubPasskey;

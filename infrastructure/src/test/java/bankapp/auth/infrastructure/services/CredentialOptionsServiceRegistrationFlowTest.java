@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +27,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     private static final Challenge DEFAULT_CHALLENGE = new Challenge(
             UUID.randomUUID(),
             new byte[]{123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123},
-            DEFAULT_TIMEOUT / 1000,
+            Duration.ofMillis(DEFAULT_TIMEOUT),
             DEFAULT_CLOCK
     );
 

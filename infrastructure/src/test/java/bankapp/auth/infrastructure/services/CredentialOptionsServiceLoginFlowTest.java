@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public class CredentialOptionsServiceLoginFlowTest {
     private static final Challenge DEFAULT_CHALLENGE = new Challenge(
             UUID.randomUUID(),
             ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
-            DEFAULT_TIMEOUT / 1000,
+            Duration.ofMillis(DEFAULT_TIMEOUT),
             DEFAULT_CLOCK
     );
 

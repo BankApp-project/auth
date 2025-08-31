@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.Clock;
+import java.time.Duration;
 import java.util.UUID;
 
 @Service
@@ -25,7 +26,7 @@ public class ChallengeGenerationService implements ChallengeGenerationPort {
         return new Challenge(
                 sessionId,
                 value,
-                0L,
+                Duration.ZERO,
                 Clock.systemUTC()
         );
     }

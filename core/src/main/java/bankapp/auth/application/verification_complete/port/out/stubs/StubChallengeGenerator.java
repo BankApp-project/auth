@@ -5,6 +5,7 @@ import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.util.UUID;
 
 public class StubChallengeGenerator implements ChallengeGenerationPort {
@@ -25,7 +26,7 @@ public class StubChallengeGenerator implements ChallengeGenerationPort {
         return new Challenge(
                 sessionId,
                 challengeBytes,
-                ttl,
+                Duration.ofSeconds(ttl),
                 clock
         );
     }

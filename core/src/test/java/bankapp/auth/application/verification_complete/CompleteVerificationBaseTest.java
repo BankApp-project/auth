@@ -21,6 +21,7 @@ import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.time.Clock;
+import java.time.Duration;
 
 import static org.mockito.Mockito.mock;
 
@@ -36,7 +37,7 @@ public abstract class CompleteVerificationBaseTest {
     protected static final String DEFAULT_OTP_KEY = "test@bankapp.online";
     protected static final EmailAddress DEFAULT_EMAIL = new EmailAddress(DEFAULT_OTP_KEY);
     protected static final String DEFAULT_OTP_VALUE = "123456";
-    protected static final int challengeTtl = 66; // in seconds
+    protected static final Duration challengeTtl = Duration.ofSeconds(66); // in seconds
 
     // --- SHARED DEPENDENCIES & MOCKS ---
     // Use stubs for predictable behavior and mocks for verification

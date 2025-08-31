@@ -1,6 +1,7 @@
 package bankapp.auth.application.shared.port.out.dto;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -13,13 +14,13 @@ public record Challenge(
     public Challenge(
             UUID sessionId,
             byte[] value,
-            long ttlInSeconds,
+            Duration ttl,
             Clock clock
     ) {
         this(
                 sessionId,
                 value,
-                Instant.now(clock).plusSeconds(ttlInSeconds)
+                Instant.now(clock).plus(ttl)
         );
     }
     public boolean isValid(Clock clock) {
