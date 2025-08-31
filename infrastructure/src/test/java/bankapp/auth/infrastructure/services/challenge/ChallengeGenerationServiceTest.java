@@ -27,4 +27,13 @@ class ChallengeGenerationServiceTest {
         assertThat(res)
                 .hasNoNullFieldsOrProperties();
     }
+
+    @Test
+    void generate_should_return_challenge_with_unique_sessionId() {
+
+        var res = challengeGenerationService.generate();
+        var res2 = challengeGenerationService.generate();
+
+        assertNotEquals(res.sessionId(),res2.sessionId());
+    }
 }
