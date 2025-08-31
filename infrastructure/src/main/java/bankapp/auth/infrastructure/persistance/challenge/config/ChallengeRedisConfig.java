@@ -18,11 +18,9 @@ public class ChallengeRedisConfig {
         template.setConnectionFactory(connectionFactory);
 
         Jackson2JsonRedisSerializer<Challenge> serializer = new Jackson2JsonRedisSerializer<>(objectMapper, Challenge.class);
+        template.setValueSerializer(serializer);
 
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(serializer);
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(serializer);
         return template;
     }
 }
