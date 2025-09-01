@@ -28,7 +28,7 @@ public class CredentialOptionsServiceLoginFlowTest {
     private static final Clock DEFAULT_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(30);
     private static final EmailAddress DEFAULT_EMAIL_ADDRESS = new EmailAddress("test@bankapp.online");
-    private static final User DEFAULT_USER = new User(DEFAULT_EMAIL_ADDRESS);
+    private static final User DEFAULT_USER = User.createNew(DEFAULT_EMAIL_ADDRESS);
     private static final List<Passkey> DEFAULT_USER_CREDENTIALS = List.of(new Passkey(
                 ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
                 DEFAULT_USER.getId(),

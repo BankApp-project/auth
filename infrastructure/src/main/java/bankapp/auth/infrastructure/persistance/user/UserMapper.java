@@ -16,7 +16,7 @@ public class UserMapper {
     }
 
     public User toDomainUser(JpaUser jpaUser) {
-        User user = new User(new EmailAddress(jpaUser.getEmail()));
+        User user = User.createNew(new EmailAddress(jpaUser.getEmail()));
         
         // Use reflection to set the ID since it's final and set during construction
         try {

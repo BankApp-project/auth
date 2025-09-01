@@ -37,7 +37,7 @@ public class CompleteVerificationRegistrationFlowTest extends CompleteVerificati
     @Test
     void should_return_RegistrationResponse_if_user_exists_but_is_not_enabled() {
         // Given
-        User disabledUser = new User(DEFAULT_EMAIL);
+        User disabledUser = User.createNew(DEFAULT_EMAIL);
         userRepository.save(disabledUser);
 
         // When
@@ -50,7 +50,7 @@ public class CompleteVerificationRegistrationFlowTest extends CompleteVerificati
     @Test
     void should_return_RegistrationResponse_with_already_persisted_user_when_user_exists_but_is_not_enabled() {
         // Given
-        User disabledUser = new User(DEFAULT_EMAIL);
+        User disabledUser = User.createNew(DEFAULT_EMAIL);
         userRepository.save(disabledUser);
 
         // When

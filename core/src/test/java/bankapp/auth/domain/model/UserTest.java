@@ -15,8 +15,8 @@ class UserTest {
         // Given: No existing users
 
         // When: Creating two different users
-        var user = new User(new EmailAddress("test@bankapp.online"));
-        var user2 = new User(new EmailAddress("test2@bankapp.online"));
+        var user = User.createNew(new EmailAddress("test@bankapp.online"));
+        var user2 = User.createNew(new EmailAddress("test2@bankapp.online"));
 
         // Then: Each user should have a unique ID
         assertNotEquals(user.getId(), user2.getId());
@@ -26,7 +26,7 @@ class UserTest {
     void id_should_remain_same_after_persistance() {
         // Given: User is saved in the DB
         UserRepository userRepository = new StubUserRepository();
-        var user = new User(new EmailAddress("test@bankapp.online"));
+        var user = User.createNew(new EmailAddress("test@bankapp.online"));
         userRepository.save(user);
 
         // When: User is retrieved via email address

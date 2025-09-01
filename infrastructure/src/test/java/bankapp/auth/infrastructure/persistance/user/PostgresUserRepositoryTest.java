@@ -25,7 +25,7 @@ class PostgresUserRepositoryTest implements WithPostgresContainer {
     void shouldSaveAndFindUserByEmail() {
         // Given
         EmailAddress email = new EmailAddress("test@example.com");
-        User user = new User(email);
+        User user = User.createNew(email);
         user.activate();
 
         // When
@@ -55,7 +55,7 @@ class PostgresUserRepositoryTest implements WithPostgresContainer {
     void shouldSaveUserWithDisabledStatus() {
         // Given
         EmailAddress email = new EmailAddress("disabled@example.com");
-        User user = new User(email);
+        User user = User.createNew(email);
         // User is created as disabled by default
 
         // When

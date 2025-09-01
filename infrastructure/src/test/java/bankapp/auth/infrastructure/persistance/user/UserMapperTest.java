@@ -16,7 +16,7 @@ class UserMapperTest {
     void shouldMapUserToJpaUser() {
         // Given
         EmailAddress email = new EmailAddress("test@example.com");
-        User user = new User(email);
+        User user = User.createNew(email);
         user.activate();
 
         // When
