@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_URL}:${DB_PORT:5432}/${DB_SCHEMA:test-auth}
+    username: ${DB_USERNAME:test}
+    password: ${DB_PASSWORD:test}
+    driver-class-name: org.postgresql.Driver
+    # Connection pool settings
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+  # JPA / Hibernate settings
+  jpa:
+    hibernate.ddl-auto: none
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        '[show_sql]': false
+        '[format_sql]': true
+        '[globally_quoted_identifiers]': true
