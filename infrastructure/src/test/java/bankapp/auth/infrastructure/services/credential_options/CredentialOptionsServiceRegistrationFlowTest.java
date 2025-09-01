@@ -25,7 +25,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     private static final Clock DEFAULT_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
 
     private static final EmailAddress DEFAULT_EMAIL = new EmailAddress("test@bankapp.online");
-    public static final User TEST_USER = new User(DEFAULT_EMAIL);
+    public static final User TEST_USER = User.createNew(DEFAULT_EMAIL);
     private static final Challenge DEFAULT_CHALLENGE = new Challenge(
             UUID.randomUUID(),
             new byte[]{123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123},
@@ -68,7 +68,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     @Test
     void should_return_response_with_email_as_userEntity_name_and_displayName() {
         // Given
-        User testUser = new User(DEFAULT_EMAIL);
+        User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
         var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
@@ -84,7 +84,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     @Test
     void should_return_response_with_valid_rpId() {
         // Given
-        User testUser = new User(DEFAULT_EMAIL);
+        User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
         var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
@@ -98,7 +98,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     @Test
     void should_return_response_with_valid_PublicKeyCredentialParameters() {
         // Given
-        User testUser = new User(DEFAULT_EMAIL);
+        User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
         var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
@@ -122,7 +122,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     @Test
     void should_return_response_with_valid_timeout() {
         // Given
-        User testUser = new User(DEFAULT_EMAIL);
+        User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
         var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
@@ -137,7 +137,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     @Test
     void should_return_response_with_valid_and_secure_AuthenticatorSelectionCriteria() {
         // Given
-        User testUser = new User(DEFAULT_EMAIL);
+        User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
         var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
@@ -153,7 +153,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     @Test
     void should_return_response_with_correct_settings_when_DEFAULT_AUTH_MODE_flag_is_smartphone() {
         // Given
-        User testUser = new User(DEFAULT_EMAIL);
+        User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
 
@@ -170,7 +170,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     @Test
     void should_return_response_with_default_settings_when_DEFAULT_AUTH_MODE_flag_is_default() {
         //Given
-        User testUser = new User(DEFAULT_EMAIL);
+        User testUser = User.createNew(DEFAULT_EMAIL);
         var passkeyOptionsProperties = new CredentialOptionsProperties(
                 DEFAULT_RPID,
                 AuthMode.STANDARD
@@ -196,7 +196,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
      */
     @Test
     void should_return_default_values_for_every_not_set_parameter() {
-        User testUser = new User(DEFAULT_EMAIL);
+        User testUser = User.createNew(DEFAULT_EMAIL);
 
         var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
 

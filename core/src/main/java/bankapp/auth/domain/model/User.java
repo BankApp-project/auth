@@ -10,14 +10,24 @@ import java.util.UUID;
 @Getter
 public class User {
 
-    private final UUID id = UUID.randomUUID();
+    private final UUID id;
     private final EmailAddress email;
 
     private boolean enabled;
 
-    public User(EmailAddress email) {
+    private User(EmailAddress email) {
+        this.id = UUID.randomUUID();
         this.email = email;
         this.enabled = false;
+    }
+
+    public User(UUID id, EmailAddress email, boolean enabled) {
+        this.id = id;
+        this.email = email;
+        this.enabled = enabled;
+    }
+    public static User createNew(EmailAddress email) {
+        return new User(email);
     }
 
     public void activate() {

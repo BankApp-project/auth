@@ -70,7 +70,7 @@ public class CompleteVerificationUseCase {
     }
 
     private User createAndSaveUser(EmailAddress email) {
-        User user = new User(email);
+        User user = User.createNew(email);
         userRepository.save(user);
         return user;
     }

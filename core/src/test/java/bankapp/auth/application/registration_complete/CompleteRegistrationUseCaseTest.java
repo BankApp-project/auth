@@ -59,7 +59,7 @@ class CompleteRegistrationUseCaseTest {
 
         when(sessionRepo.load(DEFAULT_CHALLENGE_ID)).thenReturn(Optional.of(DEFAULT_CHALLENGE));
 
-        testUser = new User(new EmailAddress("test@bankapp.online"));
+        testUser = User.createNew(new EmailAddress("test@bankapp.online"));
         stubPasskey = new Passkey(
                 null,
                 testUser.getId(),
