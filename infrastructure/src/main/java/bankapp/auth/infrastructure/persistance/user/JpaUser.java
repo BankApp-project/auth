@@ -8,10 +8,12 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "users", indexes = {
+        @Index(name = "idx_user_email_activated", columnList = "email, enabled")
+})
 public class JpaUser {
 
     @Id

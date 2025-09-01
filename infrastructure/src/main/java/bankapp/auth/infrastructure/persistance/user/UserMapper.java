@@ -16,22 +16,7 @@ public class UserMapper {
     }
 
     public User toDomainUser(JpaUser jpaUser) {
-        User user = User.createNew(new EmailAddress(jpaUser.getEmail()));
-        
-        // Use reflection to set the ID since it's final and set during construction
-        try {
-            var idField = User.class.getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(user, jpaUser.getId());
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to set user ID", e);
-        }
-        
-        // Set enabled status
-        if (jpaUser.isEnabled()) {
-            user.activate();
-        }
-        
-        return user;
+        var email = new EmailAddress(jpaUser.getEmail());
+        return User.reconstitute(jpaUser.getId(), email, jpaUser.isEnabled());
     }
 }

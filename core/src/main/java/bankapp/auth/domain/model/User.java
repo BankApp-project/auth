@@ -21,13 +21,18 @@ public class User {
         this.enabled = false;
     }
 
-    public User(UUID id, EmailAddress email, boolean enabled) {
+    private User(UUID id, EmailAddress email, boolean enabled) {
         this.id = id;
         this.email = email;
         this.enabled = enabled;
     }
+
     public static User createNew(EmailAddress email) {
         return new User(email);
+    }
+
+    public static User reconstitute(UUID id, EmailAddress email, boolean enabled) {
+        return new User(id, email, enabled);
     }
 
     public void activate() {
