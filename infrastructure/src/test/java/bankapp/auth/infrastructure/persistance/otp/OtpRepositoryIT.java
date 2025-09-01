@@ -1,10 +1,15 @@
 package bankapp.auth.infrastructure.persistance.otp;
 
-import bankapp.auth.infrastructure.WithRedisContainer;
 import bankapp.auth.domain.model.Otp;
+import bankapp.auth.infrastructure.WithRedisContainer;
+import bankapp.auth.infrastructure.config.ClockConfiguration;
+import bankapp.auth.infrastructure.config.JSONConfiguration;
+import bankapp.auth.infrastructure.persistance.otp.config.OtpConfiguration;
+import bankapp.auth.infrastructure.persistance.otp.config.OtpRedisConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Clock;
@@ -14,15 +19,23 @@ import java.time.ZoneId;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
+@DataRedisTest
 @ActiveProfiles("test")
-public class WithRedisOtpRepositoryIT implements WithRedisContainer {
+@Import({
+        RedisOtpRepository.class,
+        OtpRedisConfiguration.class,
+        OtpConfiguration.class,
+        ClockConfiguration.class,
+        JSONConfiguration.class
+})
+public class OtpRepositoryIT implements WithRedisContainer {
 
 
     public static final Clock CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
     public static final long TTL_IN_SECONDS = 300L;
     public static final String DEFAULT_KEY = "test-key";
     public static final String DEFAULT_VALUE = "123123";
+
     @Autowired
     private RedisOtpRepository redisOtpRepository;
 
@@ -48,7 +61,7 @@ public class WithRedisOtpRepositoryIT implements WithRedisContainer {
 
         assertThat(resOtp).isEmpty();
     }
-    
+
     @Test
     void should_delete_entry_when_valid_key_provided() {
 
