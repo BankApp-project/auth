@@ -5,6 +5,12 @@ import java.util.UUID;
 
 public class ByteArrayUtil {
 
+    /**
+     * Converts a {@link UUID} to a byte array representation.
+     *
+     * @param uuid the UUID to be converted into a byte array
+     * @return a byte array of length 16 containing the most significant and least significant bits of the UUID
+     */
     public static byte[] uuidToBytes(UUID uuid) {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
         bb.putLong(uuid.getMostSignificantBits());
