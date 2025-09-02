@@ -1,4 +1,4 @@
- <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -8,125 +8,129 @@
         <artifactId>bankapp-auth</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
-    <dependencies>
 
+    <properties>
+        <!-- The Spring Boot version is the single source of truth for most dependencies -->
+        <spring.boot.version>3.5.5</spring.boot.version> <!-- Using a recent stable version -->
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- This BOM manages the versions of Spring Boot, Testcontainers, JUnit, AssertJ, etc. -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Internal Module Dependency -->
         <dependency>
             <groupId>bankapp</groupId>
             <artifactId>bankapp-auth-core</artifactId>
-            <version>0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>${project.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-crypto</artifactId>
-            <version>6.5.3</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <!-- Spring Boot Starters (versions managed by BOM) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring.boot.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring.boot.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-            <version>${spring.boot.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>${spring.boot.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
-        <!-- For Data/Time Serialization -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.19.2</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-testcontainers -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-testcontainers</artifactId>
-            <version>${spring.boot.version}</version>
-            <scope>test</scope>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.testcontainers/junit-jupiter -->
         <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${test.containers.version}</version>
-            <scope>test</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.testcontainers/rabbitmq -->
         <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>rabbitmq</artifactId>
-            <version>${test.containers.version}</version>
-            <scope>test</scope>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.testcontainers/postgresql -->
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${test.containers.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+
+        <!-- Database & Migration -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.7</version>
+            <version>42.7.3</version> <!-- Version not managed by BOM -->
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>${flyway.version}</version>
+            <!-- Version managed by BOM -->
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-database-postgresql -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
-            <version>${flyway.version}</version>
+            <!-- Version managed by BOM -->
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.awaitility/awaitility -->
+
+        <!-- Utilities -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <!-- Version managed by BOM -->
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <!-- Version inherited from parent -->
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ============== -->
+        <!-- TEST LIBRARIES -->
+        <!-- ============== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <!-- This includes JUnit 5, AssertJ, Mockito, etc. No need to declare them again. -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+            <!-- Version managed by BOM -->
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+            <!-- Version managed by BOM -->
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+            <!-- Version managed by BOM -->
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>rabbitmq</artifactId>
+            <scope>test</scope>
+            <!-- Version managed by BOM -->
+        </dependency>
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>4.3.0</version>
             <scope>test</scope>
+            <!-- Version managed by BOM -->
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>2.3.232</version>
             <scope>test</scope>
+            <!-- Version managed by BOM -->
         </dependency>
     </dependencies>
-    <properties>
-        <test.containers.version>1.21.3</test.containers.version>
-        <spring.boot.version>3.5.5</spring.boot.version>
-        <flyway.version>11.11.2</flyway.version>
-
-    </properties>
 </project>

@@ -6,8 +6,6 @@
     <groupId>bankapp</groupId>
     <artifactId>bankapp-auth</artifactId>
     <version>0.1-SNAPSHOT</version>
-
-
     <packaging>pom</packaging>
 
     <modules>
@@ -15,65 +13,57 @@
         <module>infrastructure</module>
     </modules>
 
-    <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <optional>true</optional>
-            <scope>provided</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.13.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>5.13.3</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>4.0.0-M1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <properties>
+        <!-- Project Settings -->
+        <java.version>24</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Dependency Versions -->
+        <lombok.version>1.18.38</lombok.version>
+
+        <!-- Maven Plugin Versions -->
+        <maven.compiler.version>3.14.0</maven.compiler.version>
+        <maven.surefire.version>3.5.3</maven.surefire.version>
+    </properties>
+
+        <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
-            </plugin>
-        </plugins>
+        <!--
+        The pluginManagement section centralizes plugin versions and configurations.
+        Child modules inherit these settings when they use the plugin.
+        -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.version}</version>
+                    <configuration>
+                        <!-- Use <release> for modern Java versions -->
+                        <release>${java.version}</release>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
-
-    <properties>
-        <java.version>21</java.version>
-        <lombok.version>1.18.38</lombok.version>
-    </properties>
 </project>
