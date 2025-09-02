@@ -11,7 +11,7 @@
 
     <properties>
         <!-- The Spring Boot version is the single source of truth for most dependencies -->
-        <spring.boot.version>3.5.5</spring.boot.version> <!-- Using a recent stable version -->
+        <spring.boot.version>4.0.0-M2</spring.boot.version> <!-- Using a recent stable version -->
     </properties>
 
     <dependencyManagement>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.3</version> <!-- Version not managed by BOM -->
+            <version>42.7.7</version> <!-- Version not managed by BOM -->
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
