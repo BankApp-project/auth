@@ -6,10 +6,10 @@ import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
-import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,7 @@ class CompleteRegistrationUseCaseTest {
             Duration.ofSeconds(DEFAULT_TTL),
             Clock.systemUTC()
     );
-    private Passkey stubPasskey;
+    private PasskeyRegistrationData stubRegistrationData;
     private User testUser;
 
     private ChallengeRepository sessionRepo;
@@ -60,17 +60,23 @@ class CompleteRegistrationUseCaseTest {
         when(sessionRepo.load(DEFAULT_CHALLENGE_ID)).thenReturn(Optional.of(DEFAULT_CHALLENGE));
 
         testUser = User.createNew(new EmailAddress("test@bankapp.online"));
-        stubPasskey = new Passkey(
-                null,
+        stubRegistrationData = new PasskeyRegistrationData(
+                new byte[]{123},
                 testUser.getId(),
-                null,
+                "public-key",
+                "public key array".getBytes(),
                 0L,
                 false,
                 false,
-                null
+                false,
+                null,
+                null,
+                "attestationObject".getBytes(),
+                "attestationClientData".getBytes()
         );
 
-        when(webAuthnPort.confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), any())).thenReturn(stubPasskey);
+
+        when(webAuthnPort.confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), any())).thenReturn(stubRegistrationData);
         when(userRepository.findById(any())).thenReturn(Optional.of(testUser));
     }
 
@@ -118,7 +124,7 @@ class CompleteRegistrationUseCaseTest {
 
         useCase.handle(command);
 
-        verify(credentialRepository).save(stubPasskey);
+        verify(credentialRepository).save(stubRegistrationData);
     }
 
     @Test

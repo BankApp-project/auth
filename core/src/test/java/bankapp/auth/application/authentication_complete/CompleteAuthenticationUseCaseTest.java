@@ -144,7 +144,7 @@ public class CompleteAuthenticationUseCaseTest {
                 .thenReturn(updatedCredential);
         useCase.handle(command);
         // Then
-        verify(credentialRepository).save(eq(updatedCredential));
+        verify(credentialRepository).update(eq(updatedCredential));
     }
 
 

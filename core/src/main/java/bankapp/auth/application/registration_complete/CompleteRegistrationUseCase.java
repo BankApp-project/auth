@@ -7,7 +7,7 @@ import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.domain.model.Passkey;
+import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
@@ -38,17 +38,16 @@ public class CompleteRegistrationUseCase {
         this.tokenIssuer = tokenIssuingPort;
     }
 
-    //deleted logs for now. it was hard to read flow.
     public AuthenticationGrant handle(@NonNull CompleteRegistrationCommand command) {
         var challenge = getChallenge(command);
 
-        Passkey credential = verifyAndExtractCredentialRecord(command, challenge);
+        var credential = verifyAndExtractCredentialRecord(command, challenge);
 
         saveCredentialRecord(credential);
 
         challengeRepository.delete(command.challengeId());
 
-        User user = fetchUser(credential.getUserHandle());
+        User user = fetchUser(credential.userHandle());
 
         user.activate();
 
@@ -79,8 +78,8 @@ public class CompleteRegistrationUseCase {
         return challenge.get();
     }
 
-    private Passkey verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge challenge) {
-        Passkey credential;
+    private PasskeyRegistrationData verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge challenge) {
+        PasskeyRegistrationData credential;
         try {
             credential = webAuthnPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), challenge);
         } catch (Exception e) {
@@ -90,7 +89,7 @@ public class CompleteRegistrationUseCase {
         return credential;
     }
 
-    private void saveCredentialRecord(Passkey credential) {
+    private void saveCredentialRecord(PasskeyRegistrationData credential) {
         try {
             credentialRepository.save(credential);
         } catch (CredentialAlreadyExistsException e) {
