@@ -3,6 +3,7 @@ package bankapp.auth.infrastructure.persistance.user;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.infrastructure.WithPostgresContainer;
+import bankapp.auth.infrastructure.config.JSONConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -16,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @SpringJUnitConfig
-@Import({PostgresUserRepository.class, UserMapper.class})
+@Import({PostgresUserRepository.class, UserMapper.class, JSONConfiguration.class})
 @ActiveProfiles("test-postgres")
 class PostgresUserRepositoryTest implements WithPostgresContainer {
 
