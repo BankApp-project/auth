@@ -32,7 +32,7 @@ public class Passkey {
     private final byte[] id;
 
     /*
-     * Corresponding User ID as a byte array
+     * Corresponding User ID
      */
     private final UUID userHandle;
 
