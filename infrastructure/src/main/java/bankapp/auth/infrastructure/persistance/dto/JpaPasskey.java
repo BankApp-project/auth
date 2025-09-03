@@ -1,6 +1,11 @@
 package bankapp.auth.infrastructure.persistance.dto;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
+import bankapp.auth.infrastructure.persistance.dto.converters.JsonToMapConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -21,7 +26,8 @@ import java.util.UUID;
  */
 @Getter
 @EqualsAndHashCode
-public class CredentialRecord {
+@Entity
+public class JpaPasskey {
 
     // === Core Fields Required for Authentication ===
 
@@ -30,22 +36,27 @@ public class CredentialRecord {
      * identifier for the credential, used to look it up during authentication.
      * Stored as the raw byte array.
      */
+    @Id
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
     private final byte[] id;
 
     /*
-     * Corresponding User ID as a byte array
+     * Corresponding User ID
      */
+    @Column(name = "user_handle", nullable = false, updatable = false, unique = true)
     private final UUID userHandle;
 
     /*
      * The credential type. For WebAuthn, this MUST be the string "public-key".
      */
+    @Column(name = "type", nullable = false)
     private final String type;
 
     /*
      * The COSE-formatted public key of the credential. The Relying Party uses
      * this key to verify authentication signatures from the user's authenticator.
      */
+    @Column(name = "public_key", nullable = false, updatable = false, unique = true)
     private final byte[] publicKey;
 
     /*
@@ -54,12 +65,14 @@ public class CredentialRecord {
      * help detect cloned authenticators.
      * NOTE: This field is not final to allow for modification.
      */
+    @Column(name = "sign_count", nullable = false)
     private long signCount;
 
     /*
      * A flag indicating that the user has been successfully verified (e.g., via PIN
      * or biometrics) for this credential at least once.
      */
+    @Column(name = "uv_initialized", nullable = false)
     private final boolean uvInitialized;
 
     // === Optional Flags and Metadata ===
@@ -68,24 +81,30 @@ public class CredentialRecord {
      * A flag indicating if the authenticator reported that the credential is
      * "backup eligible".
      */
+    @Column(name = "backup_eligible", nullable = false)
     private final boolean backupEligible;
 
     /*
      * A flag indicating if the authenticator reported that the credential is
      * currently "backed up".
      */
+    @Column(name = "backup_state", nullable = false)
     private final boolean backupState;
 
     /*
      * A list of authenticator transport methods (e.g., "internal", "usb", "nfc")
      * that the client believes can be used to exercise the credential. May be empty.
      */
+    // persist as string
+    @Column(name = "transports")
     private final List<AuthenticatorTransport> transports;
 
     /*
      * The client extension outputs created by the authenticator for this
      * credential during the original registration ceremony. Can be null.
      */
+    @Convert(converter = JsonToMapConverter.class)
+    @Column(name = "client_extensions", columnDefinition = "JSONB")
     private final Map<String, Object> extensions;
 
     // === Attestation Data for Auditing and Verification ===
@@ -96,6 +115,7 @@ public class CredentialRecord {
      * inspect the credential's attestation statement at any time for auditing,
      * such as to verify the authenticator's model or certification level.
      */
+    @Column(name = "attestation", nullable = false)
     private final byte[] attestationObject;
 
     /*
@@ -103,12 +123,13 @@ public class CredentialRecord {
      * byte array. Storing this, along with the attestationObject, allows the
      * Relying Party to re-verify the original attestation signature at a later date.
      */
+    @Column(name = "attestation_client_data")
     private final byte[] attestationClientDataJSON;
 
     /**
      * Constructor to initialize all fields.
      */
-    public CredentialRecord(
+    public JpaPasskey(
             byte[] id,
             UUID userHandle,
             String type,
@@ -136,7 +157,7 @@ public class CredentialRecord {
         this.attestationClientDataJSON = attestationClientDataJSON;
     }
 
-    public CredentialRecord signCountIncrement() {
+    public JpaPasskey signCountIncrement() {
         this.signCount++;
         return this;
     }
