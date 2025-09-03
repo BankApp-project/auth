@@ -1,6 +1,8 @@
 package bankapp.auth.infrastructure.persistance.dto.converters;
 
 import bankapp.auth.infrastructure.config.JSONConfiguration;
+import bankapp.auth.infrastructure.persistance.passkey.converters.JsonConverterException;
+import bankapp.auth.infrastructure.persistance.passkey.converters.JsonToMapConverter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

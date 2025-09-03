@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.persistance.dto.converters;
+package bankapp.auth.infrastructure.persistance.passkey.converters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

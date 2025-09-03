@@ -1,7 +1,7 @@
-package bankapp.auth.infrastructure.persistance.dto;
+package bankapp.auth.infrastructure.persistance.passkey;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
-import bankapp.auth.infrastructure.persistance.dto.converters.JsonToMapConverter;
+import bankapp.auth.infrastructure.persistance.passkey.converters.JsonToMapConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;

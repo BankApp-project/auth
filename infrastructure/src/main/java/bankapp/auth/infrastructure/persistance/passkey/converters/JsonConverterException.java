@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.persistance.dto.converters;
+package bankapp.auth.infrastructure.persistance.passkey.converters;
 
 public class JsonConverterException extends RuntimeException{
 
