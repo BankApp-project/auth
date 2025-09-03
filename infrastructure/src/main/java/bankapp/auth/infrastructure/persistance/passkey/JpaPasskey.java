@@ -175,6 +175,11 @@ public class JpaPasskey {
         return this;
     }
 
+    public JpaPasskey signCountUpdate(long signCount) {
+        this.signCount = signCount;
+        return this;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
