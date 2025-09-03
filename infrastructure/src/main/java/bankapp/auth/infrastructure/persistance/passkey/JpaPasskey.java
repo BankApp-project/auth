@@ -6,12 +6,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.hibernate.proxy.HibernateProxy;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A library-agnostic representation of a Credential Record, which is the data
@@ -25,7 +23,6 @@ import java.util.UUID;
  * @see <a href="https://www.w3.org/TR/webauthn-3/#credential-record">W3C WebAuthn Level 3: Credential Record</a>
  */
 @Getter
-@EqualsAndHashCode
 @Entity
 public class JpaPasskey {
 
@@ -38,32 +35,31 @@ public class JpaPasskey {
      */
     @Id
     @Column(name = "id", nullable = false, updatable = false, unique = true)
-    private final byte[] id;
+    private byte[] id;
 
     /*
      * Corresponding User ID
      */
     @Column(name = "user_handle", nullable = false, updatable = false, unique = true)
-    private final UUID userHandle;
+    private UUID userHandle;
 
     /*
      * The credential type. For WebAuthn, this MUST be the string "public-key".
      */
     @Column(name = "type", nullable = false)
-    private final String type;
+    private String type;
 
     /*
      * The COSE-formatted public key of the credential. The Relying Party uses
      * this key to verify authentication signatures from the user's authenticator.
      */
     @Column(name = "public_key", nullable = false, updatable = false, unique = true)
-    private final byte[] publicKey;
+    private byte[] publicKey;
 
     /*
      * The signature counter of the credential. The Relying Party MUST store
      * this value and verify that it increases with each new authentication to
      * help detect cloned authenticators.
-     * NOTE: This field is not final to allow for modification.
      */
     @Column(name = "sign_count", nullable = false)
     private long signCount;
@@ -73,7 +69,7 @@ public class JpaPasskey {
      * or biometrics) for this credential at least once.
      */
     @Column(name = "uv_initialized", nullable = false)
-    private final boolean uvInitialized;
+    private boolean uvInitialized;
 
     // === Optional Flags and Metadata ===
 
@@ -82,14 +78,14 @@ public class JpaPasskey {
      * "backup eligible".
      */
     @Column(name = "backup_eligible", nullable = false)
-    private final boolean backupEligible;
+    private boolean backupEligible;
 
     /*
      * A flag indicating if the authenticator reported that the credential is
      * currently "backed up".
      */
     @Column(name = "backup_state", nullable = false)
-    private final boolean backupState;
+    private boolean backupState;
 
     /*
      * A list of authenticator transport methods (e.g., "internal", "usb", "nfc")
@@ -97,7 +93,7 @@ public class JpaPasskey {
      */
     // persist as string
     @Column(name = "transports")
-    private final List<AuthenticatorTransport> transports;
+    private List<AuthenticatorTransport> transports;
 
     /*
      * The client extension outputs created by the authenticator for this
@@ -105,7 +101,7 @@ public class JpaPasskey {
      */
     @Convert(converter = JsonToMapConverter.class)
     @Column(name = "client_extensions", columnDefinition = "JSONB")
-    private final Map<String, Object> extensions;
+    private Map<String, Object> extensions;
 
     // === Attestation Data for Auditing and Verification ===
 
@@ -116,7 +112,7 @@ public class JpaPasskey {
      * such as to verify the authenticator's model or certification level.
      */
     @Column(name = "attestation", nullable = false)
-    private final byte[] attestationObject;
+    private byte[] attestationObject;
 
     /*
      * The raw `clientDataJSON` received during registration. This is a UTF-8 encoded
@@ -124,7 +120,7 @@ public class JpaPasskey {
      * Relying Party to re-verify the original attestation signature at a later date.
      */
     @Column(name = "attestation_client_data")
-    private final byte[] attestationClientDataJSON;
+    private byte[] attestationClientDataJSON;
 
     /**
      * Constructor to initialize all fields.
@@ -143,6 +139,19 @@ public class JpaPasskey {
             byte[] attestationObject,
             byte[] attestationClientDataJSON
     ) {
+        // Validate required fields
+        if (id == null || id.length == 0) {
+            throw new IllegalArgumentException("Credential ID cannot be null or empty");
+        }
+        if (userHandle == null) {
+            throw new IllegalArgumentException("User handle cannot be null");
+        }
+        if (type == null || type.trim().isEmpty()) {
+            throw new IllegalArgumentException("Type cannot be null or empty");
+        }
+        if (publicKey == null || publicKey.length == 0) {
+            throw new IllegalArgumentException("Public key cannot be null or empty");
+        }
         this.id = id;
         this.userHandle = userHandle;
         this.type = type;
@@ -157,8 +166,28 @@ public class JpaPasskey {
         this.attestationClientDataJSON = attestationClientDataJSON;
     }
 
+    protected JpaPasskey() {
+        // for JPA
+    }
+
     public JpaPasskey signCountIncrement() {
         this.signCount++;
         return this;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        JpaPasskey that = (JpaPasskey) o;
+        return getId() != null && Arrays.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
