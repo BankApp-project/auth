@@ -34,15 +34,24 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
         return Optional.of(passkey);
     }
 
-    // user handle
     @Override
     public List<Passkey> loadForUserId(UUID userId) {
-        return List.of();
+        var res = jpaPasskeyRepository.findAllByUserHandle(userId);
+
+        return res.stream()
+                .map(mapper::toDomainPasskey)
+                .toList();
     }
 
     @Override
     public void save(PasskeyRegistrationData passkeyRegistrationData) throws CredentialAlreadyExistsException {
-        var jpaPasskey = new JpaPasskey(
+        var jpaPasskey = mapToJpaPasskey(passkeyRegistrationData);
+
+        jpaPasskeyRepository.save(jpaPasskey);
+    }
+
+    private JpaPasskey mapToJpaPasskey(PasskeyRegistrationData passkeyRegistrationData) {
+        return new JpaPasskey(
                 passkeyRegistrationData.id(),
                 passkeyRegistrationData.userHandle(),
                 passkeyRegistrationData.type(),
@@ -56,8 +65,6 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
                 passkeyRegistrationData.attestationObject(),
                 passkeyRegistrationData.attestationClientDataJSON()
         );
-
-        jpaPasskeyRepository.save(jpaPasskey);
     }
 
     /// This method updates signCount
