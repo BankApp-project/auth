@@ -1,15 +1,16 @@
 package bankapp.auth.infrastructure.persistance.passkey.dto;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
+import bankapp.auth.infrastructure.persistance.passkey.converters.AuthenticatorTransportConverter;
 import bankapp.auth.infrastructure.persistance.passkey.converters.JsonToMapConverter;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * A library-agnostic representation of a Credential Record, which is the data
@@ -22,8 +23,12 @@ import java.util.*;
  *
  * @see <a href="https://www.w3.org/TR/webauthn-3/#credential-record">W3C WebAuthn Level 3: Credential Record</a>
  */
-@Getter
 @Entity
+@Getter
+@Table(name = "jpa_passkey", indexes = {
+        @Index(name = "idx_user_userHandle", columnList = "user_handle")
+        // index for public_key too?
+})
 public class JpaPasskey {
 
     // === Core Fields Required for Authentication ===
@@ -92,7 +97,8 @@ public class JpaPasskey {
      * that the client believes can be used to exercise the credential. May be empty.
      */
     // persist as string
-    @Column(name = "transports")
+    @Convert(converter = AuthenticatorTransportConverter.class)
+    @Column(name = "transports", columnDefinition = "VARCHAR")
     private List<AuthenticatorTransport> transports;
 
     /*
@@ -100,7 +106,8 @@ public class JpaPasskey {
      * credential during the original registration ceremony. Can be null.
      */
     @Convert(converter = JsonToMapConverter.class)
-    @Column(name = "client_extensions", columnDefinition = "JSONB")
+    //todo check why this has to be varchar, and not JSONB
+    @Column(name = "client_extensions", columnDefinition = "VARCHAR")
     private Map<String, Object> extensions;
 
     // === Attestation Data for Auditing and Verification ===
