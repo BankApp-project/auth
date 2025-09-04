@@ -5,11 +5,12 @@ import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.domain.model.Passkey;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface PasskeyRepository {
 
-    Passkey load(UUID credentialId);
+    Optional<Passkey> load(UUID credentialId);
 
     /**
      * Loads credential records for the given ID.

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -20,12 +21,20 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
     private final JpaToEntityPasskeyMapper mapper;
 
     @Override
-    public Passkey load(byte[] credentialId) {
-        var jpaPasskey = jpaPasskeyRepository.findById(credentialId).get();
+    public Optional<Passkey> load(UUID credentialId) {
+        var jpaPasskeyOptional = jpaPasskeyRepository.findById(credentialId);
 
-        return mapper.toDomainPasskey(jpaPasskey);
+        if (jpaPasskeyOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var jpaPasskey = jpaPasskeyOptional.get();
+        var passkey = mapper.toDomainPasskey(jpaPasskey);
+
+        return Optional.of(passkey);
     }
 
+    // user handle
     @Override
     public List<Passkey> loadForUserId(UUID userId) {
         return List.of();

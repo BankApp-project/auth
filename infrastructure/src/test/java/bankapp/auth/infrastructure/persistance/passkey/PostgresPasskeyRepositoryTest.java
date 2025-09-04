@@ -2,39 +2,47 @@ package bankapp.auth.infrastructure.persistance.passkey;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
-import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.WithPostgresContainer;
+import com.github.f4b6a3.uuid.alt.GUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.security.SecureRandom;
+import java.time.Clock;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
 @ActiveProfiles("test-postgres")
 public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
 
-    public static final byte[] CREDENTIAL_ID = "credential-id-123".getBytes();
-
     @Autowired
     private PostgresPasskeyRepository repo;
 
+    @Autowired
+    private Clock clock;
+    @Autowired
+    private SecureRandom secureRandom;
+
     @Test
     public void should_return_list_of_passkeys_of_saved_elements() {
-        var registrationData = createSampleRegistrationData();
 
+        var registrationData = createSampleRegistrationData();
+        var credentialId = registrationData.id();
         repo.save(registrationData);
 
-        Passkey loadedPasskey = repo.load(CREDENTIAL_ID);
+       var loadedPasskeyOpt = repo.load(credentialId);
 
+        assertTrue(loadedPasskeyOpt.isPresent());
+
+        var loadedPasskey = loadedPasskeyOpt.get();
         assertNotNull(loadedPasskey);
         assertEquals(registrationData.id(), loadedPasskey.getId());
         assertThat(loadedPasskey)
@@ -44,9 +52,17 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
     }
 
     private PasskeyRegistrationData createSampleRegistrationData() {
+        var userId = UUID.randomUUID();
+        return createSampleRegistrationData(userId);
+    }
+
+    private PasskeyRegistrationData createSampleRegistrationData(UUID userHandle) {
+
+        var credentialId = GUID.v7(clock.instant(),secureRandom).toUUID();
+
         return new PasskeyRegistrationData(
-                CREDENTIAL_ID,
-                UUID.randomUUID(),
+                credentialId,
+                userHandle,
                 "public-key",
                 "public-key-bytes".getBytes(),
                 100L,
@@ -58,5 +74,22 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
                 "attestation-object-bytes".getBytes(),
                 "client-data-json-bytes".getBytes()
         );
+    }
+
+    @Test
+    void load_should_return_empty_optional_if_values_not_present() {
+        var res = repo.load(UUID.randomUUID());
+
+        assertThat(res).isEmpty();
+    }
+
+    @Test
+    void loadForUserId_should_load_passkey_list_for_given_user() {
+
+    }
+
+    @Test
+    void update_should_update_signCount_of_passkey_record() {
+
     }
 }

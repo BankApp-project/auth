@@ -59,7 +59,7 @@ public class CompleteAuthenticationUseCaseTest {
 
         passkey = getCredentialRecord();
         credentialId = passkey.getId();
-        when(passkeyRepository.load(credentialId)).thenReturn(passkey);
+        when(passkeyRepository.load(credentialId)).thenReturn(Optional.of(passkey));
         when(webAuthnPort.confirmAuthenticationChallenge(
                 authenticationResponseJSON,
                 TEST_CHALLENGE,

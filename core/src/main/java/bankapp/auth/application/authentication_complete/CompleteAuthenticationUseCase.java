@@ -42,7 +42,10 @@ public class CompleteAuthenticationUseCase {
 
     private Passkey verifyChallengeAndUpdateCredentialRecord(CompleteAuthenticationCommand command, Challenge session) {
         try {
-            var credentialRecord = passkeyRepository.load(command.credentialId());
+            var credentialRecordOpt = passkeyRepository.load(command.credentialId());
+
+            var credentialRecord = credentialRecordOpt.orElseThrow();
+
             return webAuthnPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session, credentialRecord);
         } catch (RuntimeException e) {
             throw new CompleteAuthenticationException("Failed to confirm authentication value: " + e.getMessage(), e);
