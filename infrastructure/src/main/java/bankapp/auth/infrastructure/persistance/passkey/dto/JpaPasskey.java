@@ -23,6 +23,7 @@ import java.util.UUID;
  *
  * @see <a href="https://www.w3.org/TR/webauthn-3/#credential-record">W3C WebAuthn Level 3: Credential Record</a>
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Getter
 @Table(name = "jpa_passkey", indexes = {
@@ -45,7 +46,7 @@ public class JpaPasskey {
     /*
      * Corresponding User ID
      */
-    @Column(name = "user_handle", nullable = false, updatable = false, unique = true)
+    @Column(name = "user_handle", nullable = false, updatable = false)
     private UUID userHandle;
 
     /*

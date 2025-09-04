@@ -26,9 +26,6 @@ CREATE TABLE users
 ALTER TABLE jpa_passkey
     ADD CONSTRAINT uc_jpa_passkey_public_key UNIQUE (public_key);
 
-ALTER TABLE jpa_passkey
-    ADD CONSTRAINT uc_jpa_passkey_user_handle UNIQUE (user_handle);
-
 ALTER TABLE users
     ADD CONSTRAINT uc_users_email UNIQUE (email);
 
