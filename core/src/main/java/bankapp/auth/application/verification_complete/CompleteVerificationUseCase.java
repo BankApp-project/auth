@@ -2,7 +2,7 @@ package bankapp.auth.application.verification_complete;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
-import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
@@ -20,21 +20,21 @@ public class CompleteVerificationUseCase {
 
     private final ChallengeRepository challengeRepository;
     private final UserRepository userRepository;
-    private final CredentialRepository credentialRepository;
+    private final PasskeyRepository passkeyRepository;
 
     private final CredentialOptionsPort credentialOptionsPort;
     private final ChallengeGenerationPort challengeGenerator;
 
     public CompleteVerificationUseCase(
             @NotNull ChallengeRepository challengeRepository,
-            @NotNull CredentialRepository credentialRepository,
+            @NotNull PasskeyRepository passkeyRepository,
             @NotNull UserRepository userRepository,
             @NotNull CredentialOptionsPort credentialOptionsPort,
             @NotNull ChallengeGenerationPort challengeGenerator,
             @NotNull OtpService otpService
     ) {
         this.challengeRepository = challengeRepository;
-        this.credentialRepository = credentialRepository;
+        this.passkeyRepository = passkeyRepository;
         this.userRepository = userRepository;
         this.credentialOptionsPort = credentialOptionsPort;
         this.challengeGenerator = challengeGenerator;
@@ -84,7 +84,7 @@ public class CompleteVerificationUseCase {
     }
 
     private LoginResponse getLoginResponse(User user, Challenge challenge) {
-        var userCredentials = credentialRepository.loadForUserId(user.getId());
+        var userCredentials = passkeyRepository.loadForUserId(user.getId());
         var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge);
         return new LoginResponse(passkeyOptions, challenge.sessionId());
     }

@@ -5,7 +5,7 @@ import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
-import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubChallengeRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
@@ -43,7 +43,7 @@ public class CompleteAuthenticationUseCaseTest {
 
     private ChallengeRepository sessionRepo;
     private WebAuthnPort webAuthnPort;
-    private CredentialRepository credentialRepository;
+    private PasskeyRepository passkeyRepository;
     private TokenIssuingPort tokenIssuingPort;
 
     private CompleteAuthenticationUseCase useCase;
@@ -55,11 +55,11 @@ public class CompleteAuthenticationUseCaseTest {
         sessionRepo.save(TEST_CHALLENGE);
 
         webAuthnPort = mock(WebAuthnPort.class);
-        credentialRepository = mock(CredentialRepository.class);
+        passkeyRepository = mock(PasskeyRepository.class);
 
         passkey = getCredentialRecord();
         credentialId = passkey.getId();
-        when(credentialRepository.load(credentialId)).thenReturn(passkey);
+        when(passkeyRepository.load(credentialId)).thenReturn(passkey);
         when(webAuthnPort.confirmAuthenticationChallenge(
                 authenticationResponseJSON,
                 TEST_CHALLENGE,
@@ -68,7 +68,7 @@ public class CompleteAuthenticationUseCaseTest {
 
         tokenIssuingPort = mock(TokenIssuingPort.class);
 
-        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository, tokenIssuingPort);
+        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, passkeyRepository, tokenIssuingPort);
         command = new CompleteAuthenticationCommand(DEFAULT_SESSION_ID, authenticationResponseJSON, credentialId);
     }
 
@@ -88,7 +88,7 @@ public class CompleteAuthenticationUseCaseTest {
     @Test
     void should_load_authSession_from_repository() {
         sessionRepo = mock(ChallengeRepository.class);
-        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, credentialRepository, tokenIssuingPort);
+        useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnPort, passkeyRepository, tokenIssuingPort);
 
         when(sessionRepo.load(eq(DEFAULT_SESSION_ID))).thenReturn(Optional.of(TEST_CHALLENGE));
 
@@ -133,7 +133,7 @@ public class CompleteAuthenticationUseCaseTest {
         // When & Then
         useCase.handle(command);
 
-        verify(credentialRepository).load(eq(credentialId));
+        verify(passkeyRepository).load(eq(credentialId));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class CompleteAuthenticationUseCaseTest {
                 .thenReturn(updatedCredential);
         useCase.handle(command);
         // Then
-        verify(credentialRepository).update(eq(updatedCredential));
+        verify(passkeyRepository).update(eq(updatedCredential));
     }
 
 
@@ -173,7 +173,7 @@ public class CompleteAuthenticationUseCaseTest {
     @Test
     void should_not_delete_challenge_when_fails_to_load_credential() {
         // Given
-        when(credentialRepository.load(credentialId)).thenThrow(new RuntimeException("Failed to load credential"));
+        when(passkeyRepository.load(credentialId)).thenThrow(new RuntimeException("Failed to load credential"));
 
         // When & Then
         assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));

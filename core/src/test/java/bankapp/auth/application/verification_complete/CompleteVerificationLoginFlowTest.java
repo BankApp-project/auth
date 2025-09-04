@@ -1,7 +1,7 @@
 package bankapp.auth.application.verification_complete;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
@@ -50,7 +50,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         // Create a realistic dummy Passkey for testing purposes
         var credentials = getPasskeys();
 
-        var mockCredentialRepository = mock(CredentialRepository.class);
+        var mockCredentialRepository = mock(PasskeyRepository.class);
         var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
         when(mockCredentialRepository.loadForUserId(defaultUser.getId())).thenReturn(credentials);
 
@@ -81,7 +81,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         when(mockChallengeGenerator.generate()).thenReturn(challenge);
 
         var useCase = new CompleteVerificationUseCase(
-                challengeRepository, credentialRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator,
+                challengeRepository, passkeyRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator,
                 otpService);
 
         // When

@@ -7,7 +7,7 @@ import bankapp.auth.domain.model.Passkey;
 import java.util.List;
 import java.util.UUID;
 
-public interface CredentialRepository {
+public interface PasskeyRepository {
 
     Passkey load(byte[] credentialId);
 

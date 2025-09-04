@@ -8,7 +8,7 @@ import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
-import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
@@ -37,7 +37,7 @@ class CompleteRegistrationUseCaseTest {
     private User testUser;
 
     private ChallengeRepository sessionRepo;
-    private CredentialRepository credentialRepository;
+    private PasskeyRepository passkeyRepository;
     private UserRepository userRepository;
     private WebAuthnPort webAuthnPort;
     private TokenIssuingPort tokenIssuingPort;
@@ -49,12 +49,12 @@ class CompleteRegistrationUseCaseTest {
     void setUp() {
         sessionRepo = mock(ChallengeRepository.class);
         webAuthnPort = mock(WebAuthnPort.class);
-        credentialRepository = mock(CredentialRepository.class);
+        passkeyRepository = mock(PasskeyRepository.class);
         userRepository = mock(UserRepository.class);
         tokenIssuingPort = mock(TokenIssuingPort.class);
 
         command = new CompleteRegistrationCommand(DEFAULT_CHALLENGE_ID, "blob");
-        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, credentialRepository, userRepository, tokenIssuingPort);
+        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, passkeyRepository, userRepository, tokenIssuingPort);
 
 
         when(sessionRepo.load(DEFAULT_CHALLENGE_ID)).thenReturn(Optional.of(DEFAULT_CHALLENGE));
@@ -124,7 +124,7 @@ class CompleteRegistrationUseCaseTest {
 
         useCase.handle(command);
 
-        verify(credentialRepository).save(stubRegistrationData);
+        verify(passkeyRepository).save(stubRegistrationData);
     }
 
     @Test
@@ -148,7 +148,7 @@ class CompleteRegistrationUseCaseTest {
     @Test
     void should_not_delete_session_when_credential_save_fails() {
         // Given
-        doThrow(new RuntimeException("Database error")).when(credentialRepository).save(any());
+        doThrow(new RuntimeException("Database error")).when(passkeyRepository).save(any());
 
         // When & Then
         assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
@@ -189,7 +189,7 @@ class CompleteRegistrationUseCaseTest {
 
     @Test
     void should_throw_exception_when_duplicated_credential() {
-        doThrow(new CredentialAlreadyExistsException("Credential already exists")).when(credentialRepository).save(any());
+        doThrow(new CredentialAlreadyExistsException("Credential already exists")).when(passkeyRepository).save(any());
 
         assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
     }

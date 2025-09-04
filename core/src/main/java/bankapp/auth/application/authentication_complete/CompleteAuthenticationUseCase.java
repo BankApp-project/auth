@@ -6,7 +6,7 @@ import bankapp.auth.application.shared.port.out.WebAuthnPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.domain.model.Passkey;
-import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 
 import java.util.UUID;
@@ -14,14 +14,14 @@ import java.util.UUID;
 public class CompleteAuthenticationUseCase {
 
     private final ChallengeRepository challengeRepository;
-    private final CredentialRepository credentialRepository;
+    private final PasskeyRepository passkeyRepository;
     private final WebAuthnPort webAuthnPort;
     private final TokenIssuingPort tokenIssuingPort;
 
-    public CompleteAuthenticationUseCase(ChallengeRepository sessionRepo, WebAuthnPort webAuthnPort, CredentialRepository credentialRepository, TokenIssuingPort tokenIssuingPort) {
+    public CompleteAuthenticationUseCase(ChallengeRepository sessionRepo, WebAuthnPort webAuthnPort, PasskeyRepository passkeyRepository, TokenIssuingPort tokenIssuingPort) {
         this.challengeRepository = sessionRepo;
         this.webAuthnPort = webAuthnPort;
-        this.credentialRepository = credentialRepository;
+        this.passkeyRepository = passkeyRepository;
         this.tokenIssuingPort = tokenIssuingPort;
     }
 
@@ -32,7 +32,7 @@ public class CompleteAuthenticationUseCase {
 
         UUID userId = updatedCredential.getUserHandle();
 
-        credentialRepository.update(updatedCredential);
+        passkeyRepository.update(updatedCredential);
 
         challengeRepository.delete(command.challengeId());
 
@@ -42,7 +42,7 @@ public class CompleteAuthenticationUseCase {
 
     private Passkey verifyChallengeAndUpdateCredentialRecord(CompleteAuthenticationCommand command, Challenge session) {
         try {
-            var credentialRecord = credentialRepository.load(command.credentialId());
+            var credentialRecord = passkeyRepository.load(command.credentialId());
             return webAuthnPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session, credentialRecord);
         } catch (RuntimeException e) {
             throw new CompleteAuthenticationException("Failed to confirm authentication value: " + e.getMessage(), e);

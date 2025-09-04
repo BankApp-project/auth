@@ -3,7 +3,7 @@ package bankapp.auth.application.verification_complete;
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
-import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubChallengeRepository;
@@ -46,7 +46,7 @@ public abstract class CompleteVerificationBaseTest {
     protected HashingPort hasher;
     protected UserRepository userRepository;
     protected CredentialOptionsPort credentialOptionsPort;
-    protected CredentialRepository credentialRepository;
+    protected PasskeyRepository passkeyRepository;
     protected ChallengeGenerationPort challengeGenerator;
     protected ChallengeRepository challengeRepository;
     protected LoggerPort log;
@@ -63,7 +63,7 @@ public abstract class CompleteVerificationBaseTest {
         hasher = new StubHasher();
         userRepository = new StubUserRepository();
         credentialOptionsPort = new StubCredentialOptionsService();
-        credentialRepository = mock(CredentialRepository.class);
+        passkeyRepository = mock(PasskeyRepository.class);
         challengeGenerator = new StubChallengeGenerator(DEFAULT_TTL, DEFAULT_CLOCK);
         challengeRepository = new StubChallengeRepository();
         log = mock(LoggerPort.class);
@@ -77,7 +77,7 @@ public abstract class CompleteVerificationBaseTest {
         // Prepare the default command and use case instance
         defaultCommand = new CompleteVerificationCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
         defaultUseCase = new CompleteVerificationUseCase(
-                challengeRepository, credentialRepository, userRepository, credentialOptionsPort, challengeGenerator,
+                challengeRepository, passkeyRepository, userRepository, credentialOptionsPort, challengeGenerator,
                 otpService);
     }
 }

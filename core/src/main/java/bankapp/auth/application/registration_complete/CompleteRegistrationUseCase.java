@@ -9,7 +9,7 @@ import bankapp.auth.application.shared.exception.CredentialAlreadyExistsExceptio
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
-import bankapp.auth.application.shared.port.out.persistance.CredentialRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.User;
 import lombok.NonNull;
@@ -20,20 +20,20 @@ public class CompleteRegistrationUseCase {
 
     private final ChallengeRepository challengeRepository;
     private final WebAuthnPort webAuthnPort;
-    private final CredentialRepository credentialRepository;
+    private final PasskeyRepository passkeyRepository;
     private final UserRepository userRepository;
     private final TokenIssuingPort tokenIssuer;
 
     public CompleteRegistrationUseCase(
             ChallengeRepository challengeRepository,
             WebAuthnPort webAuthnPort,
-            CredentialRepository credentialRepository,
+            PasskeyRepository passkeyRepository,
             UserRepository userRepository,
             TokenIssuingPort tokenIssuingPort
     ) {
         this.challengeRepository = challengeRepository;
         this.webAuthnPort = webAuthnPort;
-        this.credentialRepository = credentialRepository;
+        this.passkeyRepository = passkeyRepository;
         this.userRepository = userRepository;
         this.tokenIssuer = tokenIssuingPort;
     }
@@ -91,7 +91,7 @@ public class CompleteRegistrationUseCase {
 
     private void saveCredentialRecord(PasskeyRegistrationData credential) {
         try {
-            credentialRepository.save(credential);
+            passkeyRepository.save(credential);
         } catch (CredentialAlreadyExistsException e) {
             throw new CompleteRegistrationException("Credential already exists with this ID or PublicKey. Aborted.");
         } catch (RuntimeException e) {
