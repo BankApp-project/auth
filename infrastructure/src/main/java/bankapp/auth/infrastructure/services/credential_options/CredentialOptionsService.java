@@ -55,9 +55,10 @@ public class CredentialOptionsService implements CredentialOptionsPort {
             return res;
         }
         for (var credential : userCredentials) {
+            var idBytes = ByteArrayUtil.uuidToBytes(credential.getId());
             var credentialDescriptor = new PublicKeyCredentialDescriptor(
                     PASSKEY_TYPE,
-                    credential.getId(),
+                    idBytes,
                     credential.getTransports()
             );
             res.add(credentialDescriptor);

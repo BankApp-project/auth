@@ -17,10 +17,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -74,7 +75,7 @@ class AuthenticationControllerTest {
 
         var challengeId = UUID.randomUUID().toString();
         var authRespJson = "someJSONblob";
-        var credentialId = new byte[]{123};
+        var credentialId = UUID.randomUUID();
         var request = new CompleteAuthenticationRequest(challengeId, authRespJson, credentialId);
         var requestJson = objectMapper.writeValueAsString(request);
 
@@ -97,7 +98,7 @@ class AuthenticationControllerTest {
         verify(completeAuthenticationUseCase).handle(argThat(command -> {
             boolean first = command.AuthenticationResponseJSON().equals(requestedCommand.AuthenticationResponseJSON());
             boolean second = command.challengeId().equals(requestedCommand.challengeId());
-            boolean third = Arrays.equals(command.credentialId(), requestedCommand.credentialId());
+            boolean third = Objects.equals(command.credentialId(),requestedCommand.credentialId());
 
             return first && second && third;
         }));

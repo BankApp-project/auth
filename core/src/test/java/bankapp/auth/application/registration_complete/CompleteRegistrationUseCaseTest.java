@@ -61,7 +61,7 @@ class CompleteRegistrationUseCaseTest {
 
         testUser = User.createNew(new EmailAddress("test@bankapp.online"));
         stubRegistrationData = new PasskeyRegistrationData(
-                new byte[]{123},
+                UUID.randomUUID(),
                 testUser.getId(),
                 "public-key",
                 "public key array".getBytes(),

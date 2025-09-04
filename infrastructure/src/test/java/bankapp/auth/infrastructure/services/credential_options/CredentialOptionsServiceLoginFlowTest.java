@@ -2,10 +2,10 @@ package bankapp.auth.infrastructure.services.credential_options;
 
 import bankapp.auth.application.shared.enums.AuthMode;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.application.shared.service.ByteArrayUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CredentialOptionsServiceLoginFlowTest {
 
@@ -30,13 +31,13 @@ public class CredentialOptionsServiceLoginFlowTest {
     private static final EmailAddress DEFAULT_EMAIL_ADDRESS = new EmailAddress("test@bankapp.online");
     private static final User DEFAULT_USER = User.createNew(DEFAULT_EMAIL_ADDRESS);
     private static final List<Passkey> DEFAULT_USER_CREDENTIALS = List.of(new Passkey(
-                ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
-                DEFAULT_USER.getId(),
+            UUID.randomUUID(),
+            DEFAULT_USER.getId(),
             null,
-                0L,
-                false,
+            0L,
             false,
-                null
+            false,
+            null
     ));
     private static final Challenge DEFAULT_CHALLENGE = new Challenge(
             UUID.randomUUID(),
@@ -84,7 +85,7 @@ public class CredentialOptionsServiceLoginFlowTest {
         var rpId = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE).rpId();
 
         assertNotNull(rpId);
-        assertEquals(DEFAULT_RPID,rpId);
+        assertEquals(DEFAULT_RPID, rpId);
     }
 
     @Test
@@ -93,8 +94,9 @@ public class CredentialOptionsServiceLoginFlowTest {
         var allowedCredentials = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER_CREDENTIALS, DEFAULT_CHALLENGE).allowCredentials();
 
         assertNotNull(allowedCredentials);
-        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getId() ,allowedCredentials.getFirst().id());
-        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getTransports(),allowedCredentials.getFirst().transports());
+        var credentialIdBytes = ByteArrayUtil.bytesToUuid(allowedCredentials.getFirst().id());
+        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getId(), credentialIdBytes);
+        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getTransports(), allowedCredentials.getFirst().transports());
     }
 
     @Test
@@ -106,8 +108,8 @@ public class CredentialOptionsServiceLoginFlowTest {
     }
 
     @Test
-    void should_return_empty_allowed_credential_list_when_userCredentials_is_null () {
-        var res = passkeyOptionsService.getPasskeyRequestOptions(null,DEFAULT_CHALLENGE);
+    void should_return_empty_allowed_credential_list_when_userCredentials_is_null() {
+        var res = passkeyOptionsService.getPasskeyRequestOptions(null, DEFAULT_CHALLENGE);
 
         assertEquals(new ArrayList<>(), res.allowCredentials());
     }

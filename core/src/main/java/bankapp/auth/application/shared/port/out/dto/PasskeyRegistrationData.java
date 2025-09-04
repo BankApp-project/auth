@@ -21,7 +21,7 @@ import java.util.UUID;
 @Builder
 public record PasskeyRegistrationData(
         // === Core Fields ===
-        byte @NonNull [] id,
+        @NonNull UUID id,
         @NonNull UUID userHandle,
         @NonNull String type,
         byte @NonNull [] publicKey,

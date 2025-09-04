@@ -7,9 +7,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -40,7 +40,7 @@ public class JpaPasskey {
      */
     @Id
     @Column(name = "id", nullable = false, updatable = false, unique = true)
-    private byte[] id;
+    private UUID id;
 
     /*
      * Corresponding User ID
@@ -133,7 +133,7 @@ public class JpaPasskey {
      * Constructor to initialize all fields.
      */
     public JpaPasskey(
-            byte[] id,
+            UUID id,
             UUID userHandle,
             String type,
             byte[] publicKey,
@@ -147,8 +147,8 @@ public class JpaPasskey {
             byte[] attestationClientDataJSON
     ) {
         // Validate required fields
-        if (id == null || id.length == 0) {
-            throw new IllegalArgumentException("Credential ID cannot be null or empty");
+        if (id == null) {
+            throw new IllegalArgumentException("Credential ID cannot be null");
         }
         if (userHandle == null) {
             throw new IllegalArgumentException("User handle cannot be null");
@@ -195,7 +195,7 @@ public class JpaPasskey {
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
         JpaPasskey that = (JpaPasskey) o;
-        return getId() != null && Arrays.equals(getId(), that.getId());
+        return getId() != null && Objects.equals(getId(), that.getId());
     }
 
     @Override

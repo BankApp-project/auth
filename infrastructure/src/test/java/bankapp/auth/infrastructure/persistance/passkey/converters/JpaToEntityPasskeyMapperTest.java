@@ -3,6 +3,7 @@ package bankapp.auth.infrastructure.persistance.passkey.converters;
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.persistance.passkey.dto.JpaPasskey;
+import com.github.f4b6a3.uuid.alt.GUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,8 +24,10 @@ class JpaToEntityPasskeyMapperTest {
     }
 
     private JpaPasskey createSampleJpaPasskey() {
+        var credentialId = GUID.v7().toUUID();
+        var userId = GUID.v4().toUUID();
         return new JpaPasskey(
-                "credential-id-123".getBytes(),
+                userId,
                 UUID.randomUUID(),
                 "public-key",
                 "public-key-bytes".getBytes(),
@@ -49,7 +52,7 @@ class JpaToEntityPasskeyMapperTest {
 
         // Assert
         assertNotNull(domainPasskey);
-        assertArrayEquals(jpaPasskey.getId(), domainPasskey.getId());
+        assertEquals(jpaPasskey.getId(), domainPasskey.getId());
         assertEquals(jpaPasskey.getUserHandle(), domainPasskey.getUserHandle());
         assertArrayEquals(jpaPasskey.getPublicKey(), domainPasskey.getPublicKey());
         assertEquals(jpaPasskey.getSignCount(), domainPasskey.getSignCount());
@@ -83,6 +86,6 @@ class JpaToEntityPasskeyMapperTest {
         assertEquals(domainPasskey.getSignCount(), originalJpaPasskey.getSignCount());
 
         // Check that other fields (which are immutable in the domain object) remained unchanged
-        assertArrayEquals("credential-id-123".getBytes(), originalJpaPasskey.getId());
+        assertEquals(originalJpaPasskey.getId(),domainPasskey.getId());
     }
 }

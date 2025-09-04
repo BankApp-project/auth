@@ -93,7 +93,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
 
     private List<Passkey> getPasskeys() {
         var credential = new Passkey(
-                new byte[]{1, 2, 3, 4}, // credentialId
+                UUID.randomUUID(),
                 defaultUser.getId(),
                 new byte[]{5, 6, 7, 8}, // publicKey
                 1L, // signatureCount

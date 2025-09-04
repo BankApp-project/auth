@@ -1,6 +1,6 @@
 CREATE TABLE jpa_passkey
 (
-    id                      BYTEA        NOT NULL,
+    id                      UUID         NOT NULL,
     user_handle             UUID         NOT NULL,
     type                    VARCHAR(255) NOT NULL,
     public_key              BYTEA        NOT NULL,

@@ -29,7 +29,7 @@ public class Passkey {
      * identifier for the credential, used to look it up during authentication.
      * Stored as the raw byte array.
      */
-    private final byte[] id;
+    private final UUID id;
 
     /*
      * Corresponding User ID
@@ -75,7 +75,7 @@ public class Passkey {
      * Constructor to initialize all fields.
      */
     public Passkey(
-            byte[] id,
+            UUID id,
             UUID userHandle,
             byte[] publicKey,
             long signCount,
