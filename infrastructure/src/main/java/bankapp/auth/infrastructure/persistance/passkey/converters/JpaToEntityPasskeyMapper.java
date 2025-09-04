@@ -2,11 +2,13 @@ package bankapp.auth.infrastructure.persistance.passkey.converters;
 
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.persistance.passkey.dto.JpaPasskey;
+import org.springframework.stereotype.Component;
 
 /**
  * Maps between the persistence-layer {@link JpaPasskey} entity and the
  * domain-layer {@link Passkey} model.
  */
+@Component
 public class JpaToEntityPasskeyMapper {
 
     /**
