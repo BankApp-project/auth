@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.persistance.passkey.converters;
 
 import bankapp.auth.domain.model.Passkey;
-import bankapp.auth.infrastructure.persistance.passkey.JpaPasskey;
+import bankapp.auth.infrastructure.persistance.passkey.dto.JpaPasskey;
 
 /**
  * Maps between the persistence-layer {@link JpaPasskey} entity and the

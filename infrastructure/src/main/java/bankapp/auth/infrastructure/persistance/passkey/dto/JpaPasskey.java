@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.persistance.passkey;
+package bankapp.auth.infrastructure.persistance.passkey.dto;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.infrastructure.persistance.passkey.converters.JsonToMapConverter;
