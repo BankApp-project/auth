@@ -7,9 +7,8 @@ import com.github.f4b6a3.uuid.alt.GUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,8 +26,8 @@ class JpaToEntityPasskeyMapperTest {
         var credentialId = GUID.v7().toUUID();
         var userId = GUID.v4().toUUID();
         return new JpaPasskey(
+                credentialId,
                 userId,
-                UUID.randomUUID(),
                 "public-key",
                 "public-key-bytes".getBytes(),
                 100L,
