@@ -1,0 +1,68 @@
+package bankapp.auth.infrastructure.services.credential_options;
+
+import bankapp.auth.application.shared.enums.UserVerificationRequirement;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialDescriptor;
+import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
+import bankapp.auth.application.shared.service.ByteArrayUtil;
+import bankapp.auth.domain.model.Passkey;
+import bankapp.auth.domain.model.annotations.Nullable;
+import lombok.RequiredArgsConstructor;
+
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Assembles the PublicKeyCredentialRequestOptions object for passkey authentication.
+ * This is a plain Java class, not a Spring component.
+ */
+@RequiredArgsConstructor
+class PasskeyRequestOptionsAssembler {
+
+    private final static String PASSKEY_TYPE = "public-key";
+
+    private final CredentialOptionsProperties properties;
+    private final Clock clock;
+
+    public PublicKeyCredentialRequestOptions assemble(@Nullable List<Passkey> userCredentials, Challenge challenge) {
+        long timeoutMillis = getTimeoutMillis(challenge.expirationTime());
+
+        return new PublicKeyCredentialRequestOptions(
+                challenge.value(),
+                timeoutMillis,
+                properties.rpId(),
+                getAllowedCredentials(userCredentials),
+                UserVerificationRequirement.REQUIRED,
+                getExtensions()
+        );
+    }
+
+    private long getTimeoutMillis(Instant expirationTime) {
+        return Duration.between(Instant.now(clock), expirationTime).toMillis();
+    }
+
+    private List<PublicKeyCredentialDescriptor> getAllowedCredentials(@Nullable List<Passkey> userCredentials) {
+        if (userCredentials == null) {
+            return new ArrayList<>();
+        }
+        List<PublicKeyCredentialDescriptor> res = new ArrayList<>();
+        for (var credential : userCredentials) {
+            var idBytes = ByteArrayUtil.uuidToBytes(credential.getId());
+            var credentialDescriptor = new PublicKeyCredentialDescriptor(
+                    PASSKEY_TYPE,
+                    idBytes,
+                    credential.getTransports()
+            );
+            res.add(credentialDescriptor);
+        }
+        return res;
+    }
+
+    private Map<String, Object> getExtensions() {
+        return null;
+    }
+}
