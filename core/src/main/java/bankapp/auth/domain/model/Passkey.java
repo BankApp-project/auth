@@ -3,6 +3,7 @@ package bankapp.auth.domain.model;
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
@@ -48,6 +49,7 @@ public class Passkey {
      * help detect cloned authenticators.
      * NOTE: This field is not final to allow for modification.
      */
+    @Setter
     private long signCount;
 
     /*

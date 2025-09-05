@@ -4,6 +4,7 @@ import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.infrastructure.WithPostgresContainer;
 import com.github.f4b6a3.uuid.alt.GUID;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,27 +50,6 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
         return createSampleRegistrationData(userId);
     }
 
-    private PasskeyRegistrationData createSampleRegistrationData(UUID userHandle) {
-
-        var credentialId = UUID.randomUUID();
-
-        var publicKey = GUID.v4().toBytes();
-
-        return new PasskeyRegistrationData(
-                credentialId,
-                userHandle,
-                "public-key",
-                publicKey,
-                100L,
-                true,
-                true,
-                true,
-                Arrays.asList(AuthenticatorTransport.INTERNAL, AuthenticatorTransport.USB),
-                Collections.singletonMap("extKey", "extValue"),
-                "attestation-object-bytes".getBytes(),
-                "client-data-json-bytes".getBytes()
-        );
-    }
 
     @Test
     void load_should_return_empty_optional_if_values_not_present() {
@@ -111,8 +91,53 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
         assertThat(credentialList).isEmpty();
     }
 
+    @Transactional
     @Test
-    void update_should_update_SignCount_signCount_of_passkey_record() {
+    void updateSignCount_should_update_SignCount_signCount_of_passkey_record() {
 
+        var userId = UUID.randomUUID();
+        var registrationData = createSampleRegistrationData(userId);
+        var passkeyId = registrationData.id();
+        repo.save(registrationData);
+
+        var loadedPasskeyOpt = repo.load(passkeyId);
+        assertThat(loadedPasskeyOpt).isPresent();
+
+        var loadedPasskey = loadedPasskeyOpt.get();
+        var oldSignCount = loadedPasskey.getSignCount();
+
+        loadedPasskey.setSignCount(oldSignCount + 1);
+
+        repo.updateSignCount(loadedPasskey);
+
+        var loadedUpdatedPasskeyOpt = repo.load(passkeyId);
+        assertThat(loadedUpdatedPasskeyOpt).isPresent();
+
+        var loadedUpdatedPasskey = loadedUpdatedPasskeyOpt.get();
+
+        assertThat(loadedUpdatedPasskey.getSignCount())
+                .isGreaterThan(oldSignCount);
+    }
+
+    private PasskeyRegistrationData createSampleRegistrationData(UUID userHandle) {
+
+        var credentialId = UUID.randomUUID();
+
+        var publicKey = GUID.v4().toBytes();
+
+        return new PasskeyRegistrationData(
+                credentialId,
+                userHandle,
+                "public-key",
+                publicKey,
+                100L,
+                true,
+                true,
+                true,
+                Arrays.asList(AuthenticatorTransport.INTERNAL, AuthenticatorTransport.USB),
+                Collections.singletonMap("extKey", "extValue"),
+                "attestation-object-bytes".getBytes(),
+                "client-data-json-bytes".getBytes()
+        );
     }
 }

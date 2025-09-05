@@ -71,6 +71,6 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
     /// This method updates signCount
     @Override
     public void updateSignCount(Passkey updatedCredential) {
-
+        jpaPasskeyRepository.updateSignCount(updatedCredential.getId(), updatedCredential.getSignCount());
     }
 }
