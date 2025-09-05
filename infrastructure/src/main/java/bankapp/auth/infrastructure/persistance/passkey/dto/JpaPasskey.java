@@ -2,10 +2,11 @@ package bankapp.auth.infrastructure.persistance.passkey.dto;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.infrastructure.persistance.passkey.converters.AuthenticatorTransportConverter;
-import bankapp.auth.infrastructure.persistance.passkey.converters.JsonToMapConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.Map;
@@ -105,9 +106,8 @@ public class JpaPasskey {
      * The client extension outputs created by the authenticator for this
      * credential during the original registration ceremony. Can be null.
      */
-    @Convert(converter = JsonToMapConverter.class)
-    //todo check why this has to be varchar, and not JSONB
-    @Column(name = "client_extensions", columnDefinition = "VARCHAR")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "client_extensions", columnDefinition = "JSON")
     private Map<String, Object> extensions;
 
     // === Attestation Data for Auditing and Verification ===
@@ -118,7 +118,7 @@ public class JpaPasskey {
      * inspect the credential's attestation statement at any time for auditing,
      * such as to verify the authenticator's model or certification level.
      */
-    //lazy loading as safety net. probably this fields will be used only for audit
+    //lazy loading as safety net. DTOs is TWTG. probably this fields will be used only for audit
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "attestation", nullable = false)
     private byte[] attestationObject;
@@ -128,7 +128,7 @@ public class JpaPasskey {
      * byte array. Storing this, along with the attestationObject, allows the
      * Relying Party to re-verify the original attestation signature at a later date.
      */
-    //lazy loading as safety net. probably this fields will only be used for audit
+    //lazy loading as safety net. DTOs is TWTG. probably this fields will be used only for audit
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "attestation_client_data")
     private byte[] attestationClientDataJSON;

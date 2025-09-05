@@ -9,7 +9,7 @@ CREATE TABLE passkey
     backup_eligible         BOOLEAN      NOT NULL,
     backup_state            BOOLEAN      NOT NULL,
     transports              VARCHAR,
-    client_extensions       VARCHAR,
+    client_extensions       JSON,
     attestation             BYTEA        NOT NULL,
     attestation_client_data BYTEA,
     CONSTRAINT pk_passkey PRIMARY KEY (id)
