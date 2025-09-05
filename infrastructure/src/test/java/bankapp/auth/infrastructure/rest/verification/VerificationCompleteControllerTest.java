@@ -8,7 +8,6 @@ import bankapp.auth.infrastructure.rest.verification.dto.CompleteVerificationReq
 import bankapp.auth.infrastructure.rest.verification.dto.CompleteVerificationResponseDto;
 import bankapp.auth.infrastructure.rest.verification.dto.VerificationResponseMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,7 +22,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Disabled
 @WebMvcTest(VerificationCompleteController.class)
 class VerificationCompleteControllerTest {
 
