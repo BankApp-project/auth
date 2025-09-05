@@ -7,7 +7,7 @@ import bankapp.auth.infrastructure.AmqpOtpTestConfig;
 import bankapp.auth.infrastructure.WithRabbitMQContainer;
 import bankapp.auth.infrastructure.WithRedisContainer;
 import bankapp.auth.infrastructure.persistance.otp.config.OtpConfiguration;
-import bankapp.auth.infrastructure.rest.verification.dto.InitiateVerificationRequest;
+import bankapp.auth.infrastructure.rest.verification.initiate.InitiateVerificationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

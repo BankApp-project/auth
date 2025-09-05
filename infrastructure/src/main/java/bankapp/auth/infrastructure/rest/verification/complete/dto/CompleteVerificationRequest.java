@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.rest.verification.dto;
+package bankapp.auth.infrastructure.rest.verification.complete.dto;
 
 public record CompleteVerificationRequest(String email, String value) {
 }

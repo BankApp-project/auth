@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.rest.verification;
+package bankapp.auth.infrastructure.rest.verification.initiate;
 
 import bankapp.auth.application.verification_initiate.InitiateVerificationUseCase;
 import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;

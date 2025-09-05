@@ -1,9 +1,8 @@
-package bankapp.auth.infrastructure.rest.verification;
+package bankapp.auth.infrastructure.rest.verification.initiate;
 
 
 import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.infrastructure.rest.verification.dto.InitiateVerificationRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

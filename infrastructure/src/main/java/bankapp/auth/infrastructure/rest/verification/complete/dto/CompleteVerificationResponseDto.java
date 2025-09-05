@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.rest.verification.dto;
+package bankapp.auth.infrastructure.rest.verification.complete.dto;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

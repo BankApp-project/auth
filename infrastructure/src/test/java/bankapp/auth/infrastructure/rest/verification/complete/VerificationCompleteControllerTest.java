@@ -1,12 +1,12 @@
-package bankapp.auth.infrastructure.rest.verification;
+package bankapp.auth.infrastructure.rest.verification.complete;
 
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
 import bankapp.auth.application.verification_complete.CompleteVerificationUseCase;
 import bankapp.auth.application.verification_complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
-import bankapp.auth.infrastructure.rest.verification.dto.CompleteVerificationRequest;
-import bankapp.auth.infrastructure.rest.verification.dto.CompleteVerificationResponseDto;
-import bankapp.auth.infrastructure.rest.verification.dto.VerificationResponseMapper;
+import bankapp.auth.infrastructure.rest.verification.complete.dto.CompleteVerificationRequest;
+import bankapp.auth.infrastructure.rest.verification.complete.dto.CompleteVerificationResponseDto;
+import bankapp.auth.infrastructure.rest.verification.complete.dto.VerificationResponseMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
