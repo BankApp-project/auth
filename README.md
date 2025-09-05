@@ -1,5 +1,14 @@
 ## Rules
 
+### Use Case's beans
+After finishing implementation of all use case's ports, add `@UseCase` annotation on class level of specific use case:
+```java
+@UseCase //this
+public class InitiateVerificationUseCase {
+//(...)
+}
+```
+
 ### EmailAddress VO
 We use VO `EmailAddress` for all email addresses at whole application level. 
 Security and data integrity measures.
