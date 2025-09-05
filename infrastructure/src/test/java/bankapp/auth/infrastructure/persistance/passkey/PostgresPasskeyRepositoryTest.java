@@ -2,7 +2,6 @@ package bankapp.auth.infrastructure.persistance.passkey;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
-import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.WithPostgresContainer;
 import com.github.f4b6a3.uuid.alt.GUID;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,7 +87,7 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
         repo.save(registrationData1);
         repo.save(registrationData2);
 
-        List<Passkey> credentialList = repo.loadForUserId(userId);
+        var credentialList = repo.loadForUserId(userId);
 
         assertThat(credentialList).isNotEmpty();
 
@@ -102,7 +100,15 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
 
     @Test
     void loadForUserId_should_return_empty_list_when_no_credential_is_present_for_given_userId() {
+        var userIdWithoutAnyPasskey = UUID.randomUUID();
 
+        //to check for not empty db.
+        repo.save(createSampleRegistrationData());
+        repo.save(createSampleRegistrationData());
+
+        var credentialList = repo.loadForUserId(userIdWithoutAnyPasskey);
+
+        assertThat(credentialList).isEmpty();
     }
 
     @Test
