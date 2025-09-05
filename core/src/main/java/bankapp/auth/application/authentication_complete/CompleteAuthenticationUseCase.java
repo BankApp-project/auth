@@ -8,6 +8,7 @@ import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
+import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 
 import java.util.UUID;
 
@@ -25,6 +26,7 @@ public class CompleteAuthenticationUseCase {
         this.tokenIssuingPort = tokenIssuingPort;
     }
 
+    @TransactionalUseCase
     public AuthenticationGrant handle(CompleteAuthenticationCommand command) {
         var session = getSession(command);
 

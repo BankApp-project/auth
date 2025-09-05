@@ -4,6 +4,7 @@ import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
+import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 
 public class InitiateAuthenticationUseCase {
 
@@ -20,6 +21,7 @@ public class InitiateAuthenticationUseCase {
         this.credentialOptionsService = credentialOptionsService;
     }
 
+    @TransactionalUseCase
     public LoginResponse handle() {
         var challenge = challengeGenerator.generate();
 

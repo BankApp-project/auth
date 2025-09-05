@@ -12,6 +12,7 @@ import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.User;
+import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 import lombok.NonNull;
 
 import java.util.UUID;
@@ -38,6 +39,7 @@ public class CompleteRegistrationUseCase {
         this.tokenIssuer = tokenIssuingPort;
     }
 
+    @TransactionalUseCase
     public AuthenticationGrant handle(@NonNull CompleteRegistrationCommand command) {
         var challenge = getChallenge(command);
 

@@ -12,6 +12,7 @@ import bankapp.auth.application.verification_complete.port.out.dto.RegistrationR
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.NotNull;
+import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 import bankapp.auth.domain.model.vo.EmailAddress;
 
 public class CompleteVerificationUseCase {
@@ -42,6 +43,7 @@ public class CompleteVerificationUseCase {
     }
 
     //TODO THINK ABOUT DIVIDING IT TO VERIFICATION_COMPLETE AND REGISTRATION_INITIATE / AUTHENTICATION_INITIATE
+    @TransactionalUseCase
     public CompleteVerificationResponse handle(CompleteVerificationCommand command) {
 
         verifyAndConsumeOtp(command.key(), command.value());

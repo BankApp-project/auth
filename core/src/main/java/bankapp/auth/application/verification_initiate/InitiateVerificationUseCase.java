@@ -5,6 +5,7 @@ import bankapp.auth.application.verification_initiate.port.in.InitiateVerificati
 import bankapp.auth.application.shared.port.out.*;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.annotations.NotNull;
+import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 
 @UseCase
 public class InitiateVerificationUseCase {
@@ -19,6 +20,7 @@ public class InitiateVerificationUseCase {
         this.otpService = otpService;
     }
 
+    @TransactionalUseCase
     public void handle(InitiateVerificationCommand command) {
 
             VerificationData data = otpService.createVerificationOtp(command.email());
