@@ -1,4 +1,4 @@
-CREATE TABLE jpa_passkey
+CREATE TABLE passkey
 (
     id                      UUID         NOT NULL,
     user_handle             UUID         NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE jpa_passkey
     client_extensions       VARCHAR,
     attestation             BYTEA        NOT NULL,
     attestation_client_data BYTEA,
-    CONSTRAINT pk_jpa_passkey PRIMARY KEY (id)
+    CONSTRAINT pk_passkey PRIMARY KEY (id)
 );
 
 CREATE TABLE users
@@ -23,12 +23,12 @@ CREATE TABLE users
     CONSTRAINT pk_users PRIMARY KEY (id)
 );
 
-ALTER TABLE jpa_passkey
-    ADD CONSTRAINT uc_jpa_passkey_public_key UNIQUE (public_key);
+ALTER TABLE passkey
+    ADD CONSTRAINT uc_passkey_public_key UNIQUE (public_key);
 
 ALTER TABLE users
     ADD CONSTRAINT uc_users_email UNIQUE (email);
 
 CREATE INDEX idx_user_email_activated ON users (email, enabled);
 
-CREATE INDEX idx_user_userHandle ON jpa_passkey (user_handle);
+CREATE INDEX idx_user_userHandle ON passkey (user_handle);

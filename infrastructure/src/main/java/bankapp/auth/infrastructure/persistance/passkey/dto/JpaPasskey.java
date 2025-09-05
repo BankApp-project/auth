@@ -26,7 +26,7 @@ import java.util.UUID;
 @SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Getter
-@Table(name = "jpa_passkey", indexes = {
+@Table(name = "passkey", indexes = {
         @Index(name = "idx_user_userHandle", columnList = "user_handle")
         // index for public_key too?
 })
@@ -34,35 +34,35 @@ public class JpaPasskey {
 
     // === Core Fields Required for Authentication ===
 
-    /*
+    /**
      * The credential ID of the public key credential. This is a globally unique
      * identifier for the credential, used to look it up during authentication.
-     * Stored as the raw byte array.
+     * Stored as the UUID.
      */
     @Id
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     private UUID id;
 
-    /*
+    /**
      * Corresponding User ID
      */
     @Column(name = "user_handle", nullable = false, updatable = false)
     private UUID userHandle;
 
-    /*
+    /**
      * The credential type. For WebAuthn, this MUST be the string "public-key".
      */
     @Column(name = "type", nullable = false)
     private String type;
 
-    /*
+    /**
      * The COSE-formatted public key of the credential. The Relying Party uses
      * this key to verify authentication signatures from the user's authenticator.
      */
     @Column(name = "public_key", nullable = false, updatable = false, unique = true)
     private byte[] publicKey;
 
-    /*
+    /**
      * The signature counter of the credential. The Relying Party MUST store
      * this value and verify that it increases with each new authentication to
      * help detect cloned authenticators.
@@ -70,7 +70,7 @@ public class JpaPasskey {
     @Column(name = "sign_count", nullable = false)
     private long signCount;
 
-    /*
+    /**
      * A flag indicating that the user has been successfully verified (e.g., via PIN
      * or biometrics) for this credential at least once.
      */
@@ -79,30 +79,29 @@ public class JpaPasskey {
 
     // === Optional Flags and Metadata ===
 
-    /*
+    /**
      * A flag indicating if the authenticator reported that the credential is
      * "backup eligible".
      */
     @Column(name = "backup_eligible", nullable = false)
     private boolean backupEligible;
 
-    /*
+    /**
      * A flag indicating if the authenticator reported that the credential is
      * currently "backed up".
      */
     @Column(name = "backup_state", nullable = false)
     private boolean backupState;
 
-    /*
+    /**
      * A list of authenticator transport methods (e.g., "internal", "usb", "nfc")
      * that the client believes can be used to exercise the credential. May be empty.
      */
-    // persist as string
     @Convert(converter = AuthenticatorTransportConverter.class)
     @Column(name = "transports", columnDefinition = "VARCHAR")
     private List<AuthenticatorTransport> transports;
 
-    /*
+    /**
      * The client extension outputs created by the authenticator for this
      * credential during the original registration ceremony. Can be null.
      */
@@ -113,20 +112,24 @@ public class JpaPasskey {
 
     // === Attestation Data for Auditing and Verification ===
 
-    /*
+    /**
      * The raw `attestationObject` received from the authenticator during registration.
      * This is a CBOR-encoded byte array. Storing this allows the Relying Party to
      * inspect the credential's attestation statement at any time for auditing,
      * such as to verify the authenticator's model or certification level.
      */
+    //lazy loading as safety net. probably this fields will be used only for audit
+    @Basic(fetch = FetchType.LAZY)
     @Column(name = "attestation", nullable = false)
     private byte[] attestationObject;
 
-    /*
+    /**
      * The raw `clientDataJSON` received during registration. This is a UTF-8 encoded
      * byte array. Storing this, along with the attestationObject, allows the
      * Relying Party to re-verify the original attestation signature at a later date.
      */
+    //lazy loading as safety net. probably this fields will be used only for audit
+    @Basic(fetch = FetchType.LAZY)
     @Column(name = "attestation_client_data")
     private byte[] attestationClientDataJSON;
 
