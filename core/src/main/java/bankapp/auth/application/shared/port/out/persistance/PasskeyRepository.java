@@ -21,5 +21,5 @@ public interface PasskeyRepository {
 
     void save(PasskeyRegistrationData passkeyRegistrationData) throws CredentialAlreadyExistsException;
 
-    void update(Passkey updatedCredential);
+    void updateSignCount(Passkey updatedCredential);
 }

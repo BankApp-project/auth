@@ -22,6 +22,7 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
 
     @Override
     public Optional<Passkey> load(UUID credentialId) {
+        // we should not fetch all the data from the repo. Only the needed one.
         var jpaPasskeyOptional = jpaPasskeyRepository.findById(credentialId);
 
         if (jpaPasskeyOptional.isEmpty()) {
@@ -69,7 +70,7 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
 
     /// This method updates signCount
     @Override
-    public void update(Passkey updatedCredential) {
+    public void updateSignCount(Passkey updatedCredential) {
 
     }
 }

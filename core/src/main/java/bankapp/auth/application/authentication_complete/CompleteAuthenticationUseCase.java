@@ -32,7 +32,7 @@ public class CompleteAuthenticationUseCase {
 
         UUID userId = updatedCredential.getUserHandle();
 
-        passkeyRepository.update(updatedCredential);
+        passkeyRepository.updateSignCount(updatedCredential);
 
         challengeRepository.delete(command.challengeId());
 

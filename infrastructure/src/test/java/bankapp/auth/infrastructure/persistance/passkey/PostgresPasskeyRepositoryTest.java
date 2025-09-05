@@ -106,7 +106,7 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
     }
 
     @Test
-    void update_should_update_signCount_of_passkey_record() {
+    void update_should_update_SignCount_signCount_of_passkey_record() {
 
     }
 }
