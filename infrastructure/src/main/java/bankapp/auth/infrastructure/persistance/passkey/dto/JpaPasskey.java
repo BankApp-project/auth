@@ -128,7 +128,7 @@ public class JpaPasskey {
      * byte array. Storing this, along with the attestationObject, allows the
      * Relying Party to re-verify the original attestation signature at a later date.
      */
-    //lazy loading as safety net. probably this fields will be used only for audit
+    //lazy loading as safety net. probably this fields will only be used for audit
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "attestation_client_data")
     private byte[] attestationClientDataJSON;
@@ -179,11 +179,6 @@ public class JpaPasskey {
 
     protected JpaPasskey() {
         // for JPA
-    }
-
-    public JpaPasskey signCountIncrement() {
-        this.signCount++;
-        return this;
     }
 
     public JpaPasskey signCountUpdate(long signCount) {
