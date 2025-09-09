@@ -76,6 +76,6 @@ public class InitiateAuthenticationUseCaseTest {
     void should_return_response_with_newly_generated_challenge() {
         var res = useCase.handle();
 
-        assertEquals(DEFAULT_CHALLENGE.sessionId(), res.challengeId());
+        assertEquals(DEFAULT_CHALLENGE.challengeId(), res.challengeId());
     }
 }

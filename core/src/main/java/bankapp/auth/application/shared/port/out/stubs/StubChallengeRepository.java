@@ -13,7 +13,7 @@ public class StubChallengeRepository implements ChallengeRepository {
 
     @Override
     public void save(Challenge challenge) {
-        sessionCache.put(challenge.sessionId(), challenge);
+        sessionCache.put(challenge.challengeId(), challenge);
     }
 
     @Override

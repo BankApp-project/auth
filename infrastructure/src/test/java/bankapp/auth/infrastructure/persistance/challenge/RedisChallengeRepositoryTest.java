@@ -44,7 +44,7 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     void shouldSaveChallengeAndSetTtl() {
         // given
         var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK);
-        var key = "challenge:" + challenge.sessionId();
+        var key = "challenge:" + challenge.challengeId();
 
         // when
         redisChallengeRepository.save(challenge);
@@ -61,11 +61,11 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     void shouldLoadChallenge() {
         // given
         var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK);
-        var key = "challenge:" + challenge.sessionId();
+        var key = "challenge:" + challenge.challengeId();
         redisTemplate.opsForValue().set(key, challenge);
 
         // when
-        var result = redisChallengeRepository.load(challenge.sessionId());
+        var result = redisChallengeRepository.load(challenge.challengeId());
 
         // then
         assertThat(result).isPresent().contains(challenge);
@@ -75,7 +75,7 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     void shouldDeleteChallenge() {
         // given
         var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK);
-        var sessionId = challenge.sessionId();
+        var sessionId = challenge.challengeId();
         var key = "challenge:" + sessionId;
         redisTemplate.opsForValue().set(key, challenge);
 

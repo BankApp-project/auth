@@ -7,19 +7,19 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public record Challenge(
-        UUID sessionId,          // The key for the cache
+        UUID challengeId,          // The key for the cache
         byte[] value,            // The cryptographic value
         Instant expirationTime   // When this context becomes invalid
 ) {
 
     public Challenge(
-            UUID sessionId,
+            UUID challengeId,
             byte[] value,
             Duration ttl,
             Clock clock
     ) {
         this(
-                sessionId,
+                challengeId,
                 value,
                 Instant.now(clock).plus(ttl)
         );
@@ -33,11 +33,11 @@ public record Challenge(
     public boolean equals(Object o) {
         if (!(o instanceof Challenge challenge)) return false;
 
-        return Arrays.equals(value, challenge.value) && sessionId.equals(challenge.sessionId) && expirationTime.equals(challenge.expirationTime);
+        return Arrays.equals(value, challenge.value) && challengeId.equals(challenge.challengeId) && expirationTime.equals(challenge.expirationTime);
     }
     @Override
     public int hashCode() {
-        int result = sessionId.hashCode();
+        int result = challengeId.hashCode();
         result = 31 * result + Arrays.hashCode(value);
         result = 31 * result + expirationTime.hashCode();
         return result;

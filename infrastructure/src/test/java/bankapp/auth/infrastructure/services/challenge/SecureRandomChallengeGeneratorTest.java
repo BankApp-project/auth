@@ -51,7 +51,7 @@ class SecureRandomChallengeGeneratorTest {
         var res = secureRandomChallengeGenerator.generate();
         var res2 = secureRandomChallengeGenerator.generate();
 
-        assertNotEquals(res.sessionId(), res2.sessionId());
+        assertNotEquals(res.challengeId(), res2.challengeId());
     }
 
     @Test
