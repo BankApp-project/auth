@@ -12,7 +12,13 @@
         <module>core</module>
         <module>infrastructure</module>
     </modules>
-
+    <url>https://github.com/BankApp-project/auth</url>
+    <scm>
+        <url>https://github.com/BankApp-project/auth</url>
+    </scm>
+    <issueManagement>
+        <url>https://github.com/BankApp-project/auth/issues</url>
+    </issueManagement>
     <properties>
         <!-- Project Settings -->
         <java.version>25</java.version>
