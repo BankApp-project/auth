@@ -46,6 +46,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
     private static final String VERIFICATION_COMPLETE_ENDPOINT = "/verification/complete/email/";
     private static final String DEFAULT_EMAIL = "test@bankapp.online";
     private static final String DEFAULT_OTP = "123456";
+    private static final String INVALID_OTP = "654321";
     private static final Clock FIXED_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
     private static final Duration CHALLENGE_TTL = Duration.ofSeconds(60);
 
@@ -152,6 +153,33 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
         assertThat(userOptional)
                 .isPresent()
                 .hasValueSatisfying(user -> assertThat(user.isEnabled()).isTrue());
+    }
+
+    @Test
+    void completeVerification_should_return_400_response_when_new_user_provide_invalid_otp() throws Exception {
+        // Arrange
+        var hashedOtp = hasher.hashSecurely(DEFAULT_OTP);
+        var otp = Otp.createNew(DEFAULT_EMAIL, hashedOtp, clock, otpProperties.ttl());
+        otpRepository.save(otp);
+
+        var challenge = createFixedChallenge();
+        Mockito.when(challengeGeneratorMock.generate()).thenReturn(challenge);
+
+        var completeVerificationRequest = new CompleteVerificationRequest(DEFAULT_EMAIL, INVALID_OTP);
+
+        // Act & Assert
+        mockMvc.perform(post(VERIFICATION_COMPLETE_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(completeVerificationRequest)))
+                .andExpect(status().is4xxClientError());
+
+        // Additional Assertions
+        assertUserNotCreated();
+    }
+
+    private void assertUserNotCreated() {
+        var userOpt = userRepository.findByEmail(new EmailAddress(DEFAULT_EMAIL));
+        assertThat(userOpt).isEmpty();
     }
 
     private Challenge createFixedChallenge() {

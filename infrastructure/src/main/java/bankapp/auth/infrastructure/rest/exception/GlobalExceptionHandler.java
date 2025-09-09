@@ -1,5 +1,6 @@
 package bankapp.auth.infrastructure.rest.exception;
 
+import bankapp.auth.application.verification_complete.OtpVerificationException;
 import bankapp.auth.domain.model.exception.InvalidEmailFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleIllegalArgumentException(IllegalArgumentException e) {
         var status = HttpStatus.BAD_REQUEST;
         var err = new ApiError(status, e.getMessage());
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(OtpVerificationException.class)
+    public  ResponseEntity<ApiError> handleOtpVerificationException(OtpVerificationException e) {
+        var status = HttpStatus.BAD_REQUEST;
+        var err = new ApiError(status, "Invalid OTP");
 
         return ResponseEntity.status(status).body(err);
     }
