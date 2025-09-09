@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.rest.authentication;
+package bankapp.auth.infrastructure.rest.authentication.initiate;
 
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
 

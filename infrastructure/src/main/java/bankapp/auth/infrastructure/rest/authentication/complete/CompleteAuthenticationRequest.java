@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.rest.authentication;
+package bankapp.auth.infrastructure.rest.authentication.complete;
 
 import java.util.UUID;
 

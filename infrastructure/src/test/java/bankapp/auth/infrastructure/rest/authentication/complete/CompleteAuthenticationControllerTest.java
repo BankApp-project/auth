@@ -4,7 +4,6 @@ import bankapp.auth.application.authentication.complete.CompleteAuthenticationCo
 import bankapp.auth.application.authentication.complete.CompleteAuthenticationUseCase;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
-import bankapp.auth.infrastructure.rest.authentication.CompleteAuthenticationRequest;
 import bankapp.auth.infrastructure.rest.shared.dto.AuthenticationGrantResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

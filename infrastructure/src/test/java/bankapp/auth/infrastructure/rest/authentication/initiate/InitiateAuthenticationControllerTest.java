@@ -3,7 +3,6 @@ package bankapp.auth.infrastructure.rest.authentication.initiate;
 import bankapp.auth.application.authentication.initiate.InitiateAuthenticationUseCase;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
 import bankapp.auth.application.verification.complete.port.out.dto.LoginResponse;
-import bankapp.auth.infrastructure.rest.authentication.InitiateAuthenticationResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
