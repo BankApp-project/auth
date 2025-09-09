@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.rest.authentication.complete;
 
-import bankapp.auth.application.authentication_complete.CompleteAuthenticationCommand;
-import bankapp.auth.application.authentication_complete.CompleteAuthenticationUseCase;
+import bankapp.auth.application.authentication.complete.CompleteAuthenticationCommand;
+import bankapp.auth.application.authentication.complete.CompleteAuthenticationUseCase;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.infrastructure.rest.authentication.CompleteAuthenticationRequest;

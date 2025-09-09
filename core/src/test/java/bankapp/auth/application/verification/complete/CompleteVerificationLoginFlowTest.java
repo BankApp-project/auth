@@ -1,0 +1,106 @@
+package bankapp.auth.application.verification.complete;
+
+import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
+import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
+import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.dto.LoginResponse;
+import bankapp.auth.domain.model.Passkey;
+import bankapp.auth.domain.model.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
+public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseTest {
+
+
+    private User defaultUser;
+
+    @BeforeEach
+    @Override
+    void setUp() {
+        // First, run the common setup from the base class
+        super.setUp();
+
+        // Then, add the specific setup for the login flow: an existing, enabled user
+        defaultUser = User.createNew(DEFAULT_EMAIL);
+        defaultUser.activate();
+        userRepository.save(defaultUser);
+    }
+
+    @Test
+    void should_return_LoginResponse_if_user_already_exists_and_is_enabled() {
+        // When
+        CompleteVerificationResponse response = defaultUseCase.handle(defaultCommand);
+
+        // Then
+        assertInstanceOf(LoginResponse.class, response);
+    }
+
+    @Test
+    void should_find_and_pass_user_credentials_to_service_when_user_exists() {
+        // Given
+        // Create a realistic dummy Passkey for testing purposes
+        var credentials = getPasskeys();
+
+        var mockCredentialRepository = mock(PasskeyRepository.class);
+        var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
+        when(mockCredentialRepository.loadForUserId(defaultUser.getId())).thenReturn(credentials);
+
+        var useCase = new CompleteVerificationUseCase(
+                challengeRepository, mockCredentialRepository, userRepository, mockCredentialOptionsService, challengeGenerator,
+                otpService);
+
+        // When
+        useCase.handle(defaultCommand);
+
+        // Then
+        verify(mockCredentialOptionsService).getPasskeyRequestOptions(eq(credentials), any());
+    }
+
+    @Test
+    void should_generate_and_pass_challenge_to_service_when_user_exists() {
+        // Given
+        var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
+        var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
+
+        var challenge = new Challenge(
+                UUID.randomUUID(),
+                new byte[]{123},
+                challengeTtl,
+                DEFAULT_CLOCK
+        );
+
+        when(mockChallengeGenerator.generate()).thenReturn(challenge);
+
+        var useCase = new CompleteVerificationUseCase(
+                challengeRepository, passkeyRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator,
+                otpService);
+
+        // When
+        useCase.handle(defaultCommand);
+
+        // Then
+        verify(mockCredentialOptionsService).getPasskeyRequestOptions(any(), eq(challenge));
+    }
+
+    private List<Passkey> getPasskeys() {
+        var credential = new Passkey(
+                UUID.randomUUID(),
+                defaultUser.getId(),
+                new byte[]{5, 6, 7, 8}, // publicKey
+                1L, // signatureCount
+                true, // uvInitialized
+                true, // backupState
+                null // attestationObject
+        );
+        return List.of(credential);
+    }
+}

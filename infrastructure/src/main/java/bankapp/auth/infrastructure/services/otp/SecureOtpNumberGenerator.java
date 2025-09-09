@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.services.otp;
 
-import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
+import bankapp.auth.application.verification.initiate.port.out.OtpGenerationPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

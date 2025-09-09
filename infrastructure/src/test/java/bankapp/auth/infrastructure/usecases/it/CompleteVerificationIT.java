@@ -6,7 +6,7 @@ import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
-import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
+import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;

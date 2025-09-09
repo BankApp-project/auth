@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.rest.exception;
 
-import bankapp.auth.application.verification_complete.OtpVerificationException;
+import bankapp.auth.application.verification.complete.OtpVerificationException;
 import bankapp.auth.domain.model.exception.InvalidEmailFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

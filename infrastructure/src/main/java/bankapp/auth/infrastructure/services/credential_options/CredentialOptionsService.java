@@ -3,7 +3,7 @@ package bankapp.auth.infrastructure.services.credential_options;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
-import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.Nullable;

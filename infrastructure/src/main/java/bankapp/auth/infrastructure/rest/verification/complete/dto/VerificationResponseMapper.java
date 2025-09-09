@@ -2,9 +2,9 @@ package bankapp.auth.infrastructure.rest.verification.complete.dto;
 
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
-import bankapp.auth.application.verification_complete.CompleteVerificationResponse;
-import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
-import bankapp.auth.application.verification_complete.port.out.dto.RegistrationResponse;
+import bankapp.auth.application.verification.complete.CompleteVerificationResponse;
+import bankapp.auth.application.verification.complete.port.out.dto.LoginResponse;
+import bankapp.auth.application.verification.complete.port.out.dto.RegistrationResponse;
 
 import java.util.UUID;
 

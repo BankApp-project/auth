@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.rest.authentication.initiate;
 
 
-import bankapp.auth.application.authentication_initiate.InitiateAuthenticationUseCase;
+import bankapp.auth.application.authentication.initiate.InitiateAuthenticationUseCase;
 import bankapp.auth.infrastructure.rest.authentication.InitiateAuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

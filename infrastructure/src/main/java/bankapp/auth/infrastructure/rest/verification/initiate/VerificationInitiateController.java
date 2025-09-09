@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.rest.verification.initiate;
 
 
-import bankapp.auth.application.verification_initiate.port.in.InitiateVerificationCommand;
+import bankapp.auth.application.verification.initiate.port.in.InitiateVerificationCommand;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

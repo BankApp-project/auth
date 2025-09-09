@@ -2,9 +2,9 @@ package bankapp.auth.domain;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
-import bankapp.auth.application.verification_complete.OtpVerificationException;
-import bankapp.auth.application.verification_initiate.VerificationData;
-import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
+import bankapp.auth.application.verification.complete.OtpVerificationException;
+import bankapp.auth.application.verification.initiate.VerificationData;
+import bankapp.auth.application.verification.initiate.port.out.OtpGenerationPort;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.vo.EmailAddress;

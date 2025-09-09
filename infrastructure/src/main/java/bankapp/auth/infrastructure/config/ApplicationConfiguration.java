@@ -3,7 +3,7 @@ package bankapp.auth.infrastructure.config;
 import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
-import bankapp.auth.application.verification_initiate.port.out.OtpGenerationPort;
+import bankapp.auth.application.verification.initiate.port.out.OtpGenerationPort;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.port.out.OtpConfigPort;
 import org.springframework.context.annotation.Bean;
