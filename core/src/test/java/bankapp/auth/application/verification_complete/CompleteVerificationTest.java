@@ -80,8 +80,8 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
         var sessionId = res.challengeId();
         var sessionOptional = challengeRepository.load(sessionId);
         assertTrue(sessionOptional.isPresent());
-        Clock fixedClockBeforeExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(DEFAULT_TTL - 1), DEFAULT_CLOCK.getZone());
-        Clock fixedClockAfterExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(DEFAULT_TTL + 1), DEFAULT_CLOCK.getZone());
+        Clock fixedClockBeforeExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(DEFAULT_TTL_IN_SECONDS - 1), DEFAULT_CLOCK.getZone());
+        Clock fixedClockAfterExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(DEFAULT_TTL_IN_SECONDS + 1), DEFAULT_CLOCK.getZone());
 
         // Then
         assertTrue(sessionOptional.get().isValid(fixedClockBeforeExpiration));

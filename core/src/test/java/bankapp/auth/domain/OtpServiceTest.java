@@ -16,12 +16,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +29,7 @@ class OtpServiceTest {
 
     private static final int OTP_SIZE = 6;
     private static final int TTL_IN_SECONDS = 60;
+    private static final Duration TTL = Duration.ofSeconds(TTL_IN_SECONDS);
     private static final Clock CLOCK = Clock.systemUTC();
     private static final String OTP_VALUE = "123456";
     private static final String EMAIL_VALUE = "test@bankapp.online";
@@ -128,7 +129,7 @@ class OtpServiceTest {
 
     private String hashAndPersistDefaultOtp() {
         var hashedOtp = hasher.hashSecurely(OTP_VALUE);
-        var otp = Otp.createNew(EMAIL_VALUE,hashedOtp,CLOCK,TTL_IN_SECONDS);
+        var otp = Otp.createNew(EMAIL_VALUE, hashedOtp, CLOCK, TTL);
         otpRepository.save(otp);
         return hashedOtp;
     }

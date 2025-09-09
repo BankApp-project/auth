@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 
@@ -32,7 +33,7 @@ public class OtpRepositoryIT implements WithRedisContainer {
 
 
     public static final Clock CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
-    public static final long TTL_IN_SECONDS = 300L;
+    public static final Duration TTL = Duration.ofSeconds(300);
     public static final String DEFAULT_KEY = "test-key";
     public static final String DEFAULT_VALUE = "123123";
 
@@ -42,7 +43,7 @@ public class OtpRepositoryIT implements WithRedisContainer {
     @Test
     void should_save_and_load_otp_with_correct_ttl() {
 
-        Otp testOtp = Otp.createNew(DEFAULT_KEY, DEFAULT_VALUE, CLOCK, TTL_IN_SECONDS);
+        Otp testOtp = Otp.createNew(DEFAULT_KEY, DEFAULT_VALUE, CLOCK, TTL);
 
         redisOtpRepository.save(testOtp);
 
@@ -65,7 +66,7 @@ public class OtpRepositoryIT implements WithRedisContainer {
     @Test
     void should_delete_entry_when_valid_key_provided() {
 
-        Otp testOtp = Otp.createNew(DEFAULT_KEY, DEFAULT_VALUE, CLOCK, TTL_IN_SECONDS);
+        Otp testOtp = Otp.createNew(DEFAULT_KEY, DEFAULT_VALUE, CLOCK, TTL);
 
         redisOtpRepository.save(testOtp);
 

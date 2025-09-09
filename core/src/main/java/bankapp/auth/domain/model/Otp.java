@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -31,11 +32,11 @@ public class Otp {
         }
     }
 
-    public static Otp createNew(String key, String value, @NonNull Clock clock, long ttlInSeconds) {
+    public static Otp createNew(String key, String value, @NonNull Clock clock, Duration ttl) {
         return new Otp(
                 key,
                 value,
-                Instant.now(clock).plusSeconds(ttlInSeconds)
+                Instant.now(clock).plus(ttl)
         );
     }
 
