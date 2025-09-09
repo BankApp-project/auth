@@ -108,6 +108,73 @@ class OtpTest {
     }
 
     @Test
+    void should_create_otp_with_reconstitute() {
+        // Given
+        Instant expirationTime = Instant.now(DEFAULT_CLOCK).plus(TTL);
+
+        // When
+        Otp otp = Otp.reconstitute(DEFAULT_KEY, DEFAULT_VALUE, expirationTime);
+
+        // Then
+        assertNotNull(otp);
+        assertEquals(DEFAULT_KEY, otp.getKey());
+        assertEquals(DEFAULT_VALUE, otp.getValue());
+        assertEquals(expirationTime, otp.getExpirationTime());
+    }
+
+    @Test
+    void should_throw_exception_when_reconstitute_key_is_null() {
+        // Given
+        Instant expirationTime = Instant.now(DEFAULT_CLOCK).plus(TTL);
+
+        // When & Then
+        assertThrows(NullPointerException.class,
+                () -> Otp.reconstitute(null, DEFAULT_VALUE, expirationTime),
+                "Should throw NullPointerException if key is null");
+    }
+
+    @Test
+    void should_throw_exception_when_reconstitute_value_is_null() {
+        // Given
+        Instant expirationTime = Instant.now(DEFAULT_CLOCK).plus(TTL);
+
+        // When & Then
+        assertThrows(NullPointerException.class,
+                () -> Otp.reconstitute(DEFAULT_KEY, null, expirationTime),
+                "Should throw NullPointerException if value is null");
+    }
+
+    @Test
+    void should_throw_exception_when_reconstitute_expiration_time_is_null() {
+        // When & Then
+        assertThrows(NullPointerException.class,
+                () -> Otp.reconstitute(DEFAULT_KEY, DEFAULT_VALUE, null),
+                "Should throw NullPointerException if expiration time is null");
+    }
+
+    @Test
+    void should_throw_exception_when_reconstitute_key_is_empty() {
+        // Given
+        Instant expirationTime = Instant.now(DEFAULT_CLOCK).plus(TTL);
+
+        // When & Then
+        assertThrows(OtpFormatException.class,
+                () -> Otp.reconstitute("", DEFAULT_VALUE, expirationTime),
+                "Should throw OtpFormatException if key is empty");
+    }
+
+    @Test
+    void should_throw_exception_when_reconstitute_value_is_empty() {
+        // Given
+        Instant expirationTime = Instant.now(DEFAULT_CLOCK).plus(TTL);
+
+        // When & Then
+        assertThrows(OtpFormatException.class,
+                () -> Otp.reconstitute(DEFAULT_KEY, "", expirationTime),
+                "Should throw OtpFormatException if value is empty");
+    }
+
+    @Test
     void should_be_able_to_set_expiration_time_in_minutes() {
         Otp otp = Otp.createNew(DEFAULT_KEY, DEFAULT_VALUE, DEFAULT_CLOCK, TTL);
 
