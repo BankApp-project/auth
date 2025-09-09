@@ -50,13 +50,13 @@ app:
         enabled: true
       complete:
         enabled: true
-    registration:
-      enabled: false
     authentication:
       initiate:
         enabled: true
       complete:
         enabled: false
+    registration:
+      enabled: false
   amqp:
     publisher:
       notifications:
