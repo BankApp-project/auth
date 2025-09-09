@@ -8,6 +8,7 @@ import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.domain.model.Otp;
+import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.infrastructure.WithPostgresContainer;
 import bankapp.auth.infrastructure.WithRedisContainer;
@@ -94,11 +95,63 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.challengeId").value(challenge.challengeId().toString()))
-                .andExpect(jsonPath("$.options.challenge").value(Base64.getEncoder().encodeToString(challenge.value())));
+                .andExpect(jsonPath("$.registrationOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.value())));
 
         // Additional Assertions
         assertChallengeIsSaved(challenge);
         assertUserIsCreatedAndDisabled();
+    }
+
+    private void assertUserIsCreatedAndDisabled() {
+        var emailObj = new EmailAddress(DEFAULT_EMAIL);
+        var userOptional = userRepository.findByEmail(emailObj);
+
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(user -> assertThat(user.isEnabled()).isFalse());
+    }
+
+    @Test
+    void completeVerification_should_return_valid_login_response_when_new_user_provide_valid_otp() throws Exception {
+        // Arrange
+        var hashedOtp = hasher.hashSecurely(DEFAULT_OTP);
+        var otp = Otp.createNew(DEFAULT_EMAIL, hashedOtp, clock, otpProperties.ttl());
+        otpRepository.save(otp);
+
+        createAndActivateUser();
+
+        var challenge = createFixedChallenge();
+        Mockito.when(challengeGeneratorMock.generate()).thenReturn(challenge);
+
+        var completeVerificationRequest = new CompleteVerificationRequest(DEFAULT_EMAIL, DEFAULT_OTP);
+
+        // Act & Assert
+        mockMvc.perform(post(VERIFICATION_COMPLETE_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(completeVerificationRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.challengeId").value(challenge.challengeId().toString()))
+                .andExpect(jsonPath("$.loginOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.value())));
+
+        // Additional Assertions
+        assertChallengeIsSaved(challenge);
+        assertUserIsCreatedAndEnabled();
+    }
+
+    private void createAndActivateUser() {
+        var user = User.createNew(new EmailAddress(DEFAULT_EMAIL));
+        user.activate();
+        userRepository.save(user);
+    }
+
+    private void assertUserIsCreatedAndEnabled() {
+        var emailObj = new EmailAddress(DEFAULT_EMAIL);
+        var userOptional = userRepository.findByEmail(emailObj);
+
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(user -> assertThat(user.isEnabled()).isTrue());
     }
 
     private Challenge createFixedChallenge() {
@@ -117,14 +170,5 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
                     assertThat(loadedChallenge.challengeId()).isEqualTo(expectedChallenge.challengeId());
                     assertThat(loadedChallenge.expirationTime()).isEqualTo(Instant.now(FIXED_CLOCK).plus(CHALLENGE_TTL));
                 });
-    }
-
-    private void assertUserIsCreatedAndDisabled() {
-        var emailObj = new EmailAddress(DEFAULT_EMAIL);
-        var userOptional = userRepository.findByEmail(emailObj);
-
-        assertThat(userOptional)
-                .isPresent()
-                .hasValueSatisfying(user -> assertThat(user.isEnabled()).isFalse());
     }
 }
