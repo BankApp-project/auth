@@ -31,9 +31,9 @@ public record Challenge(
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Challenge challenge)) return false;
+        if (!(o instanceof Challenge(UUID id, byte[] value1, Instant time))) return false;
 
-        return Arrays.equals(value, challenge.value) && challengeId.equals(challenge.challengeId) && expirationTime.equals(challenge.expirationTime);
+        return Arrays.equals(value, value1) && challengeId.equals(id) && expirationTime.equals(time);
     }
     @Override
     public int hashCode() {
