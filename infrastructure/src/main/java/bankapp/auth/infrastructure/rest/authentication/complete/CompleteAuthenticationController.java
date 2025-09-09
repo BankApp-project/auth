@@ -1,40 +1,32 @@
-package bankapp.auth.infrastructure.rest.authentication;
+package bankapp.auth.infrastructure.rest.authentication.complete;
 
 import bankapp.auth.application.authentication_complete.CompleteAuthenticationCommand;
 import bankapp.auth.application.authentication_complete.CompleteAuthenticationUseCase;
-import bankapp.auth.application.authentication_initiate.InitiateAuthenticationUseCase;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
+import bankapp.auth.infrastructure.rest.authentication.CompleteAuthenticationRequest;
 import bankapp.auth.infrastructure.rest.shared.dto.AuthenticationGrantResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-
 @ConditionalOnProperty(
-        name = "app.feature.authentication.enabled",
+        name = "app.feature.authentication.complete.enabled",
         havingValue = "true"
 )
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/authentication")
-public class AuthenticationController {
+@RequestMapping("/authentication/complete")
+public class CompleteAuthenticationController {
 
-    private final InitiateAuthenticationUseCase initiateAuthenticationUseCase;
     private final CompleteAuthenticationUseCase completeAuthenticationUseCase;
 
-    @GetMapping("/initiate")
-    public ResponseEntity<InitiateAuthenticationResponse> initiateAuthentication() {
-        var useCaseResponse = initiateAuthenticationUseCase.handle();
-
-        var response = new InitiateAuthenticationResponse(useCaseResponse.options(), useCaseResponse.challengeId().toString());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @PostMapping("/complete")
+    @PostMapping
     public ResponseEntity<AuthenticationGrantResponse> completeAuthentication(@RequestBody CompleteAuthenticationRequest request) {
         var command = getCompleteAuthenticationCommand(request);
 

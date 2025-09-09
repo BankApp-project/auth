@@ -1,11 +1,13 @@
 package bankapp.auth.application.authentication_initiate;
 
+import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.verification_complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification_complete.port.out.CredentialOptionsPort;
 import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 
+@UseCase
 public class InitiateAuthenticationUseCase {
 
     private final ChallengeGenerationPort challengeGenerator;

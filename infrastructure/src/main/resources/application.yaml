@@ -53,7 +53,10 @@ app:
     registration:
       enabled: false
     authentication:
-      enabled: false
+      initiate:
+        enabled: true
+      complete:
+        enabled: false
   amqp:
     publisher:
       notifications:

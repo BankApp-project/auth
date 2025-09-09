@@ -1,15 +1,12 @@
-package bankapp.auth.infrastructure.rest.authentication;
+package bankapp.auth.infrastructure.rest.authentication.complete;
 
 import bankapp.auth.application.authentication_complete.CompleteAuthenticationCommand;
 import bankapp.auth.application.authentication_complete.CompleteAuthenticationUseCase;
-import bankapp.auth.application.authentication_initiate.InitiateAuthenticationUseCase;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
-import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
-import bankapp.auth.application.verification_complete.port.out.dto.LoginResponse;
+import bankapp.auth.infrastructure.rest.authentication.CompleteAuthenticationRequest;
 import bankapp.auth.infrastructure.rest.shared.dto.AuthenticationGrantResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,20 +21,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
-@WebMvcTest(AuthenticationController.class)
-class AuthenticationControllerTest {
+@WebMvcTest(CompleteAuthenticationController.class)
+class CompleteAuthenticationControllerTest {
 
     @MockitoBean
-    InitiateAuthenticationUseCase initiateAuthenticationUseCase;
-
-    @MockitoBean
-    CompleteAuthenticationUseCase completeAuthenticationUseCase;
+    private CompleteAuthenticationUseCase completeAuthenticationUseCase;
 
     @Autowired
     private MockMvc mockMvc;
@@ -46,33 +38,8 @@ class AuthenticationControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void should_return_response_with_challengeId_and_PublicKeyCredentialRequestOptions() throws Exception {
-
-        var options = new PublicKeyCredentialRequestOptions(
-                new byte[]{123},
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-        var loginResponse = new LoginResponse(options, UUID.randomUUID());
-
-        when(initiateAuthenticationUseCase.handle()).thenReturn(loginResponse);
-
-        var responseStub = new InitiateAuthenticationResponse(options, loginResponse.challengeId().toString());
-        var responseJson = objectMapper.writeValueAsString(responseStub);
-
-
-        mockMvc.perform(get("/authentication/initiate")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(responseJson));
-    }
-
-    @Test
     void should_return_valid_response_with_valid_request() throws Exception {
-
+        // Given
         var challengeId = UUID.randomUUID().toString();
         var authRespJson = "someJSONblob";
         var credentialId = UUID.randomUUID();
@@ -84,23 +51,25 @@ class AuthenticationControllerTest {
         var authTokens = new AuthTokens("accessToken", "refreshToken");
         var useCaseResponse = new AuthenticationGrant(authTokens);
 
-        when(completeAuthenticationUseCase.handle(any())).thenReturn(useCaseResponse);
+        when(completeAuthenticationUseCase.handle(any(CompleteAuthenticationCommand.class))).thenReturn(useCaseResponse);
 
         var responseWithTokens = new AuthenticationGrantResponse("accessToken", "refreshToken");
         var responseJson = objectMapper.writeValueAsString(responseWithTokens);
 
+        // When & Then
         mockMvc.perform(post("/authentication/complete")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().json(responseJson));
 
+        // Verify that the use case was called with the correct arguments
         verify(completeAuthenticationUseCase).handle(argThat(command -> {
-            boolean first = command.AuthenticationResponseJSON().equals(requestedCommand.AuthenticationResponseJSON());
-            boolean second = command.challengeId().equals(requestedCommand.challengeId());
-            boolean third = Objects.equals(command.credentialId(),requestedCommand.credentialId());
+            boolean challengeIdMatches = command.challengeId().equals(requestedCommand.challengeId());
+            boolean responseJsonMatches = command.AuthenticationResponseJSON().equals(requestedCommand.AuthenticationResponseJSON());
+            boolean credentialIdMatches = Objects.equals(command.credentialId(), requestedCommand.credentialId());
 
-            return first && second && third;
+            return challengeIdMatches && responseJsonMatches && credentialIdMatches;
         }));
     }
 }
