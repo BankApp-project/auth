@@ -5,7 +5,7 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationO
 import java.util.UUID;
 
 public record RegistrationResponseDto(
-        PublicKeyCredentialCreationOptions options,
+        PublicKeyCredentialCreationOptions registrationOptions,
         UUID challengeId
 ) implements CompleteVerificationResponseDto {
 }
