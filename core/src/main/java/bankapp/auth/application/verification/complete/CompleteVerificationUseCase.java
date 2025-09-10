@@ -16,6 +16,8 @@ import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 import bankapp.auth.domain.model.vo.EmailAddress;
 
+import java.util.UUID;
+
 @UseCase
 public class CompleteVerificationUseCase {
 
@@ -52,7 +54,7 @@ public class CompleteVerificationUseCase {
 
         User user = findOrCreateUser(command.key());
 
-        var challenge = generateAndSaveChallenge();
+        var challenge = generateAndSaveChallenge(user.getId());
 
         return prepareResponse(user, challenge);
     }
@@ -61,8 +63,8 @@ public class CompleteVerificationUseCase {
         otpService.verifyAndConsumeOtp(key,value);
     }
 
-    private Challenge generateAndSaveChallenge() {
-        var challenge = challengeGenerator.generate();
+    private Challenge generateAndSaveChallenge(UUID userId) {
+        var challenge = challengeGenerator.generate(userId);
         challengeRepository.save(challenge);
         return challenge;
     }

@@ -31,7 +31,8 @@ class CompleteRegistrationUseCaseTest {
             DEFAULT_CHALLENGE_ID,
             new byte[]{111},
             Duration.ofSeconds(DEFAULT_TTL),
-            Clock.systemUTC()
+            Clock.systemUTC(),
+            UUID.randomUUID()
     );
     private PasskeyRegistrationData stubRegistrationData;
     private User testUser;

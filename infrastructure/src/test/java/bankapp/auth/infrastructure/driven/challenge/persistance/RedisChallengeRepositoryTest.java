@@ -43,7 +43,7 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     @Test
     void shouldSaveChallengeAndSetTtl() {
         // given
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK);
+        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
         var key = "challenge:" + challenge.challengeId();
 
         // when
@@ -60,7 +60,7 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     @Test
     void shouldLoadChallenge() {
         // given
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK);
+        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
         var key = "challenge:" + challenge.challengeId();
         redisTemplate.opsForValue().set(key, challenge);
 
@@ -74,7 +74,7 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     @Test
     void shouldDeleteChallenge() {
         // given
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK);
+        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
         var sessionId = challenge.challengeId();
         var key = "challenge:" + sessionId;
         redisTemplate.opsForValue().set(key, challenge);

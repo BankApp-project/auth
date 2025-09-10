@@ -25,7 +25,7 @@ public class InitiateAuthenticationUseCase {
 
     @TransactionalUseCase
     public LoginResponse handle() {
-        var challenge = challengeGenerator.generate();
+        var challenge = challengeGenerator.generate(null);
 
         challengeRepository.save(challenge);
 

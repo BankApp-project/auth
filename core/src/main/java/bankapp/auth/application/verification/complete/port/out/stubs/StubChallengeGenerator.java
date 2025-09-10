@@ -19,7 +19,7 @@ public class StubChallengeGenerator implements ChallengeGenerationPort {
     }
 
     @Override
-    public Challenge generate() {
+    public Challenge generate(UUID userId) {
         var sessionId = UUID.randomUUID();
         var challenge = UUID.randomUUID();
         byte[] challengeBytes = ByteArrayUtil.uuidToBytes(challenge);
@@ -27,7 +27,8 @@ public class StubChallengeGenerator implements ChallengeGenerationPort {
                 sessionId,
                 challengeBytes,
                 Duration.ofSeconds(ttl),
-                clock
+                clock,
+                userId
         );
     }
 }

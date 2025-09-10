@@ -27,7 +27,8 @@ public class InitiateAuthenticationUseCaseTest {
             UUID.randomUUID(),
             new byte[]{123},
             DEFAULT_CHALLENGE_TTL,
-            DEFAULT_CLOCK
+            DEFAULT_CLOCK,
+            null
     );
 
     private InitiateAuthenticationUseCase useCase;
@@ -46,7 +47,7 @@ public class InitiateAuthenticationUseCaseTest {
         MockitoAnnotations.openMocks(this);
 
 
-        when(challengeGenerator.generate()).thenReturn(DEFAULT_CHALLENGE);
+        when(challengeGenerator.generate(null)).thenReturn(DEFAULT_CHALLENGE);
 
         useCase = new InitiateAuthenticationUseCase(challengeGenerator, challengeRepository, credentialOptionsService);
     }
@@ -55,7 +56,7 @@ public class InitiateAuthenticationUseCaseTest {
     void should_generate_challenge() {
         useCase.handle();
 
-        verify(challengeGenerator).generate();
+        verify(challengeGenerator).generate(null);
     }
 
     @Test

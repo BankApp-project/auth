@@ -53,7 +53,7 @@ class WebAuthnServiceTest {
 
         var challengeId = UUID.randomUUID();
         var challengeVal = new byte[] {123,111};
-        return new Challenge(challengeId, challengeVal, TTL, FIXED_CLOCK);
+        return new Challenge(challengeId, challengeVal, TTL, FIXED_CLOCK, UUID.randomUUID());
     }
 
 }

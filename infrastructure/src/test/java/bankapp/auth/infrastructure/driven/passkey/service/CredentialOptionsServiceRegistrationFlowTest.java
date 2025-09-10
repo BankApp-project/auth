@@ -31,7 +31,8 @@ class CredentialOptionsServiceRegistrationFlowTest {
             UUID.randomUUID(),
             new byte[]{123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123},
             DEFAULT_TIMEOUT,
-            DEFAULT_CLOCK
+            DEFAULT_CLOCK,
+            TEST_USER.getId()
     );
 
     CredentialOptionsService passkeyOptionsService;

@@ -20,7 +20,7 @@ public class SecureRandomChallengeGenerator implements ChallengeGenerationPort {
     private final Clock clock;
 
     @Override
-    public Challenge generate() {
+    public Challenge generate(UUID userId) {
         var sessionId = getSessionId();
 
         byte[] value = getRandomChallengeValue();
@@ -30,7 +30,8 @@ public class SecureRandomChallengeGenerator implements ChallengeGenerationPort {
         return new Challenge(
                 sessionId,
                 value,
-                expTime
+                expTime,
+                userId
         );
     }
 

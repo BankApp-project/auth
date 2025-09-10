@@ -34,6 +34,7 @@ import java.util.Base64;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -85,7 +86,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
         otpRepository.save(otp);
 
         var challenge = createFixedChallenge();
-        Mockito.when(challengeGeneratorMock.generate()).thenReturn(challenge);
+        Mockito.when(challengeGeneratorMock.generate(any(UUID.class))).thenReturn(challenge);
 
         var completeVerificationRequest = new CompleteVerificationRequest(DEFAULT_EMAIL, DEFAULT_OTP);
 
@@ -122,7 +123,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
         createAndActivateUser();
 
         var challenge = createFixedChallenge();
-        Mockito.when(challengeGeneratorMock.generate()).thenReturn(challenge);
+        Mockito.when(challengeGeneratorMock.generate(any(UUID.class))).thenReturn(challenge);
 
         var completeVerificationRequest = new CompleteVerificationRequest(DEFAULT_EMAIL, DEFAULT_OTP);
 
@@ -163,7 +164,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
         otpRepository.save(otp);
 
         var challenge = createFixedChallenge();
-        Mockito.when(challengeGeneratorMock.generate()).thenReturn(challenge);
+        Mockito.when(challengeGeneratorMock.generate(any(UUID.class))).thenReturn(challenge);
 
         var completeVerificationRequest = new CompleteVerificationRequest(DEFAULT_EMAIL, INVALID_OTP);
 
@@ -185,7 +186,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
     private Challenge createFixedChallenge() {
         var challengeId = UUID.randomUUID();
         var challengeValue = new byte[]{123, 123};
-        return new Challenge(challengeId, challengeValue, CHALLENGE_TTL, FIXED_CLOCK);
+        return new Challenge(challengeId, challengeValue, CHALLENGE_TTL, FIXED_CLOCK, UUID.randomUUID());
     }
 
     private void assertChallengeIsSaved(Challenge expectedChallenge) {

@@ -75,10 +75,11 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
                 UUID.randomUUID(),
                 new byte[]{123},
                 challengeTtl,
-                DEFAULT_CLOCK
+                DEFAULT_CLOCK,
+                defaultUser.getId()
         );
 
-        when(mockChallengeGenerator.generate()).thenReturn(challenge);
+        when(mockChallengeGenerator.generate(defaultUser.getId())).thenReturn(challenge);
 
         var useCase = new CompleteVerificationUseCase(
                 challengeRepository, passkeyRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator,

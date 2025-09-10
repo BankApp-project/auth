@@ -44,7 +44,8 @@ public class CredentialOptionsServiceLoginFlowTest {
             UUID.randomUUID(),
             ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
             DEFAULT_TIMEOUT,
-            DEFAULT_CLOCK
+            DEFAULT_CLOCK,
+            DEFAULT_USER.getId()
     );
 
     CredentialOptionsService passkeyOptionsService;

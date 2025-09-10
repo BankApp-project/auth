@@ -37,7 +37,8 @@ public class CompleteAuthenticationUseCaseTest {
     private final static Challenge TEST_CHALLENGE = new Challenge(
             DEFAULT_SESSION_ID,
             DEFAULT_RAW_CHALLENGE,
-            DEFAULT_EXPIRATION_TIME
+            DEFAULT_EXPIRATION_TIME,
+            DEFAULT_USER_ID
     );
 
 

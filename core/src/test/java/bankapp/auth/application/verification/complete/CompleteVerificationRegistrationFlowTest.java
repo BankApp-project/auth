@@ -22,7 +22,8 @@ public class CompleteVerificationRegistrationFlowTest extends CompleteVerificati
             UUID.randomUUID(),
             new byte[]{123},
             challengeTtl,
-            DEFAULT_CLOCK
+            DEFAULT_CLOCK,
+            UUID.randomUUID()
     );
 
     @Test
@@ -69,7 +70,7 @@ public class CompleteVerificationRegistrationFlowTest extends CompleteVerificati
         // Given
         var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
         var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
-        when(mockChallengeGenerator.generate()).thenReturn(challenge);
+        when(mockChallengeGenerator.generate(any(UUID.class))).thenReturn(challenge);
 
         var useCase = new CompleteVerificationUseCase(
                 challengeRepository, passkeyRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator,
