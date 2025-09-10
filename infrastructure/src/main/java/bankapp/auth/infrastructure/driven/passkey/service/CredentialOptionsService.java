@@ -7,7 +7,7 @@ import bankapp.auth.application.verification.complete.port.out.CredentialOptions
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.Nullable;
-import bankapp.auth.infrastructure.driven.passkey.config.CredentialOptionsProperties;
+import bankapp.auth.infrastructure.driven.passkey.config.PasskeyProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CredentialOptionsService implements CredentialOptionsPort {
 
-    private final CredentialOptionsProperties properties;
+    private final PasskeyProperties properties;
     private final Clock clock;
 
     /**

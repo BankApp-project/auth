@@ -7,7 +7,7 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOp
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.annotations.Nullable;
-import bankapp.auth.infrastructure.driven.passkey.config.CredentialOptionsProperties;
+import bankapp.auth.infrastructure.driven.passkey.config.PasskeyProperties;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Clock;
@@ -26,7 +26,7 @@ class PasskeyRequestOptionsAssembler {
 
     private final static String PASSKEY_TYPE = "public-key";
 
-    private final CredentialOptionsProperties properties;
+    private final PasskeyProperties properties;
     private final Clock clock;
 
     public PublicKeyCredentialRequestOptions assemble(@Nullable List<Passkey> userCredentials, Challenge challenge) {

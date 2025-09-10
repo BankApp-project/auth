@@ -41,7 +41,7 @@ app:
     challenge:
       length: 32 #in bytes
       ttl: 60s
-    credential-options:
+    passkey:
       rp-id: "bankapp.online"
       auth-mode: smartphone
   feature:
