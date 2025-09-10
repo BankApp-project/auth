@@ -17,7 +17,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 })
 public class BankappAuthService {
 
-    public static void main(String...args) {
+    static void main(String... args) {
         SpringApplication.run(BankappAuthService.class, args);
     }
 }
