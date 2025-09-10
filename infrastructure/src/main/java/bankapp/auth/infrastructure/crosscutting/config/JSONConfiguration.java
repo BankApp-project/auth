@@ -1,6 +1,9 @@
 package bankapp.auth.infrastructure.crosscutting.config;
 
+import bankapp.auth.domain.model.Otp;
+import bankapp.auth.infrastructure.driven.otp.persistance.OtpMixin;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,8 +13,16 @@ public class JSONConfiguration {
 
     @Bean
     public ObjectMapper objectMapper() {
-        var mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        return mapper;
+        return JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+    }
+
+    @Bean
+    public tools.jackson.databind.json.JsonMapper jsonMapper() {
+        return tools.jackson.databind.json.JsonMapper.builder()
+                .addModule(new tools.jackson.datatype.jsr310.JavaTimeModule())
+                .addMixIn(Otp.class, OtpMixin.class)
+                .build();
     }
 }

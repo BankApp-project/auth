@@ -12,6 +12,7 @@
     <properties>
         <!-- The Spring Boot version is the single source of truth for most dependencies -->
         <spring.boot.version>4.0.0-M2</spring.boot.version> <!-- Using a recent stable version -->
+        <jackson.version>3.0.0-rc9</jackson.version>
     </properties>
 
     <dependencyManagement>
@@ -79,6 +80,18 @@
         </dependency>
 
         <!-- Utilities -->
+        <!-- https://mvnrepository.com/artifact/tools.jackson.core/jackson-databind -->
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/tools.jackson.datatype/jackson-datatype-jsr310 -->
+        <dependency>
+            <groupId>tools.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>3.0.0-rc2</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
