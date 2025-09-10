@@ -1,0 +1,59 @@
+package bankapp.auth.infrastructure.driven.passkey.service;
+
+import bankapp.auth.application.shared.port.out.WebAuthnPort;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
+import bankapp.auth.domain.model.Passkey;
+import bankapp.auth.infrastructure.driven.passkey.config.PasskeyConfiguration;
+import com.webauthn4j.WebAuthnManager;
+import com.webauthn4j.data.RegistrationParameters;
+import com.webauthn4j.data.client.challenge.DefaultChallenge;
+import com.webauthn4j.server.ServerProperty;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class WebAuthnService implements WebAuthnPort {
+
+    private final WebAuthnManager webAuthnManager = WebAuthnManager.createNonStrictWebAuthnManager();
+    private final PasskeyConfiguration passkeyConfig;
+    private final RegistrationDataMapper registrationDataMapper;
+
+    @Override
+    public PasskeyRegistrationData confirmRegistrationChallenge(String registrationResponseJSON, Challenge challengeData) {
+        try {
+            var registrationParameters = getRegistrationParameters(challengeData);
+
+            var registrationData = webAuthnManager.verifyRegistrationResponseJSON(registrationResponseJSON, registrationParameters);
+
+            return registrationDataMapper.toDomainEntity(registrationData);
+        } catch (RuntimeException e) {
+            throw new RegistrationConfirmAttemptException("Confirmation of registration attempt failed.");
+        }
+    }
+
+    private RegistrationParameters getRegistrationParameters(Challenge challengeData) {
+        var serverProperty = getServerProperty(challengeData);
+
+        return getRegistrationParameters(serverProperty);
+    }
+
+    private ServerProperty getServerProperty(Challenge challengeData) {
+        var challenge = new DefaultChallenge(challengeData.value());
+        return new ServerProperty(passkeyConfig.origin(), passkeyConfig.rpId(), challenge);
+    }
+
+    private RegistrationParameters getRegistrationParameters(ServerProperty serverProperty) {
+        return new RegistrationParameters(serverProperty,
+                PublicKeyCredentialParametersProvider.getInfraPubKeyCredParams(),
+                passkeyConfig.userVerificationRequired(),
+                passkeyConfig.userPresenceRequired());
+    }
+
+
+    @Override
+    public Passkey confirmAuthenticationChallenge(String authenticationResponseJSON, Challenge challengeData, Passkey passkey) {
+        return null;
+    }
+}
