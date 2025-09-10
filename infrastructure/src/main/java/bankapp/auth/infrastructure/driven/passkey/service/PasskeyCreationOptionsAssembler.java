@@ -69,9 +69,7 @@ class PasskeyCreationOptionsAssembler {
      * <a href="https://www.w3.org/TR/webauthn-3/#dictdef-publickeycredentialparameters">...</a>
      */
     private List<PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters> getPublicKeyCredentialParametersList() {
-        var pubKeyCredParamES256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key", -7);
-        var pubKeyCredParamRS256 = new PublicKeyCredentialCreationOptions.PublicKeyCredentialParameters("public-key", -257);
-        return List.of(pubKeyCredParamES256, pubKeyCredParamRS256);
+        return PublicKeyCredentialParametersProvider.getDomainPubKeyCredParams();
     }
 
     private ArrayList<PublicKeyCredentialDescriptor> getExcludeCredentials() {
