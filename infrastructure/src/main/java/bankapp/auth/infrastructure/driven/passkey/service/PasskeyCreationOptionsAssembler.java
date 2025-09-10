@@ -7,6 +7,7 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationO
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialDescriptor;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.User;
+import bankapp.auth.infrastructure.driven.passkey.config.CredentialOptionsProperties;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Clock;

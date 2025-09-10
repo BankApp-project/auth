@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.config;
 
 import bankapp.auth.application.shared.enums.AuthMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;

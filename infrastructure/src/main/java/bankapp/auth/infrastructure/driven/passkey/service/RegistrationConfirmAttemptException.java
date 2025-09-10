@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.webauthn.service;
+package bankapp.auth.infrastructure.driven.passkey.service;
 
 public class RegistrationConfirmAttemptException extends RuntimeException {
 

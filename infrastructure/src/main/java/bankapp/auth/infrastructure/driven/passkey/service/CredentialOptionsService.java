@@ -7,6 +7,7 @@ import bankapp.auth.application.verification.complete.port.out.CredentialOptions
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.Nullable;
+import bankapp.auth.infrastructure.driven.passkey.config.CredentialOptionsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
