@@ -42,8 +42,12 @@ app:
       length: 32 #in bytes
       ttl: 60s
     passkey:
-      rp-id: "bankapp.online"
-      auth-mode: smartphone
+      rp:
+        rp-id: "bankapp.online"
+        auth-mode: smartphone
+      security:
+        user-presence-required: true
+        user-verification-required: true
   feature:
     verification:
       initiate:

@@ -5,7 +5,7 @@ import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.infrastructure.driven.passkey.config.PasskeyProperties;
+import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
 
     @BeforeEach
     void setup() {
-        var passkeyOptionsProperties = new PasskeyProperties(
+        var passkeyOptionsProperties = new PasskeyRpProperties(
                 DEFAULT_RPID,
                 DEFAULT_AUTH_MODE
         );
@@ -172,7 +172,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     void should_return_response_with_default_settings_when_DEFAULT_AUTH_MODE_flag_is_default() {
         //Given
         User testUser = User.createNew(DEFAULT_EMAIL);
-        var passkeyOptionsProperties = new PasskeyProperties(
+        var passkeyOptionsProperties = new PasskeyRpProperties(
                 DEFAULT_RPID,
                 AuthMode.STANDARD
         );

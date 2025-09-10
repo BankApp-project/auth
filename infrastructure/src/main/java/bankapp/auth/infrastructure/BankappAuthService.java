@@ -2,7 +2,8 @@ package bankapp.auth.infrastructure;
 
 import bankapp.auth.infrastructure.driven.challenge.config.ChallengeProperties;
 import bankapp.auth.infrastructure.driven.otp.config.OtpProperties;
-import bankapp.auth.infrastructure.driven.passkey.config.PasskeyProperties;
+import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
+import bankapp.auth.infrastructure.driven.passkey.config.PasskeySecurityProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,7 +14,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableConfigurationProperties({
         OtpProperties.class,
         ChallengeProperties.class,
-        PasskeyProperties.class,
+        PasskeyRpProperties.class,
+        PasskeySecurityProperties.class
 })
 public class BankappAuthService {
 

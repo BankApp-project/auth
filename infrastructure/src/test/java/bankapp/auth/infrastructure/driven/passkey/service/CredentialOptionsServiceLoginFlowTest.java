@@ -6,7 +6,7 @@ import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.infrastructure.driven.passkey.config.PasskeyProperties;
+import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,7 +51,7 @@ public class CredentialOptionsServiceLoginFlowTest {
 
     @BeforeEach
     void setup() {
-        var passkeyOptionsProperties = new PasskeyProperties(
+        var passkeyOptionsProperties = new PasskeyRpProperties(
                 DEFAULT_RPID,
                 DEFAULT_AUTH_MODE
         );

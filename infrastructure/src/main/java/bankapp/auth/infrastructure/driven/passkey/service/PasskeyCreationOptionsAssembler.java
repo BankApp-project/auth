@@ -7,7 +7,7 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationO
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialDescriptor;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.User;
-import bankapp.auth.infrastructure.driven.passkey.config.PasskeyProperties;
+import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Clock;
@@ -25,7 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 class PasskeyCreationOptionsAssembler {
 
-    private final PasskeyProperties properties;
+    private final PasskeyRpProperties properties;
     private final Clock clock;
 
     public PublicKeyCredentialCreationOptions assemble(User user, Challenge challenge) {
