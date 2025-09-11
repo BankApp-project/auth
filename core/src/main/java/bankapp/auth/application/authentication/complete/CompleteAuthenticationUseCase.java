@@ -1,13 +1,13 @@
 package bankapp.auth.application.authentication.complete;
 
-import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
-import bankapp.auth.application.shared.port.out.WebAuthnPort;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
-import bankapp.auth.domain.model.Passkey;
-import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
+import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 
 import java.util.UUID;
@@ -16,12 +16,12 @@ public class CompleteAuthenticationUseCase {
 
     private final ChallengeRepository challengeRepository;
     private final PasskeyRepository passkeyRepository;
-    private final WebAuthnPort webAuthnPort;
+    private final WebAuthnVerificationPort webAuthnVerificationPort;
     private final TokenIssuingPort tokenIssuingPort;
 
-    public CompleteAuthenticationUseCase(ChallengeRepository sessionRepo, WebAuthnPort webAuthnPort, PasskeyRepository passkeyRepository, TokenIssuingPort tokenIssuingPort) {
+    public CompleteAuthenticationUseCase(ChallengeRepository sessionRepo, WebAuthnVerificationPort webAuthnVerificationPort, PasskeyRepository passkeyRepository, TokenIssuingPort tokenIssuingPort) {
         this.challengeRepository = sessionRepo;
-        this.webAuthnPort = webAuthnPort;
+        this.webAuthnVerificationPort = webAuthnVerificationPort;
         this.passkeyRepository = passkeyRepository;
         this.tokenIssuingPort = tokenIssuingPort;
     }
@@ -48,7 +48,7 @@ public class CompleteAuthenticationUseCase {
 
             var credentialRecord = credentialRecordOpt.orElseThrow();
 
-            return webAuthnPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session, credentialRecord);
+            return webAuthnVerificationPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session, credentialRecord);
         } catch (RuntimeException e) {
             throw new CompleteAuthenticationException("Failed to confirm authentication value: " + e.getMessage(), e);
         }

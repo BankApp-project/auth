@@ -3,7 +3,7 @@ package bankapp.auth.application.registration.complete;
 import bankapp.auth.application.registration.complete.port.in.CompleteRegistrationCommand;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
-import bankapp.auth.application.shared.port.out.WebAuthnPort;
+import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
@@ -40,7 +40,7 @@ class CompleteRegistrationUseCaseTest {
     private ChallengeRepository sessionRepo;
     private PasskeyRepository passkeyRepository;
     private UserRepository userRepository;
-    private WebAuthnPort webAuthnPort;
+    private WebAuthnVerificationPort webAuthnVerificationPort;
     private TokenIssuingPort tokenIssuingPort;
 
     private CompleteRegistrationCommand command;
@@ -49,13 +49,13 @@ class CompleteRegistrationUseCaseTest {
     @BeforeEach
     void setUp() {
         sessionRepo = mock(ChallengeRepository.class);
-        webAuthnPort = mock(WebAuthnPort.class);
+        webAuthnVerificationPort = mock(WebAuthnVerificationPort.class);
         passkeyRepository = mock(PasskeyRepository.class);
         userRepository = mock(UserRepository.class);
         tokenIssuingPort = mock(TokenIssuingPort.class);
 
         command = new CompleteRegistrationCommand(DEFAULT_CHALLENGE_ID, "blob");
-        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnPort, passkeyRepository, userRepository, tokenIssuingPort);
+        useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnVerificationPort, passkeyRepository, userRepository, tokenIssuingPort);
 
 
         when(sessionRepo.load(DEFAULT_CHALLENGE_ID)).thenReturn(Optional.of(DEFAULT_CHALLENGE));
@@ -77,7 +77,7 @@ class CompleteRegistrationUseCaseTest {
         );
 
 
-        when(webAuthnPort.confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), any())).thenReturn(stubRegistrationData);
+        when(webAuthnVerificationPort.confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), any())).thenReturn(stubRegistrationData);
         when(userRepository.findById(any())).thenReturn(Optional.of(testUser));
     }
 
@@ -96,7 +96,7 @@ class CompleteRegistrationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnPort).confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), eq(DEFAULT_CHALLENGE));
+        verify(webAuthnVerificationPort).confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), eq(DEFAULT_CHALLENGE));
     }
 
     @Test
@@ -112,7 +112,7 @@ class CompleteRegistrationUseCaseTest {
     void should_throw_CompleteRegistrationException_when_challenge_verification_fails() {
         // Given
         String exceptionMsg = "Challenge verification failed";
-        when(webAuthnPort.confirmRegistrationChallenge(any(), any())).thenThrow(new RuntimeException(exceptionMsg));
+        when(webAuthnVerificationPort.confirmRegistrationChallenge(any(), any())).thenThrow(new RuntimeException(exceptionMsg));
         // When
         // Then
         var exceptionThrowed = assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
@@ -137,7 +137,7 @@ class CompleteRegistrationUseCaseTest {
     @Test
     void should_not_delete_challenge_when_user_fails_to_register_new_credential() {
         // Given
-        when(webAuthnPort.confirmRegistrationChallenge(any(), any())).thenThrow(new RuntimeException("Verification failed"));
+        when(webAuthnVerificationPort.confirmRegistrationChallenge(any(), any())).thenThrow(new RuntimeException("Verification failed"));
 
         // When & Then
         assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));

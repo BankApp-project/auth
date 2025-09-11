@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class WebAuthnServiceTest {
 
     @Autowired
-    private WebAuthnService webAuthnService;
+    private WebAuthnVerificationService webAuthnService;
 
     @Test
     void confirmRegistrationChallenge_should_throw_exception_when_invalid_response() {

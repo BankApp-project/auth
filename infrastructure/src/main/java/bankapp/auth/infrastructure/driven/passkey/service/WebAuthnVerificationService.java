@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
-import bankapp.auth.application.shared.port.out.WebAuthnPort;
+import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.domain.model.Passkey;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class WebAuthnService implements WebAuthnPort {
+public class WebAuthnVerificationService implements WebAuthnVerificationPort {
 
     private final WebAuthnManager webAuthnManager = WebAuthnManager.createNonStrictWebAuthnManager();
     private final PasskeyConfiguration passkeyConfig;
@@ -54,6 +54,7 @@ public class WebAuthnService implements WebAuthnPort {
 
     @Override
     public Passkey confirmAuthenticationChallenge(String authenticationResponseJSON, Challenge challengeData, Passkey passkey) {
-        return null;
+        //todo
+        throw new UnsupportedOperationException();
     }
 }

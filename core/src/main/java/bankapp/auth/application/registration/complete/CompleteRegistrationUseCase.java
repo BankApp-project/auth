@@ -1,11 +1,11 @@
 package bankapp.auth.application.registration.complete;
 
+import bankapp.auth.application.registration.complete.port.in.CompleteRegistrationCommand;
+import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
+import bankapp.auth.application.shared.port.out.TokenIssuingPort;
+import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
-import bankapp.auth.application.registration.complete.port.in.CompleteRegistrationCommand;
-import bankapp.auth.application.shared.port.out.TokenIssuingPort;
-import bankapp.auth.application.shared.port.out.WebAuthnPort;
-import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
@@ -20,20 +20,20 @@ import java.util.UUID;
 public class CompleteRegistrationUseCase {
 
     private final ChallengeRepository challengeRepository;
-    private final WebAuthnPort webAuthnPort;
+    private final WebAuthnVerificationPort webAuthnVerificationPort;
     private final PasskeyRepository passkeyRepository;
     private final UserRepository userRepository;
     private final TokenIssuingPort tokenIssuer;
 
     public CompleteRegistrationUseCase(
             ChallengeRepository challengeRepository,
-            WebAuthnPort webAuthnPort,
+            WebAuthnVerificationPort webAuthnVerificationPort,
             PasskeyRepository passkeyRepository,
             UserRepository userRepository,
             TokenIssuingPort tokenIssuingPort
     ) {
         this.challengeRepository = challengeRepository;
-        this.webAuthnPort = webAuthnPort;
+        this.webAuthnVerificationPort = webAuthnVerificationPort;
         this.passkeyRepository = passkeyRepository;
         this.userRepository = userRepository;
         this.tokenIssuer = tokenIssuingPort;
@@ -83,7 +83,7 @@ public class CompleteRegistrationUseCase {
     private PasskeyRegistrationData verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge challenge) {
         PasskeyRegistrationData credential;
         try {
-            credential = webAuthnPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), challenge);
+            credential = webAuthnVerificationPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), challenge);
         } catch (Exception e) {
             throw new CompleteRegistrationException("Failed to confirm new credential registration: " + e.getMessage(), e);
         }
