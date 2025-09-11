@@ -109,6 +109,12 @@
             <artifactId>uuid-creator</artifactId>
             <version>6.1.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.1.1</version>
+        </dependency>
 
         <!-- WebAuthn4j -->
         <!-- https://mvnrepository.com/artifact/com.webauthn4j/webauthn4j-core -->
