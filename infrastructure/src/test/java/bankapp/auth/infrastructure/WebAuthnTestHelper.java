@@ -8,9 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
-import java.util.Base64;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class WebAuthnTestHelper {
 
@@ -109,16 +107,25 @@ public class WebAuthnTestHelper {
         byte[] attestationObjectBytes = cborMapper.writeValueAsBytes(attestationObject);
 
 
-        // --- 7. Assemble the final JSON response ---
+// --- 7. Assemble the final JSON response ---
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("clientDataJSON", Base64.getUrlEncoder().withoutPadding().encodeToString(clientDataJSONBytes));
         response.put("attestationObject", Base64.getUrlEncoder().withoutPadding().encodeToString(attestationObjectBytes));
+
+// =========================================================================
+// CORRECTED SECTION: Move the transports field into the 'response' map
+// =========================================================================
+        response.put("transports", List.of("internal"));
+// =========================================================================
 
         Map<String, Object> finalJson = new LinkedHashMap<>();
         finalJson.put("id", Base64.getUrlEncoder().withoutPadding().encodeToString(credentialId));
         finalJson.put("rawId", Base64.getUrlEncoder().withoutPadding().encodeToString(credentialId));
         finalJson.put("type", "public-key");
         finalJson.put("response", response);
+
+// 'clientExtensionResults' is one of the few fields that does belong at the top level
+        finalJson.put("clientExtensionResults", Collections.emptyMap());
 
         return jsonMapper.writeValueAsString(finalJson);
     }

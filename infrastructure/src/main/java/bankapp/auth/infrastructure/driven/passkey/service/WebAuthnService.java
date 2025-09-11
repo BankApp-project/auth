@@ -27,7 +27,7 @@ public class WebAuthnService implements WebAuthnPort {
 
             var registrationData = webAuthnManager.verifyRegistrationResponseJSON(registrationResponseJSON, registrationParameters);
 
-            return registrationDataMapper.toDomainEntity(registrationData);
+            return registrationDataMapper.toDomainEntity(registrationData, challengeData.userId());
         } catch (RuntimeException e) {
             throw new RegistrationConfirmAttemptException("Confirmation of registration attempt failed.");
         }
