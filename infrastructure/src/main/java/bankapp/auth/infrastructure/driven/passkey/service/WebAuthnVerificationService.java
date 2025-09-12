@@ -23,6 +23,7 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
     private final WebAuthnManager webAuthnManager = WebAuthnManager.createNonStrictWebAuthnManager();
     private final PasskeyConfiguration passkeyConfig;
     private final RegistrationDataMapper registrationDataMapper;
+    private final PasskeyToCredentialRecordMapper passkeyToCredentialRecordMapper;
 
     @Override
     public Passkey confirmRegistrationChallenge(String registrationResponseJSON, Challenge challengeData) {
@@ -77,6 +78,6 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
     }
 
     private CredentialRecord getCredentialRecord(Passkey source) {
-        return PasskeyToCredentialRecordMapper.from(source);
+        return passkeyToCredentialRecordMapper.from(source);
     }
 }

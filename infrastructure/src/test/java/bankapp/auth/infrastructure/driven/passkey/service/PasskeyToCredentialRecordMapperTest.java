@@ -17,7 +17,8 @@ class PasskeyToCredentialRecordMapperTest {
         var testPasskey = PasskeyTestProvider.createSamplePasskey();
 
         // ACT: Map the Passkey to a CredentialRecord.
-        var res = PasskeyToCredentialRecordMapper.from(testPasskey);
+        var mapper = new PasskeyToCredentialRecordMapper();
+        var res = mapper.from(testPasskey);
 
         // ASSERT: Verify that all fields have been mapped correctly.
         assertNotNull(res, "The resulting CredentialRecord should not be null.");
