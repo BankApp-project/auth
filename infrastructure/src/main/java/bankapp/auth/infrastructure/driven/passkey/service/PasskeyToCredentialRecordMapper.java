@@ -26,7 +26,12 @@ public class PasskeyToCredentialRecordMapper {
         AttestationObject attestationObject = webAuthnMapper.convertAttestationObject(source.getAttestationObject());
         CollectedClientData collectedClientData = webAuthnMapper.convertClientData(source.getAttestationClientDataJSON());
 
-        return new CredentialRecordImpl(attestationObject, collectedClientData, parseClientExtensions(source.getExtensions()), parseTransports(source.getTransports()));
+        return new CredentialRecordImpl(
+                attestationObject,
+                collectedClientData,
+                parseClientExtensions(source.getExtensions()),
+                parseTransports(source.getTransports())
+        );
     }
 
     private AuthenticationExtensionsClientOutputs<RegistrationExtensionClientOutput> parseClientExtensions(Map<String, Object> extensions) {

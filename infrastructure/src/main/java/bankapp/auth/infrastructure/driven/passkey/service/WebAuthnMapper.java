@@ -33,7 +33,7 @@ public class WebAuthnMapper {
 
         return objectConverter.getJsonConverter().readValue(
                 extensionsString,
-                new TypeReference<AuthenticationExtensionsClientOutputs<RegistrationExtensionClientOutput>>() {
+                new TypeReference<>() {
                 });
     }
 
