@@ -2,7 +2,7 @@ package bankapp.auth.infrastructure.driven.passkey.persistance;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.domain.model.Passkey;
-import bankapp.auth.infrastructure.WithPostgresContainer;
+import bankapp.auth.infrastructure.utils.WithPostgresContainer;
 import com.github.f4b6a3.uuid.alt.GUID;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;

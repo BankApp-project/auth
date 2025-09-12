@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.infrastructure.WebAuthnTestHelper;
+import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
 import com.webauthn4j.converter.AttestationObjectConverter;
 import com.webauthn4j.converter.CollectedClientDataConverter;
 import com.webauthn4j.converter.util.ObjectConverter;

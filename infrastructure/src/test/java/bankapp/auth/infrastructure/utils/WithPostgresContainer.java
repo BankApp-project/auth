@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure;
+package bankapp.auth.infrastructure.utils;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;

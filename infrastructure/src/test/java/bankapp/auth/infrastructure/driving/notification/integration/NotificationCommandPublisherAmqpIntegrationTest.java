@@ -1,9 +1,9 @@
 package bankapp.auth.infrastructure.driving.notification.integration;
 
 import bankapp.auth.infrastructure.AmqpOtpTestConfig;
-import bankapp.auth.infrastructure.WithRabbitMQContainer;
 import bankapp.auth.infrastructure.driving.notification.NotificationCommandPublisher;
 import bankapp.auth.infrastructure.driving.notification.SendEmailNotificationCommand;
+import bankapp.auth.infrastructure.utils.WithRabbitMQContainer;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

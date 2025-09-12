@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.domain.model.Passkey;
-import bankapp.auth.infrastructure.WebAuthnTestHelper;
+import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
 import com.webauthn4j.WebAuthnManager;
 import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.attestation.AttestationObject;

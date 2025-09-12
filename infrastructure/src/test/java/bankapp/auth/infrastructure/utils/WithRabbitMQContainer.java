@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure;
+package bankapp.auth.infrastructure.utils;
 
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.containers.RabbitMQContainer;

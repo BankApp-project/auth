@@ -2,8 +2,8 @@ package bankapp.auth.infrastructure.usecases.it;
 
 
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
-import bankapp.auth.infrastructure.WithRedisContainer;
 import bankapp.auth.infrastructure.driving.rest.authentication.initiate.InitiateAuthenticationResponse;
+import bankapp.auth.infrastructure.utils.WithRedisContainer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

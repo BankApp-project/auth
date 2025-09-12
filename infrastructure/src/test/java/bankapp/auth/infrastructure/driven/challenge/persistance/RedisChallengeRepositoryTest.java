@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.challenge.persistance;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.infrastructure.WithRedisContainer;
+import bankapp.auth.infrastructure.utils.WithRedisContainer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

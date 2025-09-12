@@ -1,11 +1,11 @@
 package bankapp.auth.infrastructure.driven.otp.persistance;
 
 import bankapp.auth.domain.model.Otp;
-import bankapp.auth.infrastructure.WithRedisContainer;
 import bankapp.auth.infrastructure.crosscutting.config.ClockConfiguration;
 import bankapp.auth.infrastructure.crosscutting.config.JSONConfiguration;
 import bankapp.auth.infrastructure.driven.otp.config.OtpConfiguration;
 import bankapp.auth.infrastructure.driven.otp.config.OtpRedisConfiguration;
+import bankapp.auth.infrastructure.utils.WithRedisContainer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;

@@ -2,8 +2,8 @@ package bankapp.auth.infrastructure.driven.user.persistance;
 
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.infrastructure.WithPostgresContainer;
 import bankapp.auth.infrastructure.crosscutting.config.JSONConfiguration;
+import bankapp.auth.infrastructure.utils.WithPostgresContainer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

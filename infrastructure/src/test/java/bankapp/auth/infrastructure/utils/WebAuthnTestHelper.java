@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure;
+package bankapp.auth.infrastructure.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

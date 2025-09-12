@@ -10,10 +10,10 @@ import bankapp.auth.application.verification.complete.port.out.ChallengeGenerati
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
-import bankapp.auth.infrastructure.WithPostgresContainer;
-import bankapp.auth.infrastructure.WithRedisContainer;
 import bankapp.auth.infrastructure.driven.otp.config.OtpProperties;
 import bankapp.auth.infrastructure.driving.rest.verification.complete.dto.CompleteVerificationRequest;
+import bankapp.auth.infrastructure.utils.WithPostgresContainer;
+import bankapp.auth.infrastructure.utils.WithRedisContainer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
