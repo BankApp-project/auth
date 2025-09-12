@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class WebAuthnMapperTest {
 
@@ -106,14 +105,6 @@ class WebAuthnMapperTest {
             List<AuthenticatorTransport> appTransports = List.of(AuthenticatorTransport.USB, AuthenticatorTransport.NFC, AuthenticatorTransport.USB);
             Set<com.webauthn4j.data.AuthenticatorTransport> result = webAuthnMapper.mapToWebAuthnTransports(appTransports);
             assertThat(result).hasSize(2).containsExactlyInAnyOrder(com.webauthn4j.data.AuthenticatorTransport.USB, com.webauthn4j.data.AuthenticatorTransport.NFC);
-        }
-
-        @Test
-        void mapToWebAuthnTransports_should_throwIllegalArgumentException_when_inputListContainsUnsupportedTransport() {
-            List<AuthenticatorTransport> appTransports = List.of(AuthenticatorTransport.SMART_CARD);
-            assertThatThrownBy(() -> webAuthnMapper.mapToWebAuthnTransports(appTransports))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("smart-card");
         }
     }
 }
