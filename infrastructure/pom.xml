@@ -123,6 +123,12 @@
             <artifactId>webauthn4j-core</artifactId>
             <version>${webauthn.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.webauthn4j/webauthn4j-test -->
+        <dependency>
+            <groupId>com.webauthn4j</groupId>
+            <artifactId>webauthn4j-test</artifactId>
+            <version>${webauthn.version}</version>
+        </dependency>
 
         <!-- ============== -->
         <!-- TEST LIBRARIES -->

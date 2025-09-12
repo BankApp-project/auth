@@ -77,7 +77,6 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
     }
 
     private CredentialRecord getCredentialRecord(Passkey source) {
-        CredentialRecord credentialRecord = PasskeyToCredentialRecordMapper.from(source);
-        throw new UnsupportedOperationException(); //not implemented yet!
+        return PasskeyToCredentialRecordMapper.from(source);
     }
 }
