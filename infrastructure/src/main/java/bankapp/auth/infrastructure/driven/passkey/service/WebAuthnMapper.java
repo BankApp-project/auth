@@ -11,9 +11,8 @@ import com.webauthn4j.data.extension.client.AuthenticationExtensionsClientOutput
 import com.webauthn4j.data.extension.client.RegistrationExtensionClientOutput;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class WebAuthnMapper {
@@ -39,14 +38,25 @@ public class WebAuthnMapper {
     }
 
     public Set<AuthenticatorTransport> mapToWebAuthnTransports(List<bankapp.auth.application.shared.enums.AuthenticatorTransport> transports) {
-        throw new UnsupportedOperationException(); //not implemented yet!
+
+        if (transports == null) {
+            return new HashSet<>();
+        }
+
+        return transports.stream()
+                .map(t -> AuthenticatorTransport.create(t.getValue()))
+                .collect(Collectors.toSet());
     }
 
     public AttestationObject convertAttestationObject(byte[] attestationObject) {
+        Objects.requireNonNull(attestationObject);
+
         return attestationObjectConverter.convert(attestationObject);
     }
 
     public CollectedClientData convertClientData(byte[] attestationClientDataJSON) {
+        Objects.requireNonNull(attestationClientDataJSON);
+
         return collectedClientDataConverter.convert(attestationClientDataJSON);
     }
 }

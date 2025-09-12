@@ -59,8 +59,7 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
 
     @Override
     public Passkey confirmAuthenticationChallenge(String authenticationResponseJSON, Challenge challengeData, Passkey passkey) {
-        //todo
-        //i have to do credentialRecord impl
+
         var authParams = new AuthenticationParameters(
                 getServerProperty(challengeData),
                 getCredentialRecord(passkey),
