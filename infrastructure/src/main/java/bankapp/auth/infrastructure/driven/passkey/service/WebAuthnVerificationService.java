@@ -5,11 +5,16 @@ import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyConfiguration;
 import com.webauthn4j.WebAuthnManager;
+import com.webauthn4j.credential.CredentialRecord;
+import com.webauthn4j.data.AuthenticationParameters;
 import com.webauthn4j.data.RegistrationParameters;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
 import com.webauthn4j.server.ServerProperty;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +59,25 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
     @Override
     public Passkey confirmAuthenticationChallenge(String authenticationResponseJSON, Challenge challengeData, Passkey passkey) {
         //todo
-        throw new UnsupportedOperationException();
+        //i have to do credentialRecord impl
+        var authParams = new AuthenticationParameters(
+                getServerProperty(challengeData),
+                getCredentialRecord(passkey),
+                getAllowedCredentials(),
+                passkeyConfig.userVerificationRequired(),
+                passkeyConfig.userPresenceRequired());
+
+        webAuthnManager.verifyAuthenticationResponseJSON(authenticationResponseJSON, authParams);
+        passkey.signCountIncrement();
+        return passkey;
+    }
+
+    private @Nullable List<byte[]> getAllowedCredentials() {
+        throw new UnsupportedOperationException(); //not implemented yet!
+    }
+
+    private CredentialRecord getCredentialRecord(Passkey source) {
+        CredentialRecord credentialRecord = PasskeyToCredentialRecordMapper.from(source);
+        throw new UnsupportedOperationException(); //not implemented yet!
     }
 }
