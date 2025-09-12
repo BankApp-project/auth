@@ -24,6 +24,7 @@ public class PasskeyToCredentialRecordMapper {
     private final ObjectConverter objectConverter = new ObjectConverter();
     private final AttestationObjectConverter attestationObjectConverter = new AttestationObjectConverter(objectConverter);
     private final CollectedClientDataConverter collectedClientDataConverter = new CollectedClientDataConverter(objectConverter);
+    private WebAuthnMapper webAuthnMapper;
 
 
     public CredentialRecord from(Passkey source) {
@@ -35,10 +36,10 @@ public class PasskeyToCredentialRecordMapper {
     }
 
     private AuthenticationExtensionsClientOutputs<RegistrationExtensionClientOutput> parseClientExtensions(Map<String, Object> extensions) {
-        throw new UnsupportedOperationException(); //not implemented yet!
+        return webAuthnMapper.mapToClientExtensions(extensions);
     }
 
     private Set<AuthenticatorTransport> parseTransports(List<bankapp.auth.application.shared.enums.AuthenticatorTransport> transports) {
-        throw new UnsupportedOperationException(); //not implemented yet!
+        return webAuthnMapper.mapToWebAuthnTransports(transports);
     }
 }
