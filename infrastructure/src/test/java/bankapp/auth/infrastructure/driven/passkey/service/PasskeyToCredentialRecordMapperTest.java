@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
-import bankapp.auth.infrastructure.utils.PasskeyTestProvider;
+import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import com.webauthn4j.converter.util.ObjectConverter;
 import com.webauthn4j.util.UUIDUtil;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ class PasskeyToCredentialRecordMapperTest {
     @Test
     void from_should_create_valid_credentialRecord_from_Passkey() {
         // ARRANGE: Create a valid source Passkey object with realistic data.
-        var testPasskey = PasskeyTestProvider.createSamplePasskey();
+        var testPasskey = TestPasskeyProvider.createSamplePasskey();
 
         // ACT: Map the Passkey to a CredentialRecord.
         var mapper = new PasskeyToCredentialRecordMapper(new WebAuthnMapper(new ObjectConverter()));

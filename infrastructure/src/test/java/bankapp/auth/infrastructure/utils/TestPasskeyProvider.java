@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
-public class PasskeyTestProvider {
+public class TestPasskeyProvider {
 
     private static final ObjectConverter objConv = new ObjectConverter();
     private static final AttestationObjectConverter attestationObjConv = new AttestationObjectConverter(objConv);

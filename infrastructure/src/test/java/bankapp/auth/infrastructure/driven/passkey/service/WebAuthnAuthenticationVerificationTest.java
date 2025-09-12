@@ -26,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-// Assume this is in the same package or has the necessary imports
 @SpringBootTest
 @ActiveProfiles("test")
 class WebAuthnAuthenticationVerificationTest {
