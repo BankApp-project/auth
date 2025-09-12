@@ -1,7 +1,6 @@
 package bankapp.auth.application.shared.port.out.persistance;
 
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
-import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.domain.model.Passkey;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public interface PasskeyRepository {
      */
     List<Passkey> loadForUserId(UUID userId);
 
-    void save(PasskeyRegistrationData passkeyRegistrationData) throws CredentialAlreadyExistsException;
+    void save(Passkey passkey) throws CredentialAlreadyExistsException;
 
     void updateSignCount(Passkey updatedCredential);
 }

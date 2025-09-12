@@ -1,7 +1,6 @@
 package bankapp.auth.infrastructure.driven.passkey.persistance;
 
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
-import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.driven.passkey.persistance.converters.JpaToEntityPasskeyMapper;
@@ -45,26 +44,26 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
     }
 
     @Override
-    public void save(PasskeyRegistrationData passkeyRegistrationData) throws CredentialAlreadyExistsException {
-        var jpaPasskey = mapToJpaPasskey(passkeyRegistrationData);
+    public void save(Passkey passkey) throws CredentialAlreadyExistsException {
+        var jpaPasskey = mapToJpaPasskey(passkey);
 
         jpaPasskeyRepository.save(jpaPasskey);
     }
 
-    private JpaPasskey mapToJpaPasskey(PasskeyRegistrationData passkeyRegistrationData) {
+    private JpaPasskey mapToJpaPasskey(Passkey passkey) {
         return new JpaPasskey(
-                passkeyRegistrationData.id(),
-                passkeyRegistrationData.userHandle(),
-                passkeyRegistrationData.type(),
-                passkeyRegistrationData.publicKey(),
-                passkeyRegistrationData.signCount(),
-                passkeyRegistrationData.uvInitialized(),
-                passkeyRegistrationData.backupEligible(),
-                passkeyRegistrationData.backupState(),
-                passkeyRegistrationData.transports(),
-                passkeyRegistrationData.extensions(),
-                passkeyRegistrationData.attestationObject(),
-                passkeyRegistrationData.attestationClientDataJSON()
+                passkey.getId(),
+                passkey.getUserHandle(),
+                passkey.getType(),
+                passkey.getPublicKey(),
+                passkey.getSignCount(),
+                passkey.isUvInitialized(),
+                passkey.isBackupEligible(),
+                passkey.isBackupState(),
+                passkey.getTransports(),
+                passkey.getExtensions(),
+                passkey.getAttestationObject(),
+                passkey.getAttestationClientDataJSON()
         );
     }
 

@@ -7,10 +7,10 @@ import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 import lombok.NonNull;
@@ -49,7 +49,7 @@ public class CompleteRegistrationUseCase {
 
         challengeRepository.delete(command.challengeId());
 
-        User user = fetchUser(credential.userHandle());
+        User user = fetchUser(credential.getUserHandle());
 
         user.activate();
 
@@ -80,8 +80,8 @@ public class CompleteRegistrationUseCase {
         return challenge.get();
     }
 
-    private PasskeyRegistrationData verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge challenge) {
-        PasskeyRegistrationData credential;
+    private Passkey verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge challenge) {
+        Passkey credential;
         try {
             credential = webAuthnVerificationPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), challenge);
         } catch (Exception e) {
@@ -91,7 +91,7 @@ public class CompleteRegistrationUseCase {
         return credential;
     }
 
-    private void saveCredentialRecord(PasskeyRegistrationData credential) {
+    private void saveCredentialRecord(Passkey credential) {
         try {
             passkeyRepository.save(credential);
         } catch (CredentialAlreadyExistsException e) {

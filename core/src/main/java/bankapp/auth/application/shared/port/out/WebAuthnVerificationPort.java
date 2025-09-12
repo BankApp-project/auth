@@ -1,12 +1,11 @@
 package bankapp.auth.application.shared.port.out;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.domain.model.Passkey;
 
 public interface WebAuthnVerificationPort {
 
-    PasskeyRegistrationData confirmRegistrationChallenge(String registrationResponseJSON, Challenge challengeData);
+    Passkey confirmRegistrationChallenge(String registrationResponseJSON, Challenge challengeData);
 
     /**
      *

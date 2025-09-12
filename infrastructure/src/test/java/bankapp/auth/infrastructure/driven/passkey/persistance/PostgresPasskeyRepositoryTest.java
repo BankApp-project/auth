@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.persistance;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
-import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.WithPostgresContainer;
 import com.github.f4b6a3.uuid.alt.GUID;
 import jakarta.transaction.Transactional;
@@ -29,7 +29,7 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
     public void should_return_list_of_passkeys_of_saved_elements() {
 
         var registrationData = createSampleRegistrationData();
-        var credentialId = registrationData.id();
+        var credentialId = registrationData.getId();
         repo.save(registrationData);
 
         var loadedPasskeyOpt = repo.load(credentialId);
@@ -38,14 +38,14 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
 
         var loadedPasskey = loadedPasskeyOpt.get();
         assertNotNull(loadedPasskey);
-        assertEquals(registrationData.id(), loadedPasskey.getId());
+        assertEquals(registrationData.getId(), loadedPasskey.getId());
         assertThat(loadedPasskey)
                 .usingRecursiveComparison()
                 .isEqualTo(registrationData);
 
     }
 
-    private PasskeyRegistrationData createSampleRegistrationData() {
+    private Passkey createSampleRegistrationData() {
         var userId = UUID.randomUUID();
         return createSampleRegistrationData(userId);
     }
@@ -97,7 +97,7 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
 
         var userId = UUID.randomUUID();
         var registrationData = createSampleRegistrationData(userId);
-        var passkeyId = registrationData.id();
+        var passkeyId = registrationData.getId();
         repo.save(registrationData);
 
         var loadedPasskeyOpt = repo.load(passkeyId);
@@ -119,13 +119,13 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
                 .isGreaterThan(oldSignCount);
     }
 
-    private PasskeyRegistrationData createSampleRegistrationData(UUID userHandle) {
+    private Passkey createSampleRegistrationData(UUID userHandle) {
 
         var credentialId = UUID.randomUUID();
 
         var publicKey = GUID.v4().toBytes();
 
-        return new PasskeyRegistrationData(
+        return new Passkey(
                 credentialId,
                 userHandle,
                 "public-key",

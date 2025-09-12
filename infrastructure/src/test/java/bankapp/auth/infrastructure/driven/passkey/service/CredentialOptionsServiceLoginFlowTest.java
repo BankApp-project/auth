@@ -34,11 +34,16 @@ public class CredentialOptionsServiceLoginFlowTest {
     private static final List<Passkey> DEFAULT_USER_CREDENTIALS = List.of(new Passkey(
             UUID.randomUUID(),
             DEFAULT_USER.getId(),
-            null,
+            "public-key",
+            "test-public-key".getBytes(),
             0L,
             false,
             false,
-            null
+            false,
+            null,
+            null,
+            "test-attestation-object".getBytes(),
+            "test-client-data".getBytes()
     ));
     private static final Challenge DEFAULT_CHALLENGE = new Challenge(
             UUID.randomUUID(),

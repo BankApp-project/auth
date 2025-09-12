@@ -96,11 +96,16 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         var credential = new Passkey(
                 UUID.randomUUID(),
                 defaultUser.getId(),
+                "public-key",
                 new byte[]{5, 6, 7, 8}, // publicKey
                 1L, // signatureCount
                 true, // uvInitialized
+                false, // backupEligible
                 true, // backupState
-                null // attestationObject
+                null, // transports
+                null, // extensions
+                "test-attestation-object".getBytes(),
+                "test-client-data".getBytes()
         );
         return List.of(credential);
     }

@@ -6,10 +6,10 @@ import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ class CompleteRegistrationUseCaseTest {
             Clock.systemUTC(),
             UUID.randomUUID()
     );
-    private PasskeyRegistrationData stubRegistrationData;
+    private Passkey stubRegistrationData;
     private User testUser;
 
     private ChallengeRepository sessionRepo;
@@ -61,7 +61,7 @@ class CompleteRegistrationUseCaseTest {
         when(sessionRepo.load(DEFAULT_CHALLENGE_ID)).thenReturn(Optional.of(DEFAULT_CHALLENGE));
 
         testUser = User.createNew(new EmailAddress("test@bankapp.online"));
-        stubRegistrationData = new PasskeyRegistrationData(
+        stubRegistrationData = new Passkey(
                 UUID.randomUUID(),
                 testUser.getId(),
                 "public-key",

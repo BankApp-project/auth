@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
-import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
+import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.WebAuthnTestHelper;
 import com.webauthn4j.WebAuthnManager;
 import com.webauthn4j.data.RegistrationData;
@@ -44,16 +44,16 @@ class RegistrationDataMapperTest {
             RegistrationData registrationData = webAuthnManager.parseRegistrationResponseJSON(registrationResponseJson);
 
             // ACT
-            PasskeyRegistrationData result = mapper.toDomainEntity(registrationData, userId);
+            Passkey result = mapper.toDomainEntity(registrationData, userId);
 
             // ASSERT
             assertThat(result).isNotNull();
             Assertions.assertNotNull(registrationData.getAttestationObject());
             AttestedCredentialData attestedCredData = registrationData.getAttestationObject().getAuthenticatorData().getAttestedCredentialData();
             assertThat(attestedCredData).isNotNull();
-            assertThat(result.id()).isEqualTo(UUIDUtil.fromBytes(attestedCredData.getCredentialId()));
-            assertThat(result.userHandle()).isEqualTo(userId);
-            assertThat(result.publicKey()).isNotNull();
+            assertThat(result.getId()).isEqualTo(UUIDUtil.fromBytes(attestedCredData.getCredentialId()));
+            assertThat(result.getUserHandle()).isEqualTo(userId);
+            assertThat(result.getPublicKey()).isNotNull();
         }
     }
 
@@ -152,10 +152,10 @@ class RegistrationDataMapperTest {
             when(mockData.getTransports()).thenReturn(Collections.emptySet());
 
             // ACT
-            PasskeyRegistrationData result = mapper.toDomainEntity(mockData, userId);
+            Passkey result = mapper.toDomainEntity(mockData, userId);
 
             // ASSERT
-            assertThat(result.transports()).isNotNull().isEmpty();
+            assertThat(result.getTransports()).isNotNull().isEmpty();
         }
     }
 }

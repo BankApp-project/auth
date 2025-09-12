@@ -27,11 +27,16 @@ public class JpaToEntityPasskeyMapper {
         return new Passkey(
                 jpaPasskey.getId(),
                 jpaPasskey.getUserHandle(),
+                jpaPasskey.getType(),
                 jpaPasskey.getPublicKey(),
                 jpaPasskey.getSignCount(),
                 jpaPasskey.isUvInitialized(),
+                jpaPasskey.isBackupEligible(),
                 jpaPasskey.isBackupState(),
-                jpaPasskey.getTransports()
+                jpaPasskey.getTransports(),
+                jpaPasskey.getExtensions(),
+                jpaPasskey.getAttestationObject(),
+                jpaPasskey.getAttestationClientDataJSON()
         );
     }
 

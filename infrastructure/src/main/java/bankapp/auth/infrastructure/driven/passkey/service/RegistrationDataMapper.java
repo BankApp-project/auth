@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
-import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
+import bankapp.auth.domain.model.Passkey;
 import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
 import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
@@ -17,7 +17,7 @@ import java.util.*;
 public class RegistrationDataMapper {
 
 
-    public @NotNull PasskeyRegistrationData toDomainEntity(@NotNull RegistrationData registrationData, @NotNull UUID userId) {
+    public @NotNull Passkey toDomainEntity(@NotNull RegistrationData registrationData, @NotNull UUID userId) {
         Objects.requireNonNull(registrationData);
         Objects.requireNonNull(userId);
 
@@ -25,7 +25,7 @@ public class RegistrationDataMapper {
         var attCredData = getAttestedCredentialData(registrationData);
         var credentialId = UUIDUtil.fromBytes(attCredData.getCredentialId());
 
-        return new PasskeyRegistrationData(
+        return new Passkey(
                 credentialId,
                 userId,
                 "public-key",

@@ -53,24 +53,24 @@ class WebAuthnServiceTest {
         // 3. ASSERT
         // First, perform basic checks to ensure the data is present
         assertNotNull(passkeyRegistrationData);
-        assertNotNull(passkeyRegistrationData.attestationObject(), "AttestationObject bytes should not be null");
-        assertTrue(passkeyRegistrationData.attestationObject().length > 0, "AttestationObject bytes should not be empty");
-        assertNotNull(passkeyRegistrationData.attestationClientDataJSON(), "CollectedClientDataJSON bytes should not be null");
-        assertTrue(passkeyRegistrationData.attestationClientDataJSON().length > 0, "CollectedClientDataJSON bytes should not be empty");
+        assertNotNull(passkeyRegistrationData.getAttestationObject(), "AttestationObject bytes should not be null");
+        assertTrue(passkeyRegistrationData.getAttestationObject().length > 0, "AttestationObject bytes should not be empty");
+        assertNotNull(passkeyRegistrationData.getAttestationClientDataJSON(), "CollectedClientDataJSON bytes should not be null");
+        assertTrue(passkeyRegistrationData.getAttestationClientDataJSON().length > 0, "CollectedClientDataJSON bytes should not be empty");
 
 
         // --- Core Integrity Check ---
         // Assert that the raw byte arrays can be deserialized back into their standard webauthn4j object representations
 
         // a) Parse the Attestation Object
-        AttestationObject attestationObject = attObjConv.convert(passkeyRegistrationData.attestationObject());
+        AttestationObject attestationObject = attObjConv.convert(passkeyRegistrationData.getAttestationObject());
         assertNotNull(attestationObject, "Parsed AttestationObject should not be null");
         assertNotNull(attestationObject.getAuthenticatorData(), "AuthenticatorData within the AttestationObject should not be null");
         assertEquals("packed", attestationObject.getFormat(), "Attestation format should be 'packed'");
 
 
         // b) Parse the Collected Client Data
-        CollectedClientData collectedClientData = collCltDataConv.convert(passkeyRegistrationData.attestationClientDataJSON());
+        CollectedClientData collectedClientData = collCltDataConv.convert(passkeyRegistrationData.getAttestationClientDataJSON());
         assertNotNull(collectedClientData, "Parsed CollectedClientData should not be null");
 
 

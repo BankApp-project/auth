@@ -2,7 +2,6 @@ package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.dto.PasskeyRegistrationData;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyConfiguration;
 import com.webauthn4j.WebAuthnManager;
@@ -21,7 +20,7 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
     private final RegistrationDataMapper registrationDataMapper;
 
     @Override
-    public PasskeyRegistrationData confirmRegistrationChallenge(String registrationResponseJSON, Challenge challengeData) {
+    public Passkey confirmRegistrationChallenge(String registrationResponseJSON, Challenge challengeData) {
         try {
             var registrationParameters = getRegistrationParameters(challengeData);
 

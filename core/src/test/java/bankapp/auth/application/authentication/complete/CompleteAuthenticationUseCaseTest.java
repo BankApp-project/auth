@@ -78,11 +78,16 @@ public class CompleteAuthenticationUseCaseTest {
         return new Passkey(
                 credentialId,
                 DEFAULT_USER_ID,
-                null,
+                "public-key",
+                "test-public-key".getBytes(),
                 0L,
                 false,
                 false,
-                null
+                false,
+                null,
+                null,
+                "test-attestation-object".getBytes(),
+                "test-client-data".getBytes()
         );
     }
 
