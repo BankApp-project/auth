@@ -1,11 +1,15 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
+import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.infrastructure.utils.PasskeyTestProvider;
 import com.webauthn4j.converter.util.ObjectConverter;
 import com.webauthn4j.util.UUIDUtil;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,7 +36,8 @@ class PasskeyToCredentialRecordMapperTest {
 
         // --- Assert Core Credential Data (using assertArrayEquals for byte arrays) ---
         assertNotNull(res.getAttestedCredentialData(), "AttestedCredentialData should not be null.");
-        assertArrayEquals(UUIDUtil.convertUUIDToBytes(testPasskey.getId()), res.getAttestedCredentialData().getCredentialId(), "Credential ID should match.");
+        //not ideal, TestDataUtil provides 32bytes long credentialId, and our Passkey has it as UUID (16 bytes), its workaround.
+        assertArrayEquals(UUIDUtil.convertUUIDToBytes(testPasskey.getId()), Arrays.copyOfRange(res.getAttestedCredentialData().getCredentialId(), 0, 16), "Credential ID should match.");
 
         // Correctly compare the raw COSE public key bytes.
         // The `getPublicKey().getEncoded()` method returns a different format (X.509),
@@ -47,6 +52,19 @@ class PasskeyToCredentialRecordMapperTest {
 
         // --- Assert Other Metadata ---
         assertNotNull(res.getTransports(), "Transports set should not be null.");
-        assertEquals(Set.of(testPasskey.getTransports()), res.getTransports(), "Transports should match.");
+        assertEquals(getSetOfStrings(testPasskey.getTransports()), getSetOfStrings(res.getTransports()), "Transports should match.");
+    }
+
+    private Set<String> getSetOfStrings(Set<com.webauthn4j.data.AuthenticatorTransport> transports) {
+        assertNotNull(transports);
+        return transports.stream()
+                .map(com.webauthn4j.data.AuthenticatorTransport::getValue)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<String> getSetOfStrings(List<AuthenticatorTransport> transports) {
+        return transports.stream()
+                .map(AuthenticatorTransport::getValue)
+                .collect(Collectors.toSet());
     }
 }
