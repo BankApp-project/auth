@@ -53,7 +53,7 @@ class SecureRandomChallengeGeneratorTest {
         var res = secureRandomChallengeGenerator.generate(UUID.randomUUID());
         var res2 = secureRandomChallengeGenerator.generate(UUID.randomUUID());
 
-        assertNotEquals(res.challengeId(), res2.challengeId());
+        assertNotEquals(res.sessionId(), res2.sessionId());
     }
 
     @Test

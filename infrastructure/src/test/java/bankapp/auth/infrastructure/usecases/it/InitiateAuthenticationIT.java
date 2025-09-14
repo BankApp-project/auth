@@ -45,7 +45,7 @@ public class InitiateAuthenticationIT implements WithRedisContainer {
         var res = mockMvc.perform(get(INITIATE_AUTHENTICATION_ENDPOINT))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.challengeId").isNotEmpty())
+                .andExpect(jsonPath("$.sessionId").isNotEmpty())
                 .andExpect(jsonPath("$.loginOptions.challenge").isNotEmpty())
                 .andExpect(jsonPath("$.loginOptions.timeout").isNumber())
                 .andExpect(jsonPath("$.loginOptions.rpId").isString())
@@ -58,9 +58,9 @@ public class InitiateAuthenticationIT implements WithRedisContainer {
         var jsonBody = res.getResponse().getContentAsString();
         InitiateAuthenticationResponse responseObj = objectMapper.readValue(jsonBody,InitiateAuthenticationResponse.class);
 
-        var challengeId = responseObj.challengeId();
-        var challengeUUID = UUID.fromString(challengeId);
-        var loadedChallenge = challengeRepository.load(challengeUUID);
+        var sessionId = responseObj.sessionId();
+        var sessionUUID = UUID.fromString(sessionId);
+        var loadedChallenge = challengeRepository.load(sessionUUID);
 
         assertThat(loadedChallenge).isPresent();
     }

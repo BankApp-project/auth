@@ -6,6 +6,6 @@ import java.util.UUID;
 
 public record LoginResponseDto(
         PublicKeyCredentialRequestOptions loginOptions,
-        UUID challengeId
+        UUID sessionId
 ) implements CompleteVerificationResponseDto {
 }

@@ -28,7 +28,7 @@ public class RegistrationController {
 
     @PostMapping("/complete")
     public ResponseEntity<AuthenticationGrantResponse> completeRegistation(@RequestBody CompleteRegistrationRequest request) {
-        var challenge = UUID.fromString(request.challengeId());
+        var challenge = UUID.fromString(request.sessionId());
         var regResponse = request.RegistrationResponseJSON();
 
         var command = new CompleteRegistrationCommand(challenge, regResponse);

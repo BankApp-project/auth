@@ -104,9 +104,9 @@ class WebAuthnServiceTest {
         final Clock FIXED_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
         final Duration TTL = Duration.ofSeconds(60);
 
-        var challengeId = UUID.randomUUID();
+        var sessionId = UUID.randomUUID();
         var challengeVal = new byte[] {123,111};
-        return new Session(challengeId, challengeVal, TTL, FIXED_CLOCK, UUID.randomUUID());
+        return new Session(sessionId, challengeVal, TTL, FIXED_CLOCK, UUID.randomUUID());
     }
 
 }

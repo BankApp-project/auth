@@ -30,6 +30,6 @@ public class InitiateAuthenticationUseCase {
         challengeRepository.save(challenge);
 
         var passkeyRequestOptions = credentialOptionsService.getPasskeyRequestOptions(challenge);
-        return new LoginResponse(passkeyRequestOptions, challenge.challengeId());
+        return new LoginResponse(passkeyRequestOptions, challenge.sessionId());
     }
 }

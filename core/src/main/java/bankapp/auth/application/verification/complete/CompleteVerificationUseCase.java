@@ -92,11 +92,11 @@ public class CompleteVerificationUseCase {
     private LoginResponse getLoginResponse(User user, Session session) {
         var userCredentials = passkeyRepository.loadForUserId(user.getId());
         var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, session);
-        return new LoginResponse(passkeyOptions, session.challengeId());
+        return new LoginResponse(passkeyOptions, session.sessionId());
     }
 
     private RegistrationResponse getRegistrationResponse(User user, Session session) {
         var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user, session);
-        return new RegistrationResponse(passkeyOptions, session.challengeId());
+        return new RegistrationResponse(passkeyOptions, session.sessionId());
     }
 }

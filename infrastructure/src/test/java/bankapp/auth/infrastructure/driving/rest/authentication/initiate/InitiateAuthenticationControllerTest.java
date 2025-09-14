@@ -32,7 +32,7 @@ class InitiateAuthenticationControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void should_return_response_with_challengeId_and_PublicKeyCredentialRequestOptions() throws Exception {
+    void should_return_response_with_sessionId_and_PublicKeyCredentialRequestOptions() throws Exception {
         // Given
         var options = new PublicKeyCredentialRequestOptions(
                 new byte[]{123},
@@ -46,7 +46,7 @@ class InitiateAuthenticationControllerTest {
 
         when(initiateAuthenticationUseCase.handle()).thenReturn(loginResponse);
 
-        var responseStub = new InitiateAuthenticationResponse(options, loginResponse.challengeId().toString());
+        var responseStub = new InitiateAuthenticationResponse(options, loginResponse.sessionId().toString());
         var responseJson = objectMapper.writeValueAsString(responseStub);
 
         // When & Then

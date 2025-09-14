@@ -23,7 +23,7 @@ public class RedisChallengeRepository implements ChallengeRepository {
 
     @Override
     public void save(Session session) {
-        var key = KEY_PREFIX + session.challengeId().toString();
+        var key = KEY_PREFIX + session.sessionId().toString();
         var timeout = Duration.between(Instant.now(clock), session.expirationTime());
         redisTemplate.opsForValue().set(key, session, timeout);
     }

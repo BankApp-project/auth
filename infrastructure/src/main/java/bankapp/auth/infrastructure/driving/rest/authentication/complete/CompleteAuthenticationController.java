@@ -36,10 +36,10 @@ public class CompleteAuthenticationController {
     }
 
     private CompleteAuthenticationCommand getCompleteAuthenticationCommand(CompleteAuthenticationRequest request) {
-        var challengeId = UUID.fromString(request.challengeId());
+        var sessionId = UUID.fromString(request.sessionId());
         var authRespJson = request.AuthenticationResponseJSON();
         var credentialId = request.credentialId();
-        return new CompleteAuthenticationCommand(challengeId, authRespJson, credentialId);
+        return new CompleteAuthenticationCommand(sessionId, authRespJson, credentialId);
     }
 
     private AuthenticationGrantResponse getAuthenticationGrantResponse(AuthenticationGrant useCaseResponse) {

@@ -25,7 +25,7 @@ public class InitiateAuthenticationController {
     public ResponseEntity<InitiateAuthenticationResponse> initiateAuthentication() {
         var useCaseResponse = initiateAuthenticationUseCase.handle();
 
-        var response = new InitiateAuthenticationResponse(useCaseResponse.options(), useCaseResponse.challengeId().toString());
+        var response = new InitiateAuthenticationResponse(useCaseResponse.options(), useCaseResponse.sessionId().toString());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

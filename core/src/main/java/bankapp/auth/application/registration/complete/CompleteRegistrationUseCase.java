@@ -47,7 +47,7 @@ public class CompleteRegistrationUseCase {
 
         saveCredentialRecord(credential);
 
-        challengeRepository.delete(command.challengeId());
+        challengeRepository.delete(command.sessionId());
 
         User user = fetchUser(credential.getUserHandle());
 
@@ -73,9 +73,9 @@ public class CompleteRegistrationUseCase {
     }
 
     private Session getChallenge(CompleteRegistrationCommand command) {
-        var challenge = challengeRepository.load(command.challengeId());
+        var challenge = challengeRepository.load(command.sessionId());
         if (challenge.isEmpty()) {
-            throw new CompleteRegistrationException("No such value with ID: " + command.challengeId());
+            throw new CompleteRegistrationException("No such value with ID: " + command.sessionId());
         }
         return challenge.get();
     }

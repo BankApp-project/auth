@@ -13,15 +13,15 @@ public class VerificationResponseMapper {
     public static CompleteVerificationResponseDto toDto(CompleteVerificationResponse domainResponse) {
         if (domainResponse instanceof LoginResponse(
                 PublicKeyCredentialRequestOptions options,
-                UUID challengeId
+                UUID sessionId
         )) {
-            return new LoginResponseDto(options, challengeId);
+            return new LoginResponseDto(options, sessionId);
         }
         if (domainResponse instanceof RegistrationResponse(
                 PublicKeyCredentialCreationOptions options,
-                UUID challengeId
+                UUID sessionId
         )) {
-            return new RegistrationResponseDto(options, challengeId);
+            return new RegistrationResponseDto(options, sessionId);
         }
         // Or throw an exception if the type is unknown
         throw new IllegalArgumentException("Unknown response type: " + domainResponse.getClass().getName());

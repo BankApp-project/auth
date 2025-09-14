@@ -36,7 +36,7 @@ public class CompleteAuthenticationUseCase {
 
         passkeyRepository.updateSignCount(updatedCredential);
 
-        challengeRepository.delete(command.challengeId());
+        challengeRepository.delete(command.sessionId());
 
         AuthTokens tokens = tokenIssuingPort.issueTokensForUser(userId);
         return new AuthenticationGrant(tokens);
@@ -55,9 +55,9 @@ public class CompleteAuthenticationUseCase {
     }
 
     private Session getSession(CompleteAuthenticationCommand command) {
-        var sessionOptional = challengeRepository.load(command.challengeId());
+        var sessionOptional = challengeRepository.load(command.sessionId());
         if (sessionOptional.isEmpty()) {
-            throw new CompleteAuthenticationException("No such session with ID: " + command.challengeId());
+            throw new CompleteAuthenticationException("No such session with ID: " + command.sessionId());
         }
         return sessionOptional.get();
     }

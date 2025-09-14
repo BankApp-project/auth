@@ -4,5 +4,5 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOp
 
 public record InitiateAuthenticationResponse(
         PublicKeyCredentialRequestOptions loginOptions,
-        String challengeId) {
+        String sessionId) {
 }

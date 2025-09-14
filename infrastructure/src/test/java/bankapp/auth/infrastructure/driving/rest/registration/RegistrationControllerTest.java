@@ -28,7 +28,7 @@ class RegistrationControllerTest {
 
     public static final String DEFAULT_REGISTRATION_RESPONSE = "regResp";
     public static final AuthTokens DEFAULT_AUTH_TOKENS = new AuthTokens("accessToken", "refreshToken");
-    public static final UUID DEFAULT_CHALLENGE_ID = UUID.randomUUID();
+    public static final UUID DEFAULT_SESSION_ID = UUID.randomUUID();
     private static final URI REGISTRATION_COMPLETE_ENDPOINT = URI.create("/registration/complete");
 
     private CompleteRegistrationRequest request;
@@ -45,10 +45,10 @@ class RegistrationControllerTest {
     private CompleteRegistrationUseCase completeRegistrationUseCase;
 
     @Test
-    void should_return_authTokens_and_OK_when_valid_challengeId_and_registrationResponse() throws Exception {
+    void should_return_authTokens_and_OK_when_valid_sessionId_and_registrationResponse() throws Exception {
 
-        request = new CompleteRegistrationRequest(DEFAULT_CHALLENGE_ID.toString(), DEFAULT_REGISTRATION_RESPONSE);
-        command = new CompleteRegistrationCommand(DEFAULT_CHALLENGE_ID, DEFAULT_REGISTRATION_RESPONSE);
+        request = new CompleteRegistrationRequest(DEFAULT_SESSION_ID.toString(), DEFAULT_REGISTRATION_RESPONSE);
+        command = new CompleteRegistrationCommand(DEFAULT_SESSION_ID, DEFAULT_REGISTRATION_RESPONSE);
         response = new AuthenticationGrantResponse(DEFAULT_AUTH_TOKENS.accessToken(), DEFAULT_AUTH_TOKENS.refreshToken());
 
         var authenticationGrantStub = new AuthenticationGrant(DEFAULT_AUTH_TOKENS);
@@ -67,9 +67,9 @@ class RegistrationControllerTest {
     }
 
     @Test
-    void should_return_400_when_invalid_challengeId() throws Exception {
-        var invalidChallengeId = "invalidChallengeId123";
-        request = new CompleteRegistrationRequest(invalidChallengeId, DEFAULT_REGISTRATION_RESPONSE);
+    void should_return_400_when_invalid_sessionId() throws Exception {
+        var invalidSessionId = "invalidSessionId123";
+        request = new CompleteRegistrationRequest(invalidSessionId, DEFAULT_REGISTRATION_RESPONSE);
 
         String jsonRequest = objectMapper.writeValueAsString(request);
 

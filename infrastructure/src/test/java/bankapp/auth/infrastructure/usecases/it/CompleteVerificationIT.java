@@ -96,7 +96,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
                         .content(objectMapper.writeValueAsString(completeVerificationRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.challengeId").value(challenge.challengeId().toString()))
+                .andExpect(jsonPath("$.sessionId").value(challenge.sessionId().toString()))
                 .andExpect(jsonPath("$.registrationOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.value())));
 
         // Additional Assertions
@@ -133,7 +133,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
                         .content(objectMapper.writeValueAsString(completeVerificationRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.challengeId").value(challenge.challengeId().toString()))
+                .andExpect(jsonPath("$.sessionId").value(challenge.sessionId().toString()))
                 .andExpect(jsonPath("$.loginOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.value())));
 
         // Additional Assertions
@@ -184,19 +184,19 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
     }
 
     private Session createFixedChallenge() {
-        var challengeId = UUID.randomUUID();
+        var sessionId = UUID.randomUUID();
         var challengeValue = new byte[]{123, 123};
-        return new Session(challengeId, challengeValue, CHALLENGE_TTL, FIXED_CLOCK, UUID.randomUUID());
+        return new Session(sessionId, challengeValue, CHALLENGE_TTL, FIXED_CLOCK, UUID.randomUUID());
     }
 
     private void assertChallengeIsSaved(Session expectedSession) {
-        var loadedChallengeOptional = challengeRepository.load(expectedSession.challengeId());
+        var loadedChallengeOptional = challengeRepository.load(expectedSession.sessionId());
 
         assertThat(loadedChallengeOptional)
                 .isPresent()
                 .hasValueSatisfying(loadedChallenge -> {
                     assertThat(loadedChallenge.value()).isEqualTo(expectedSession.value());
-                    assertThat(loadedChallenge.challengeId()).isEqualTo(expectedSession.challengeId());
+                    assertThat(loadedChallenge.sessionId()).isEqualTo(expectedSession.sessionId());
                     assertThat(loadedChallenge.expirationTime()).isEqualTo(Instant.now(FIXED_CLOCK).plus(CHALLENGE_TTL));
                 });
     }

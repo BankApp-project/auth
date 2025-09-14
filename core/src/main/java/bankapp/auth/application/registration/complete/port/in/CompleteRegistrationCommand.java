@@ -3,14 +3,14 @@ package bankapp.auth.application.registration.complete.port.in;
 import java.util.UUID;
 
 public record CompleteRegistrationCommand(
-        UUID challengeId,
+        UUID sessionId,
         String RegistrationResponseJSON
 ) {
     public CompleteRegistrationCommand {
         if (RegistrationResponseJSON == null || RegistrationResponseJSON.isBlank()) {
             throw new IllegalArgumentException("Registration Response JSON cannot be null or blank");
         }
-        if (challengeId == null) {
+        if (sessionId == null) {
             throw new IllegalArgumentException("Session ID cannot be null");
         }
     }

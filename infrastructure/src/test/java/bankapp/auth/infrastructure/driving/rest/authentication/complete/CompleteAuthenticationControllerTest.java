@@ -41,13 +41,13 @@ class CompleteAuthenticationControllerTest {
     @Test
     void should_return_valid_response_with_valid_request() throws Exception {
         // Given
-        var challengeId = UUID.randomUUID().toString();
+        var sessionId = UUID.randomUUID().toString();
         var authRespJson = "someJSONblob";
         var credentialId = UUID.randomUUID();
-        var request = new CompleteAuthenticationRequest(challengeId, authRespJson, credentialId);
+        var request = new CompleteAuthenticationRequest(sessionId, authRespJson, credentialId);
         var requestJson = objectMapper.writeValueAsString(request);
 
-        var requestedCommand = new CompleteAuthenticationCommand(UUID.fromString(challengeId), authRespJson, credentialId);
+        var requestedCommand = new CompleteAuthenticationCommand(UUID.fromString(sessionId), authRespJson, credentialId);
 
         var authTokens = new AuthTokens("accessToken", "refreshToken");
         var useCaseResponse = new AuthenticationGrant(authTokens);
@@ -66,11 +66,11 @@ class CompleteAuthenticationControllerTest {
 
         // Verify that the use case was called with the correct arguments
         verify(completeAuthenticationUseCase).handle(argThat(command -> {
-            boolean challengeIdMatches = command.challengeId().equals(requestedCommand.challengeId());
+            boolean sessionIdMatches = command.sessionId().equals(requestedCommand.sessionId());
             boolean responseJsonMatches = command.AuthenticationResponseJSON().equals(requestedCommand.AuthenticationResponseJSON());
             boolean credentialIdMatches = Objects.equals(command.credentialId(), requestedCommand.credentialId());
 
-            return challengeIdMatches && responseJsonMatches && credentialIdMatches;
+            return sessionIdMatches && responseJsonMatches && credentialIdMatches;
         }));
     }
 }

@@ -12,5 +12,5 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = RegistrationResponseDto.class, name = "registration")
 })
 public interface CompleteVerificationResponseDto {
-    UUID challengeId();
+    UUID sessionId();
 }

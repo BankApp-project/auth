@@ -41,11 +41,11 @@ class VerificationCompleteControllerTest {
     void completeEmailVerification_whenSuccessful_shouldReturnResponseAnd200() throws Exception {
         // Arrange
         var request = new CompleteVerificationRequest("test@bankapp.online", "123123");
-        UUID challengeId = UUID.randomUUID();
+        UUID sessionId = UUID.randomUUID();
         LoginResponse mockResponse = new LoginResponse(
                 new PublicKeyCredentialRequestOptions(
                         new byte[]{123}, 50L, "bankapp.online", null, null, null
-                ), challengeId);
+                ), sessionId);
 
         when(completeVerificationUseCase.handle(any(CompleteVerificationCommand.class)))
                 .thenReturn(mockResponse);

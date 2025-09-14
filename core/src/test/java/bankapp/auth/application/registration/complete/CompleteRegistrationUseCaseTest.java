@@ -26,9 +26,9 @@ import static org.mockito.Mockito.*;
 class CompleteRegistrationUseCaseTest {
 
     private final static long DEFAULT_TTL = 90L;
-    private final static UUID DEFAULT_CHALLENGE_ID = UUID.randomUUID();
+    private final static UUID DEFAULT_SESSION_ID = UUID.randomUUID();
     private final static Session DEFAULT_SESSION = new Session(
-            DEFAULT_CHALLENGE_ID,
+            DEFAULT_SESSION_ID,
             new byte[]{111},
             Duration.ofSeconds(DEFAULT_TTL),
             Clock.systemUTC(),
@@ -54,11 +54,11 @@ class CompleteRegistrationUseCaseTest {
         userRepository = mock(UserRepository.class);
         tokenIssuingPort = mock(TokenIssuingPort.class);
 
-        command = new CompleteRegistrationCommand(DEFAULT_CHALLENGE_ID, "blob");
+        command = new CompleteRegistrationCommand(DEFAULT_SESSION_ID, "blob");
         useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnVerificationPort, passkeyRepository, userRepository, tokenIssuingPort);
 
 
-        when(sessionRepo.load(DEFAULT_CHALLENGE_ID)).thenReturn(Optional.of(DEFAULT_SESSION));
+        when(sessionRepo.load(DEFAULT_SESSION_ID)).thenReturn(Optional.of(DEFAULT_SESSION));
 
         testUser = User.createNew(new EmailAddress("test@bankapp.online"));
         stubRegistrationData = new Passkey(
@@ -87,7 +87,7 @@ class CompleteRegistrationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(sessionRepo).load(eq(DEFAULT_CHALLENGE_ID));
+        verify(sessionRepo).load(eq(DEFAULT_SESSION_ID));
     }
 
     @Test
@@ -131,7 +131,7 @@ class CompleteRegistrationUseCaseTest {
     @Test
     void should_delete_challenge_when_user_successfully_register_new_credential() {
         assertDoesNotThrow(() -> useCase.handle(command));
-        verify(sessionRepo).delete(DEFAULT_CHALLENGE_ID);
+        verify(sessionRepo).delete(DEFAULT_SESSION_ID);
     }
 
     @Test
@@ -143,7 +143,7 @@ class CompleteRegistrationUseCaseTest {
         assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
 
         // Verify session is NOT deleted when verification fails
-        verify(sessionRepo, never()).delete(DEFAULT_CHALLENGE_ID);
+        verify(sessionRepo, never()).delete(DEFAULT_SESSION_ID);
     }
 
     @Test
@@ -155,7 +155,7 @@ class CompleteRegistrationUseCaseTest {
         assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
 
         // Verify session is NOT deleted when credential saving fails
-        verify(sessionRepo, never()).delete(DEFAULT_CHALLENGE_ID);
+        verify(sessionRepo, never()).delete(DEFAULT_SESSION_ID);
     }
 
     @Test
