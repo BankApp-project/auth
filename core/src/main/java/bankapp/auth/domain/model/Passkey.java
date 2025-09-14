@@ -118,6 +118,7 @@ public class Passkey {
             byte[] attestationObject,
             byte[] attestationClientDataJSON
     ) {
+        //todo validate passkey here.
         this.id = id;
         this.userHandle = userHandle;
         this.type = type;

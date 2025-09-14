@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.challenge.service;
 
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.infrastructure.driven.challenge.config.ChallengeProperties;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +20,14 @@ public class SecureRandomChallengeGenerator implements ChallengeGenerationPort {
     private final Clock clock;
 
     @Override
-    public Challenge generate(UUID userId) {
+    public Session generate(UUID userId) {
         var sessionId = getSessionId();
 
         byte[] value = getRandomChallengeValue();
 
         Instant expTime = getExpirationTime();
 
-        return new Challenge(
+        return new Session(
                 sessionId,
                 value,
                 expTime,

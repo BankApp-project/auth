@@ -1,7 +1,7 @@
 package bankapp.auth.application.verification.complete;
 
 import bankapp.auth.application.shared.UseCase;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
@@ -63,7 +63,7 @@ public class CompleteVerificationUseCase {
         otpService.verifyAndConsumeOtp(key,value);
     }
 
-    private Challenge generateAndSaveChallenge(UUID userId) {
+    private Session generateAndSaveChallenge(UUID userId) {
         var challenge = challengeGenerator.generate(userId);
         challengeRepository.save(challenge);
         return challenge;
@@ -81,22 +81,22 @@ public class CompleteVerificationUseCase {
         return user;
     }
 
-    private CompleteVerificationResponse prepareResponse(User user, Challenge challenge) {
+    private CompleteVerificationResponse prepareResponse(User user, Session session) {
         if (user.isEnabled()) {
-            return getLoginResponse(user, challenge);
+            return getLoginResponse(user, session);
         } else {
-            return getRegistrationResponse(user, challenge);
+            return getRegistrationResponse(user, session);
         }
     }
 
-    private LoginResponse getLoginResponse(User user, Challenge challenge) {
+    private LoginResponse getLoginResponse(User user, Session session) {
         var userCredentials = passkeyRepository.loadForUserId(user.getId());
-        var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, challenge);
-        return new LoginResponse(passkeyOptions, challenge.challengeId());
+        var passkeyOptions = credentialOptionsPort.getPasskeyRequestOptions(userCredentials, session);
+        return new LoginResponse(passkeyOptions, session.challengeId());
     }
 
-    private RegistrationResponse getRegistrationResponse(User user, Challenge challenge) {
-        var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user, challenge);
-        return new RegistrationResponse(passkeyOptions, challenge.challengeId());
+    private RegistrationResponse getRegistrationResponse(User user, Session session) {
+        var passkeyOptions = credentialOptionsPort.getPasskeyCreationOptions(user, session);
+        return new RegistrationResponse(passkeyOptions, session.challengeId());
     }
 }

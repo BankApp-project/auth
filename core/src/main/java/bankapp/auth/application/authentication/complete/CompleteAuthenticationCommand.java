@@ -12,7 +12,7 @@ public record CompleteAuthenticationCommand(
             throw new IllegalArgumentException("Authentication Response JSON cannot be null or blank");
         }
         if (challengeId == null) {
-            throw new IllegalArgumentException("Challenge ID cannot be null");
+            throw new IllegalArgumentException("Session ID cannot be null");
         }
         if (credentialId == null) {
             throw new IllegalArgumentException("Credential ID cannot be null");

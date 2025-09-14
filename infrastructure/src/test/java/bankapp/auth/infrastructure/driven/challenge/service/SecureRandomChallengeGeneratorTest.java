@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.challenge.service;
 
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.infrastructure.driven.challenge.config.ChallengeProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ class SecureRandomChallengeGeneratorTest {
         var res = secureRandomChallengeGenerator.generate(UUID.randomUUID());
 
         assertNotNull(res);
-        assertInstanceOf(Challenge.class, res);
+        assertInstanceOf(Session.class, res);
     }
 
     @Test

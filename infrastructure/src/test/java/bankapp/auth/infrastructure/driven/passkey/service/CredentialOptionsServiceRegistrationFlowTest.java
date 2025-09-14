@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.enums.AuthMode;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
@@ -27,7 +27,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
 
     private static final EmailAddress DEFAULT_EMAIL = new EmailAddress("test@bankapp.online");
     public static final User TEST_USER = User.createNew(DEFAULT_EMAIL);
-    private static final Challenge DEFAULT_CHALLENGE = new Challenge(
+    private static final Session DEFAULT_SESSION = new Session(
             UUID.randomUUID(),
             new byte[]{123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123},
             DEFAULT_TIMEOUT,
@@ -54,7 +54,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     void should_return_response_with_userId_as_userHandle() {
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(TEST_USER, DEFAULT_CHALLENGE);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(TEST_USER, DEFAULT_SESSION);
 
         assertArrayEquals(ByteArrayUtil.uuidToBytes(TEST_USER.getId()), res.user().id());
     }
@@ -62,7 +62,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     @Test
     void should_return_response_with_at_least_16bytes_long_challenge() {
 
-        var res = passkeyOptionsService.getPasskeyCreationOptions(TEST_USER, DEFAULT_CHALLENGE);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(TEST_USER, DEFAULT_SESSION);
         byte[] challenge = res.challenge();
         assertThat(challenge).hasSizeGreaterThanOrEqualTo(16);
     }
@@ -73,7 +73,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_SESSION);
 
         // Then
         String name = res.user().name();
@@ -89,7 +89,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_SESSION);
 
         // Then
         String rpId = res.rp().id();
@@ -103,7 +103,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_SESSION);
 
         // Then
         var pubKeyCredParams = res.pubKeyCredParams();
@@ -127,7 +127,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_SESSION);
 
         // Then
         var timeout = res.timeout();
@@ -142,7 +142,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         User testUser = User.createNew(DEFAULT_EMAIL);
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_SESSION);
 
         // Then
         var authSelCriteria = res.authenticatorSelection();
@@ -159,7 +159,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
 
         // When
 
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_SESSION);
 
         // Then
         var authAttach = res.authenticatorSelection().authenticatorAttachment();
@@ -183,7 +183,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
         );
 
         // When
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_SESSION);
 
         // Then
         var authAttach = res.authenticatorSelection().authenticatorAttachment();
@@ -200,7 +200,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     void should_return_default_values_for_every_not_set_parameter() {
         User testUser = User.createNew(DEFAULT_EMAIL);
 
-        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_CHALLENGE);
+        var res = passkeyOptionsService.getPasskeyCreationOptions(testUser, DEFAULT_SESSION);
 
         // Then
         var exclCred = res.excludeCredentials();

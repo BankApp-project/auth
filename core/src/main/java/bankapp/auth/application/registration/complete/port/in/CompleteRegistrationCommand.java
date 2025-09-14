@@ -11,7 +11,7 @@ public record CompleteRegistrationCommand(
             throw new IllegalArgumentException("Registration Response JSON cannot be null or blank");
         }
         if (challengeId == null) {
-            throw new IllegalArgumentException("Challenge ID cannot be null");
+            throw new IllegalArgumentException("Session ID cannot be null");
         }
     }
 }

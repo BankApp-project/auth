@@ -3,7 +3,7 @@ package bankapp.auth.application.authentication.complete;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubChallengeRepository;
@@ -34,7 +34,7 @@ public class CompleteAuthenticationUseCaseTest {
     private final String authenticationResponseJSON = "blob";
 
     private final static byte[] DEFAULT_RAW_CHALLENGE = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
-    private final static Challenge TEST_CHALLENGE = new Challenge(
+    private final static Session TEST_SESSION = new Session(
             DEFAULT_SESSION_ID,
             DEFAULT_RAW_CHALLENGE,
             DEFAULT_EXPIRATION_TIME,
@@ -53,7 +53,7 @@ public class CompleteAuthenticationUseCaseTest {
     @BeforeEach
     void setup() {
         sessionRepo = new StubChallengeRepository();
-        sessionRepo.save(TEST_CHALLENGE);
+        sessionRepo.save(TEST_SESSION);
 
         webAuthnVerificationPort = mock(WebAuthnVerificationPort.class);
         passkeyRepository = mock(PasskeyRepository.class);
@@ -63,7 +63,7 @@ public class CompleteAuthenticationUseCaseTest {
         when(passkeyRepository.load(credentialId)).thenReturn(Optional.of(passkey));
         when(webAuthnVerificationPort.confirmAuthenticationChallenge(
                 authenticationResponseJSON,
-                TEST_CHALLENGE,
+                TEST_SESSION,
                 passkey
         )).thenReturn(passkey.signCountIncrement());
 
@@ -96,7 +96,7 @@ public class CompleteAuthenticationUseCaseTest {
         sessionRepo = mock(ChallengeRepository.class);
         useCase = new CompleteAuthenticationUseCase(sessionRepo, webAuthnVerificationPort, passkeyRepository, tokenIssuingPort);
 
-        when(sessionRepo.load(eq(DEFAULT_SESSION_ID))).thenReturn(Optional.of(TEST_CHALLENGE));
+        when(sessionRepo.load(eq(DEFAULT_SESSION_ID))).thenReturn(Optional.of(TEST_SESSION));
 
         useCase.handle(command);
 
@@ -109,7 +109,7 @@ public class CompleteAuthenticationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnVerificationPort).confirmAuthenticationChallenge(eq(command.AuthenticationResponseJSON()), eq(TEST_CHALLENGE), any());
+        verify(webAuthnVerificationPort).confirmAuthenticationChallenge(eq(command.AuthenticationResponseJSON()), eq(TEST_SESSION), any());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class CompleteAuthenticationUseCaseTest {
     @Test
     void should_throw_CompleteAuthenticationException_when_challenge_verification_fails() {
         // Given
-        String exceptionMsg = "Challenge verification failed";
+        String exceptionMsg = "Session verification failed";
         when(webAuthnVerificationPort.confirmAuthenticationChallenge(any(), any(), any())).thenThrow(new RuntimeException(exceptionMsg));
         // When
         // Then

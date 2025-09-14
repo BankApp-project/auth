@@ -1,6 +1,6 @@
 package bankapp.auth.application.verification.complete.port.out.stubs;
 
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 
@@ -19,11 +19,11 @@ public class StubChallengeGenerator implements ChallengeGenerationPort {
     }
 
     @Override
-    public Challenge generate(UUID userId) {
+    public Session generate(UUID userId) {
         var sessionId = UUID.randomUUID();
         var challenge = UUID.randomUUID();
         byte[] challengeBytes = ByteArrayUtil.uuidToBytes(challenge);
-        return new Challenge(
+        return new Session(
                 sessionId,
                 challengeBytes,
                 Duration.ofSeconds(ttl),

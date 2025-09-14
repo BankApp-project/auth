@@ -6,7 +6,7 @@ import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
@@ -72,7 +72,7 @@ public class CompleteRegistrationUseCase {
         return userOpt.get();
     }
 
-    private Challenge getChallenge(CompleteRegistrationCommand command) {
+    private Session getChallenge(CompleteRegistrationCommand command) {
         var challenge = challengeRepository.load(command.challengeId());
         if (challenge.isEmpty()) {
             throw new CompleteRegistrationException("No such value with ID: " + command.challengeId());
@@ -80,10 +80,10 @@ public class CompleteRegistrationUseCase {
         return challenge.get();
     }
 
-    private Passkey verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Challenge challenge) {
+    private Passkey verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Session session) {
         Passkey credential;
         try {
-            credential = webAuthnVerificationPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), challenge);
+            credential = webAuthnVerificationPort.confirmRegistrationChallenge(command.RegistrationResponseJSON(), session);
         } catch (Exception e) {
             throw new CompleteRegistrationException("Failed to confirm new credential registration: " + e.getMessage(), e);
         }

@@ -5,7 +5,7 @@ import bankapp.auth.application.shared.exception.CredentialAlreadyExistsExceptio
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
@@ -27,7 +27,7 @@ class CompleteRegistrationUseCaseTest {
 
     private final static long DEFAULT_TTL = 90L;
     private final static UUID DEFAULT_CHALLENGE_ID = UUID.randomUUID();
-    private final static Challenge DEFAULT_CHALLENGE = new Challenge(
+    private final static Session DEFAULT_SESSION = new Session(
             DEFAULT_CHALLENGE_ID,
             new byte[]{111},
             Duration.ofSeconds(DEFAULT_TTL),
@@ -58,7 +58,7 @@ class CompleteRegistrationUseCaseTest {
         useCase = new CompleteRegistrationUseCase(sessionRepo, webAuthnVerificationPort, passkeyRepository, userRepository, tokenIssuingPort);
 
 
-        when(sessionRepo.load(DEFAULT_CHALLENGE_ID)).thenReturn(Optional.of(DEFAULT_CHALLENGE));
+        when(sessionRepo.load(DEFAULT_CHALLENGE_ID)).thenReturn(Optional.of(DEFAULT_SESSION));
 
         testUser = User.createNew(new EmailAddress("test@bankapp.online"));
         stubRegistrationData = new Passkey(
@@ -96,7 +96,7 @@ class CompleteRegistrationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnVerificationPort).confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), eq(DEFAULT_CHALLENGE));
+        verify(webAuthnVerificationPort).confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), eq(DEFAULT_SESSION));
     }
 
     @Test
@@ -111,7 +111,7 @@ class CompleteRegistrationUseCaseTest {
     @Test
     void should_throw_CompleteRegistrationException_when_challenge_verification_fails() {
         // Given
-        String exceptionMsg = "Challenge verification failed";
+        String exceptionMsg = "Session verification failed";
         when(webAuthnVerificationPort.confirmRegistrationChallenge(any(), any())).thenThrow(new RuntimeException(exceptionMsg));
         // When
         // Then

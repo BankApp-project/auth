@@ -6,14 +6,14 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
 
-public record Challenge(
+public record Session(
         UUID challengeId,          // The key for the cache
         byte[] value,            // The cryptographic value
         Instant expirationTime,   // When this context becomes invalid
         UUID userId              // ID of the related user
 ) {
 
-    public Challenge(
+    public Session(
             UUID challengeId,
             byte[] value,
             Duration ttl,
@@ -34,7 +34,7 @@ public record Challenge(
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Challenge(UUID id, byte[] value1, Instant time, UUID user))) return false;
+        if (!(o instanceof Session(UUID id, byte[] value1, Instant time, UUID user))) return false;
 
         return Arrays.equals(value, value1) && challengeId.equals(id) && expirationTime.equals(time) && userId.equals(user);
     }

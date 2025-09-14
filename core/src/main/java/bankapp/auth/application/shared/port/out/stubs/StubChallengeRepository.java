@@ -1,7 +1,7 @@
 package bankapp.auth.application.shared.port.out.stubs;
 
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -9,15 +9,15 @@ import java.util.UUID;
 
 public class StubChallengeRepository implements ChallengeRepository {
 
-    private final HashMap<UUID, Challenge> sessionCache = new HashMap<>();
+    private final HashMap<UUID, Session> sessionCache = new HashMap<>();
 
     @Override
-    public void save(Challenge challenge) {
-        sessionCache.put(challenge.challengeId(), challenge);
+    public void save(Session session) {
+        sessionCache.put(session.challengeId(), session);
     }
 
     @Override
-    public Optional<Challenge> load(UUID key) {
+    public Optional<Session> load(UUID key) {
         return Optional.ofNullable(sessionCache.get(key));
     }
 

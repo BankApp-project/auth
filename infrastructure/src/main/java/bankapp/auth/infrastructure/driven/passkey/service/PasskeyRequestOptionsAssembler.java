@@ -1,9 +1,9 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.enums.UserVerificationRequirement;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialDescriptor;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.annotations.Nullable;
@@ -29,11 +29,11 @@ class PasskeyRequestOptionsAssembler {
     private final PasskeyRpProperties properties;
     private final Clock clock;
 
-    public PublicKeyCredentialRequestOptions assemble(@Nullable List<Passkey> userCredentials, Challenge challenge) {
-        long timeoutMillis = getTimeoutMillis(challenge.expirationTime());
+    public PublicKeyCredentialRequestOptions assemble(@Nullable List<Passkey> userCredentials, Session session) {
+        long timeoutMillis = getTimeoutMillis(session.expirationTime());
 
         return new PublicKeyCredentialRequestOptions(
-                challenge.value(),
+                session.value(),
                 timeoutMillis,
                 properties.rpId(),
                 getAllowedCredentials(userCredentials),

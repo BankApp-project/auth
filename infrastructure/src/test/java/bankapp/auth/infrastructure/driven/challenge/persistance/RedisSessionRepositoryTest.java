@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.challenge.persistance;
 
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.infrastructure.utils.WithRedisContainer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,13 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class RedisChallengeRepositoryTest implements WithRedisContainer {
+class RedisSessionRepositoryTest implements WithRedisContainer {
 
     public static final Duration TTL = Duration.ofSeconds(60);
     private final static Clock FIXED_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
 
     @Autowired
-    private RedisTemplate<String, Challenge> redisTemplate;
+    private RedisTemplate<String, Session> redisTemplate;
 
     private RedisChallengeRepository redisChallengeRepository;
 
@@ -43,7 +43,7 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     @Test
     void shouldSaveChallengeAndSetTtl() {
         // given
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
+        var challenge = new Session(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
         var key = "challenge:" + challenge.challengeId();
 
         // when
@@ -60,7 +60,7 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     @Test
     void shouldLoadChallenge() {
         // given
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
+        var challenge = new Session(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
         var key = "challenge:" + challenge.challengeId();
         redisTemplate.opsForValue().set(key, challenge);
 
@@ -74,7 +74,7 @@ class RedisChallengeRepositoryTest implements WithRedisContainer {
     @Test
     void shouldDeleteChallenge() {
         // given
-        var challenge = new Challenge(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
+        var challenge = new Session(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
         var sessionId = challenge.challengeId();
         var key = "challenge:" + sessionId;
         redisTemplate.opsForValue().set(key, challenge);

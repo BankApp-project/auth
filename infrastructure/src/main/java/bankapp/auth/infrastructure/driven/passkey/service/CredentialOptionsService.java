@@ -1,8 +1,8 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
-import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
@@ -29,25 +29,25 @@ public class CredentialOptionsService implements CredentialOptionsPort {
      * {@inheritDoc}
      */
     @Override
-    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Challenge challenge) {
+    public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Session session) {
         PasskeyCreationOptionsAssembler assembler = new PasskeyCreationOptionsAssembler(properties, clock);
-        return assembler.assemble(user, challenge);
+        return assembler.assemble(user, session);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(Challenge challenge) {
-        return getPasskeyRequestOptions(null, challenge);
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(Session session) {
+        return getPasskeyRequestOptions(null, session);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, Challenge challenge) {
+    public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, Session session) {
         PasskeyRequestOptionsAssembler assembler = new PasskeyRequestOptionsAssembler(properties, clock);
-        return assembler.assemble(userCredentials, challenge);
+        return assembler.assemble(userCredentials, session);
     }
 }

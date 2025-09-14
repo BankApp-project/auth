@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
 import jakarta.validation.constraints.NotNull;
@@ -85,9 +85,9 @@ class WebAuthnAuthenticationVerificationTest {
     }
 
     /**
-     * Helper to generate a Challenge object for tests.
+     * Helper to generate a Session object for tests.
      */
-    private @NotNull Challenge getChallenge() {
+    private @NotNull Session getChallenge() {
         final Clock FIXED_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
         final Duration TTL = Duration.ofSeconds(60);
 
@@ -96,6 +96,6 @@ class WebAuthnAuthenticationVerificationTest {
         var challengeVal = new byte[32];
         new SecureRandom().nextBytes(challengeVal);
 
-        return new Challenge(challengeId, challengeVal, TTL, FIXED_CLOCK, UUID.randomUUID());
+        return new Session(challengeId, challengeVal, TTL, FIXED_CLOCK, UUID.randomUUID());
     }
 }

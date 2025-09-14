@@ -2,7 +2,7 @@ package bankapp.auth.infrastructure.usecases.it;
 
 
 import bankapp.auth.application.shared.port.out.HashingPort;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
@@ -183,20 +183,20 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
         assertThat(userOpt).isEmpty();
     }
 
-    private Challenge createFixedChallenge() {
+    private Session createFixedChallenge() {
         var challengeId = UUID.randomUUID();
         var challengeValue = new byte[]{123, 123};
-        return new Challenge(challengeId, challengeValue, CHALLENGE_TTL, FIXED_CLOCK, UUID.randomUUID());
+        return new Session(challengeId, challengeValue, CHALLENGE_TTL, FIXED_CLOCK, UUID.randomUUID());
     }
 
-    private void assertChallengeIsSaved(Challenge expectedChallenge) {
-        var loadedChallengeOptional = challengeRepository.load(expectedChallenge.challengeId());
+    private void assertChallengeIsSaved(Session expectedSession) {
+        var loadedChallengeOptional = challengeRepository.load(expectedSession.challengeId());
 
         assertThat(loadedChallengeOptional)
                 .isPresent()
                 .hasValueSatisfying(loadedChallenge -> {
-                    assertThat(loadedChallenge.value()).isEqualTo(expectedChallenge.value());
-                    assertThat(loadedChallenge.challengeId()).isEqualTo(expectedChallenge.challengeId());
+                    assertThat(loadedChallenge.value()).isEqualTo(expectedSession.value());
+                    assertThat(loadedChallenge.challengeId()).isEqualTo(expectedSession.challengeId());
                     assertThat(loadedChallenge.expirationTime()).isEqualTo(Instant.now(FIXED_CLOCK).plus(CHALLENGE_TTL));
                 });
     }

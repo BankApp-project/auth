@@ -2,9 +2,9 @@ package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.enums.AuthMode;
 import bankapp.auth.application.shared.enums.UserVerificationRequirement;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialDescriptor;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
@@ -28,15 +28,15 @@ class PasskeyCreationOptionsAssembler {
     private final PasskeyRpProperties properties;
     private final Clock clock;
 
-    public PublicKeyCredentialCreationOptions assemble(User user, Challenge challenge) {
-        long timeoutMillis = getTimeoutMillis(challenge.expirationTime());
+    public PublicKeyCredentialCreationOptions assemble(User user, Session session) {
+        long timeoutMillis = getTimeoutMillis(session.expirationTime());
         String userDisplayName = user.getEmail().getValue();
         byte[] userHandle = getUserHandle(user.getId());
 
         return new PublicKeyCredentialCreationOptions(
                 getRpEntity(),
                 getUserEntity(userHandle, userDisplayName),
-                challenge.value(),
+                session.value(),
                 getPublicKeyCredentialParametersList(),
                 timeoutMillis,
                 getExcludeCredentials(),

@@ -4,7 +4,7 @@ import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.domain.model.Passkey;
@@ -42,7 +42,7 @@ public class CompleteAuthenticationUseCase {
         return new AuthenticationGrant(tokens);
     }
 
-    private Passkey verifyChallengeAndUpdateCredentialRecord(CompleteAuthenticationCommand command, Challenge session) {
+    private Passkey verifyChallengeAndUpdateCredentialRecord(CompleteAuthenticationCommand command, Session session) {
         try {
             var credentialRecordOpt = passkeyRepository.load(command.credentialId());
 
@@ -54,7 +54,7 @@ public class CompleteAuthenticationUseCase {
         }
     }
 
-    private Challenge getSession(CompleteAuthenticationCommand command) {
+    private Session getSession(CompleteAuthenticationCommand command) {
         var sessionOptional = challengeRepository.load(command.challengeId());
         if (sessionOptional.isEmpty()) {
             throw new CompleteAuthenticationException("No such session with ID: " + command.challengeId());

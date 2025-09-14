@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
 import com.webauthn4j.converter.AttestationObjectConverter;
 import com.webauthn4j.converter.CollectedClientDataConverter;
@@ -100,13 +100,13 @@ class WebAuthnServiceTest {
         assertThat(res).usingRecursiveAssertion().hasNoNullFields().ignoringFields("transports", "extensions");
     }
 
-    private @NotNull Challenge getChallenge() {
+    private @NotNull Session getChallenge() {
         final Clock FIXED_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
         final Duration TTL = Duration.ofSeconds(60);
 
         var challengeId = UUID.randomUUID();
         var challengeVal = new byte[] {123,111};
-        return new Challenge(challengeId, challengeVal, TTL, FIXED_CLOCK, UUID.randomUUID());
+        return new Session(challengeId, challengeVal, TTL, FIXED_CLOCK, UUID.randomUUID());
     }
 
 }

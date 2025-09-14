@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.challenge.config;
 
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +13,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class ChallengeRedisConfig {
 
     @Bean
-    public RedisTemplate<String, Challenge> challengeRedisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
-        RedisTemplate<String, Challenge> template = new RedisTemplate<>();
+    public RedisTemplate<String, Session> challengeRedisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper) {
+        RedisTemplate<String, Session> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
-        Jackson2JsonRedisSerializer<Challenge> serializer = new Jackson2JsonRedisSerializer<>(objectMapper, Challenge.class);
+        Jackson2JsonRedisSerializer<Session> serializer = new Jackson2JsonRedisSerializer<>(objectMapper, Session.class);
         template.setValueSerializer(serializer);
 
         template.setKeySerializer(new StringRedisSerializer());

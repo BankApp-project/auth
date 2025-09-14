@@ -1,6 +1,6 @@
 package bankapp.auth.application.verification.complete;
 
-import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
@@ -71,7 +71,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
         var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
 
-        var challenge = new Challenge(
+        var challenge = new Session(
                 UUID.randomUUID(),
                 new byte[]{123},
                 challengeTtl,
