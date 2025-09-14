@@ -97,7 +97,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.sessionId").value(challenge.sessionId().toString()))
-                .andExpect(jsonPath("$.registrationOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.value())));
+                .andExpect(jsonPath("$.registrationOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.challenge())));
 
         // Additional Assertions
         assertChallengeIsSaved(challenge);
@@ -134,7 +134,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.sessionId").value(challenge.sessionId().toString()))
-                .andExpect(jsonPath("$.loginOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.value())));
+                .andExpect(jsonPath("$.loginOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.challenge())));
 
         // Additional Assertions
         assertChallengeIsSaved(challenge);
@@ -195,7 +195,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
         assertThat(loadedChallengeOptional)
                 .isPresent()
                 .hasValueSatisfying(loadedChallenge -> {
-                    assertThat(loadedChallenge.value()).isEqualTo(expectedSession.value());
+                    assertThat(loadedChallenge.challenge()).isEqualTo(expectedSession.challenge());
                     assertThat(loadedChallenge.sessionId()).isEqualTo(expectedSession.sessionId());
                     assertThat(loadedChallenge.expirationTime()).isEqualTo(Instant.now(FIXED_CLOCK).plus(CHALLENGE_TTL));
                 });

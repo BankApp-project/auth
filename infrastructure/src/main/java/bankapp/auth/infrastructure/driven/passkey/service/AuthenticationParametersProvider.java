@@ -30,7 +30,7 @@ public class AuthenticationParametersProvider {
     }
 
     private ServerProperty getServerProperty(Session sessionData) {
-        var challenge = new DefaultChallenge(sessionData.value());
+        var challenge = new DefaultChallenge(sessionData.challenge());
         return new ServerProperty(passkeyConfig.origin(), passkeyConfig.rpId(), challenge);
     }
 

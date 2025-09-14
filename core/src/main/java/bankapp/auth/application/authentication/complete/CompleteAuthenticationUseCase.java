@@ -50,7 +50,7 @@ public class CompleteAuthenticationUseCase {
 
             return webAuthnVerificationPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session, credentialRecord);
         } catch (RuntimeException e) {
-            throw new CompleteAuthenticationException("Failed to confirm authentication value: " + e.getMessage(), e);
+            throw new CompleteAuthenticationException("Failed to confirm authentication challenge: " + e.getMessage(), e);
         }
     }
 

@@ -42,7 +42,7 @@ class WebAuthnServiceTest {
         var challenge = getChallenge();
 
         // Use the helper to generate a valid client response based on the challenge
-        var registrationResponseJSON = WebAuthnTestHelper.generateValidRegistrationResponseJSON(challenge.value());
+        var registrationResponseJSON = WebAuthnTestHelper.generateValidRegistrationResponseJSON(challenge.challenge());
 
 
         // 2. ACT
@@ -77,7 +77,7 @@ class WebAuthnServiceTest {
         // c) Validate the content of the parsed client data
         // This is a critical check to ensure you processed the correct challenge response
         assertEquals("webauthn.create", collectedClientData.getType().getValue());
-        assertEquals(new DefaultChallenge(challenge.value()), collectedClientData.getChallenge());
+        assertEquals(new DefaultChallenge(challenge.challenge()), collectedClientData.getChallenge());
     }
 
     @Test
@@ -92,7 +92,7 @@ class WebAuthnServiceTest {
     @Test
     void confirmRegistrationChallenge_should_return_RegistrationData_when_provided_valid_parameters() throws Exception {
         var challenge = getChallenge();
-        var registrationResponseJSON = WebAuthnTestHelper.generateValidRegistrationResponseJSON(challenge.value());
+        var registrationResponseJSON = WebAuthnTestHelper.generateValidRegistrationResponseJSON(challenge.challenge());
 
         var res = webAuthnService.confirmRegistrationChallenge(registrationResponseJSON, challenge);
 

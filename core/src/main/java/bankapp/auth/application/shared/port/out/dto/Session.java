@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public record Session(
         UUID sessionId,          // The key for the cache
-        byte[] value,            // The cryptographic value
-        Instant expirationTime,   // When this context becomes invalid
-        UUID userId              // ID of the related user
+        byte[] challenge,            // The cryptographic challenge
+        Instant expirationTime,  // When this context becomes invalid
+        UUID userId             // ID of the related user
 ) {
 
     public Session(
@@ -36,12 +36,12 @@ public record Session(
     public boolean equals(Object o) {
         if (!(o instanceof Session(UUID id, byte[] value1, Instant time, UUID user))) return false;
 
-        return Arrays.equals(value, value1) && sessionId.equals(id) && expirationTime.equals(time) && userId.equals(user);
+        return Arrays.equals(challenge, value1) && sessionId.equals(id) && expirationTime.equals(time) && userId.equals(user);
     }
     @Override
     public int hashCode() {
         int result = sessionId.hashCode();
-        result = 31 * result + Arrays.hashCode(value);
+        result = 31 * result + Arrays.hashCode(challenge);
         result = 31 * result + expirationTime.hashCode();
         result = 31 * result + userId.hashCode();
         return result;

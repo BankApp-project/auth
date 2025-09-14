@@ -52,7 +52,7 @@ class WebAuthnAuthenticationVerificationTest {
 
         // Generate response using the wrong private key (private key B)
         var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
-                challenge.value(),
+                challenge.challenge(),
                 "bankapp.online", // rpId must match
                 uuidToBytes(passkeyInfo.passkey().getId()),
                 maliciousKeyPair
@@ -71,7 +71,7 @@ class WebAuthnAuthenticationVerificationTest {
         var rpId = "bankapp.online";
 
         var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
-                challenge.value(),
+                challenge.challenge(),
                 rpId,
                 passkeyInfo.credentialIdBytes(), // Use the byte[] version of the ID here
                 passkeyInfo.keyPair()

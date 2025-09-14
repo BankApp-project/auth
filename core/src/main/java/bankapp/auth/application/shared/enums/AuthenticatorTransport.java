@@ -51,7 +51,7 @@ public enum AuthenticatorTransport {
      * Returns the official string representation of the transport as defined in the
      * W3C specification.
      *
-     * @return The kebab-case or lowercase string value (e.g., "smart-card").
+     * @return The kebab-case or lowercase string challenge (e.g., "smart-card").
      */
     public String getValue() {
         return value;
@@ -63,11 +63,11 @@ public enum AuthenticatorTransport {
      *
      * @param value The string representation of the transport (e.g., "usb", "smart-card").
      * @return The corresponding AuthenticatorTransport enum constant.
-     * @throws IllegalArgumentException if the provided value does not match any known transport.
+     * @throws IllegalArgumentException if the provided challenge does not match any known transport.
      */
     public static AuthenticatorTransport fromValue(String value) {
         if (value == null) {
-            throw new IllegalArgumentException("Authenticator transport value cannot be null");
+            throw new IllegalArgumentException("Authenticator transport challenge cannot be null");
         }
         // Iterate through the enum constants to find a match.
         for (AuthenticatorTransport transport : values()) {

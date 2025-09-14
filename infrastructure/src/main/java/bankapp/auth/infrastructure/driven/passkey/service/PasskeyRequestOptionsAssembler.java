@@ -33,7 +33,7 @@ class PasskeyRequestOptionsAssembler {
         long timeoutMillis = getTimeoutMillis(session.expirationTime());
 
         return new PublicKeyCredentialRequestOptions(
-                session.value(),
+                session.challenge(),
                 timeoutMillis,
                 properties.rpId(),
                 getAllowedCredentials(userCredentials),

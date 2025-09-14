@@ -36,7 +36,7 @@ class PasskeyCreationOptionsAssembler {
         return new PublicKeyCredentialCreationOptions(
                 getRpEntity(),
                 getUserEntity(userHandle, userDisplayName),
-                session.value(),
+                session.challenge(),
                 getPublicKeyCredentialParametersList(),
                 timeoutMillis,
                 getExcludeCredentials(),

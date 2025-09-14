@@ -14,10 +14,10 @@ public class BCryptHashingService implements HashingPort {
 
 
     /**
-     * Generates a secure hash of the provided input value using the configured password encoder.
+     * Generates a secure hash of the provided input challenge using the configured password encoder.
      *
      * @param value the input string to be securely hashed; must not be null
-     * @return the securely hashed representation of the input value
+     * @return the securely hashed representation of the input challenge
      */
     @Override
     public String hashSecurely(@NonNull String value) {
