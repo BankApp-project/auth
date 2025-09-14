@@ -1,7 +1,7 @@
 package bankapp.auth.application.authentication.initiate;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.verification.complete.port.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
@@ -36,7 +36,7 @@ public class InitiateAuthenticationUseCaseTest {
     ChallengeGenerationPort challengeGenerator;
 
     @Mock
-    ChallengeRepository challengeRepository;
+    SessionRepository sessionRepository;
 
     @Mock
     CredentialOptionsPort credentialOptionsService;
@@ -52,7 +52,7 @@ public class InitiateAuthenticationUseCaseTest {
         when(challengeGenerator.generate()).thenReturn(DEFAULT_CHALLENGE);
         when(sessionIdGenerator.generate()).thenReturn(UUID.randomUUID());
 
-        useCase = new InitiateAuthenticationUseCase(challengeGenerator, challengeRepository, credentialOptionsService, sessionIdGenerator);
+        useCase = new InitiateAuthenticationUseCase(challengeGenerator, sessionRepository, credentialOptionsService, sessionIdGenerator);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class InitiateAuthenticationUseCaseTest {
     void should_persist_generated_challenge() {
         useCase.handle();
 
-        verify(challengeRepository).save(argThat(session ->
+        verify(sessionRepository).save(argThat(session ->
                 DEFAULT_CHALLENGE.equals(session.challenge()) && session.userId().isEmpty()));
     }
 

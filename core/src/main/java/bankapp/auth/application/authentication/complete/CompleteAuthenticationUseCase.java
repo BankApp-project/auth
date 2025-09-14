@@ -5,8 +5,8 @@ import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 
@@ -14,13 +14,13 @@ import java.util.UUID;
 
 public class CompleteAuthenticationUseCase {
 
-    private final ChallengeRepository challengeRepository;
+    private final SessionRepository sessionRepository;
     private final PasskeyRepository passkeyRepository;
     private final WebAuthnVerificationPort webAuthnVerificationPort;
     private final TokenIssuingPort tokenIssuingPort;
 
-    public CompleteAuthenticationUseCase(ChallengeRepository sessionRepo, WebAuthnVerificationPort webAuthnVerificationPort, PasskeyRepository passkeyRepository, TokenIssuingPort tokenIssuingPort) {
-        this.challengeRepository = sessionRepo;
+    public CompleteAuthenticationUseCase(SessionRepository sessionRepo, WebAuthnVerificationPort webAuthnVerificationPort, PasskeyRepository passkeyRepository, TokenIssuingPort tokenIssuingPort) {
+        this.sessionRepository = sessionRepo;
         this.webAuthnVerificationPort = webAuthnVerificationPort;
         this.passkeyRepository = passkeyRepository;
         this.tokenIssuingPort = tokenIssuingPort;
@@ -36,7 +36,7 @@ public class CompleteAuthenticationUseCase {
 
         passkeyRepository.updateSignCount(updatedCredential);
 
-        challengeRepository.delete(command.sessionId());
+        sessionRepository.delete(command.sessionId());
 
         AuthTokens tokens = tokenIssuingPort.issueTokensForUser(userId);
         return new AuthenticationGrant(tokens);
@@ -55,7 +55,7 @@ public class CompleteAuthenticationUseCase {
     }
 
     private Session getSession(CompleteAuthenticationCommand command) {
-        var sessionOptional = challengeRepository.load(command.sessionId());
+        var sessionOptional = sessionRepository.load(command.sessionId());
         if (sessionOptional.isEmpty()) {
             throw new CompleteAuthenticationException("No such session with ID: " + command.sessionId());
         }

@@ -30,12 +30,12 @@ class RedisSessionRepositoryTest implements WithRedisContainer {
     @Autowired
     private RedisTemplate<String, Session> redisTemplate;
 
-    private RedisChallengeRepository redisChallengeRepository;
+    private RedisSessionRepository redisChallengeRepository;
 
 
     @BeforeEach
     void setUp() {
-        redisChallengeRepository = new RedisChallengeRepository(redisTemplate, FIXED_CLOCK);
+        redisChallengeRepository = new RedisSessionRepository(redisTemplate, FIXED_CLOCK);
         // Clean up Redis before each test
         Assertions.assertNotNull(redisTemplate.getConnectionFactory());
         redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();

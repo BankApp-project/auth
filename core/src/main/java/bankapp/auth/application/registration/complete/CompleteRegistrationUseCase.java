@@ -7,8 +7,8 @@ import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
@@ -19,20 +19,20 @@ import java.util.UUID;
 
 public class CompleteRegistrationUseCase {
 
-    private final ChallengeRepository challengeRepository;
+    private final SessionRepository sessionRepository;
     private final WebAuthnVerificationPort webAuthnVerificationPort;
     private final PasskeyRepository passkeyRepository;
     private final UserRepository userRepository;
     private final TokenIssuingPort tokenIssuer;
 
     public CompleteRegistrationUseCase(
-            ChallengeRepository challengeRepository,
+            SessionRepository sessionRepository,
             WebAuthnVerificationPort webAuthnVerificationPort,
             PasskeyRepository passkeyRepository,
             UserRepository userRepository,
             TokenIssuingPort tokenIssuingPort
     ) {
-        this.challengeRepository = challengeRepository;
+        this.sessionRepository = sessionRepository;
         this.webAuthnVerificationPort = webAuthnVerificationPort;
         this.passkeyRepository = passkeyRepository;
         this.userRepository = userRepository;
@@ -47,7 +47,7 @@ public class CompleteRegistrationUseCase {
 
         saveCredentialRecord(credential);
 
-        challengeRepository.delete(command.sessionId());
+        sessionRepository.delete(command.sessionId());
 
         User user = fetchUser(credential.getUserHandle());
 
@@ -73,7 +73,7 @@ public class CompleteRegistrationUseCase {
     }
 
     private Session getChallenge(CompleteRegistrationCommand command) {
-        var challenge = challengeRepository.load(command.sessionId());
+        var challenge = sessionRepository.load(command.sessionId());
         if (challenge.isEmpty()) {
             throw new CompleteRegistrationException("No such challenge with ID: " + command.sessionId());
         }

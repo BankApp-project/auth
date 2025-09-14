@@ -3,8 +3,8 @@ package bankapp.auth.application.verification.complete;
 import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.verification.complete.port.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
@@ -25,7 +25,7 @@ public class CompleteVerificationUseCase {
 
     private final OtpService otpService;
 
-    private final ChallengeRepository challengeRepository;
+    private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
     private final PasskeyRepository passkeyRepository;
 
@@ -34,7 +34,7 @@ public class CompleteVerificationUseCase {
     private final SessionIdGenerationPort sessionIdGenerator;
 
     public CompleteVerificationUseCase(
-            @NotNull ChallengeRepository challengeRepository,
+            @NotNull SessionRepository sessionRepository,
             @NotNull PasskeyRepository passkeyRepository,
             @NotNull UserRepository userRepository,
             @NotNull CredentialOptionsPort credentialOptionsPort,
@@ -42,7 +42,7 @@ public class CompleteVerificationUseCase {
             @NotNull OtpService otpService,
             SessionIdGenerationPort sessionIdGenerator
     ) {
-        this.challengeRepository = challengeRepository;
+        this.sessionRepository = sessionRepository;
         this.passkeyRepository = passkeyRepository;
         this.userRepository = userRepository;
         this.credentialOptionsPort = credentialOptionsPort;
@@ -61,7 +61,7 @@ public class CompleteVerificationUseCase {
 
         var challenge = generateChallenge();
         var session = prepareSession(challenge, user.getId());
-        challengeRepository.save(session);
+        sessionRepository.save(session);
 
         return prepareResponse(user, session);
     }

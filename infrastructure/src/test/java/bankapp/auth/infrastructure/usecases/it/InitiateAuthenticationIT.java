@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.usecases.it;
 
 
-import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.infrastructure.driving.rest.authentication.initiate.InitiateAuthenticationResponse;
 import bankapp.auth.infrastructure.utils.WithRedisContainer;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -38,7 +38,7 @@ public class InitiateAuthenticationIT implements WithRedisContainer {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ChallengeRepository challengeRepository;
+    private SessionRepository sessionRepository;
 
     @Test
     void should_return_loginResponse() throws Exception {
@@ -60,7 +60,7 @@ public class InitiateAuthenticationIT implements WithRedisContainer {
 
         var sessionId = responseObj.sessionId();
         var sessionUUID = UUID.fromString(sessionId);
-        var loadedChallenge = challengeRepository.load(sessionUUID);
+        var loadedChallenge = sessionRepository.load(sessionUUID);
 
         assertThat(loadedChallenge).isPresent();
     }

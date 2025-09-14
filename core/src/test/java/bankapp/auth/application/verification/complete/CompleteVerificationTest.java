@@ -35,7 +35,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        var useCase = new CompleteVerificationUseCase(challengeRepository, passkeyRepository, userRepositoryMock, credentialOptionsPort, challengeGenerator, otpService, sessionIdGenerator);
+        var useCase = new CompleteVerificationUseCase(sessionRepository, passkeyRepository, userRepositoryMock, credentialOptionsPort, challengeGenerator, otpService, sessionIdGenerator);
 
         // When
         useCase.handle(defaultCommand);
@@ -65,20 +65,20 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
         var sessionId = res.sessionId();
 
         // Then
-        assertThat(challengeRepository.load(sessionId)).isPresent();
+        assertThat(sessionRepository.load(sessionId)).isPresent();
     }
 
     @Test
     void should_make_session_valid_for_defaultTtl_value_in_seconds() {
         // Given
         var useCase = new CompleteVerificationUseCase(
-                challengeRepository, passkeyRepository, userRepository, credentialOptionsPort, challengeGenerator,
+                sessionRepository, passkeyRepository, userRepository, credentialOptionsPort, challengeGenerator,
                 otpService, sessionIdGenerator);
         // When
         var res = useCase.handle(defaultCommand);
 
         var sessionId = res.sessionId();
-        var sessionOptional = challengeRepository.load(sessionId);
+        var sessionOptional = sessionRepository.load(sessionId);
         assertTrue(sessionOptional.isPresent());
         Clock fixedClockBeforeExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(DEFAULT_TTL_IN_SECONDS - 1), DEFAULT_CLOCK.getZone());
         Clock fixedClockAfterExpiration = Clock.fixed(DEFAULT_CLOCK.instant().plusSeconds(DEFAULT_TTL_IN_SECONDS + 1), DEFAULT_CLOCK.getZone());

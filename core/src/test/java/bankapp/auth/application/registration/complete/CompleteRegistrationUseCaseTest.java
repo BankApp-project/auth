@@ -7,8 +7,8 @@ import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
@@ -41,7 +41,7 @@ class CompleteRegistrationUseCaseTest {
     private Passkey stubRegistrationData;
     private User testUser;
 
-    private ChallengeRepository sessionRepo;
+    private SessionRepository sessionRepo;
     private PasskeyRepository passkeyRepository;
     private UserRepository userRepository;
     private WebAuthnVerificationPort webAuthnVerificationPort;
@@ -52,7 +52,7 @@ class CompleteRegistrationUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        sessionRepo = mock(ChallengeRepository.class);
+        sessionRepo = mock(SessionRepository.class);
         webAuthnVerificationPort = mock(WebAuthnVerificationPort.class);
         passkeyRepository = mock(PasskeyRepository.class);
         userRepository = mock(UserRepository.class);
