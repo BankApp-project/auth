@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,7 +38,8 @@ public class CompleteAuthenticationUseCaseTest {
     private final static Session TEST_SESSION = new Session(
             DEFAULT_SESSION_ID,
             DEFAULT_RAW_CHALLENGE,
-            DEFAULT_EXPIRATION_TIME,
+            Duration.ofSeconds(DEFAULT_TTL),
+            DEFAULT_CLOCK,
             DEFAULT_USER_ID
     );
 

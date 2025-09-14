@@ -2,47 +2,47 @@ package bankapp.auth.application.shared.port.out.dto;
 
 import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.Arrays;
 import java.util.UUID;
 
 public record Session(
         UUID sessionId,          // The key for the cache
-        byte[] challenge,            // The cryptographic challenge
-        Instant expirationTime,  // When this context becomes invalid
+        Challenge challenge,     // The challenge with expiration time
         UUID userId             // ID of the related user
 ) {
 
     public Session(
             UUID sessionId,
-            byte[] value,
+            byte[] challengeValue,
             Duration ttl,
             Clock clock,
             UUID userId
     ) {
         this(
                 sessionId,
-                value,
-                Instant.now(clock).plus(ttl),
+                new Challenge(challengeValue, ttl, clock),
                 userId
         );
     }
 
     public boolean isValid(Clock clock) {
-        return Instant.now(clock).isBefore(expirationTime);
+        return challenge.isValid(clock);
+    }
+
+    public java.time.Instant expirationTime() {
+        return challenge.expirationTime();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Session(UUID id, byte[] value1, Instant time, UUID user))) return false;
+        if (!(o instanceof Session session)) return false;
 
-        return Arrays.equals(challenge, value1) && sessionId.equals(id) && expirationTime.equals(time) && userId.equals(user);
+        return userId.equals(session.userId) && sessionId.equals(session.sessionId) && challenge.equals(session.challenge);
     }
+
     @Override
     public int hashCode() {
         int result = sessionId.hashCode();
-        result = 31 * result + Arrays.hashCode(challenge);
-        result = 31 * result + expirationTime.hashCode();
+        result = 31 * result + challenge.hashCode();
         result = 31 * result + userId.hashCode();
         return result;
     }

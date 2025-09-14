@@ -62,7 +62,7 @@ class SecureRandomChallengeGeneratorTest {
         var res = secureRandomChallengeGenerator.generate(UUID.randomUUID());
         var res2 = secureRandomChallengeGenerator.generate(UUID.randomUUID());
 
-        assertFalse(Arrays.equals(res.challenge(), res2.challenge()));
+        assertFalse(Arrays.equals(res.challenge().challenge(), res2.challenge().challenge()));
     }
 
     @Test
@@ -70,7 +70,7 @@ class SecureRandomChallengeGeneratorTest {
 
         var res = secureRandomChallengeGenerator.generate(UUID.randomUUID());
 
-        assertThat(res.challenge()).hasSizeGreaterThanOrEqualTo(32);
+        assertThat(res.challenge().challenge()).hasSizeGreaterThanOrEqualTo(32);
     }
 
     @Test

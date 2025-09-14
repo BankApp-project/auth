@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.time.Clock;
-import java.time.Instant;
 import java.util.UUID;
 
 @Component
@@ -25,12 +24,11 @@ public class SecureRandomChallengeGenerator implements ChallengeGenerationPort {
 
         byte[] value = getRandomChallengeValue();
 
-        Instant expTime = getExpirationTime();
-
         return new Session(
                 sessionId,
                 value,
-                expTime,
+                properties.ttl(),
+                clock,
                 userId
         );
     }
@@ -45,7 +43,4 @@ public class SecureRandomChallengeGenerator implements ChallengeGenerationPort {
         return value;
     }
 
-    private Instant getExpirationTime() {
-        return Instant.now(clock).plus(properties.ttl());
-    }
 }

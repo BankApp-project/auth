@@ -39,7 +39,8 @@ class WebAuthnServiceTest {
     void confirmRegistrationChallenge_should_return_data_parsable_by_webauthn4j() throws Exception {
         // 1. ARRANGE
         // Get a challenge for the registration ceremony
-        var challenge = getChallenge();
+        var session = getSession();
+        var challenge = session.challenge();
 
         // Use the helper to generate a valid client response based on the challenge
         var registrationResponseJSON = WebAuthnTestHelper.generateValidRegistrationResponseJSON(challenge.challenge());
@@ -47,7 +48,7 @@ class WebAuthnServiceTest {
 
         // 2. ACT
         // Call the service method under test
-        var passkeyRegistrationData = webAuthnService.confirmRegistrationChallenge(registrationResponseJSON, challenge);
+        var passkeyRegistrationData = webAuthnService.confirmRegistrationChallenge(registrationResponseJSON, session);
 
 
         // 3. ASSERT
@@ -82,7 +83,7 @@ class WebAuthnServiceTest {
 
     @Test
     void confirmRegistrationChallenge_should_throw_exception_when_invalid_response() {
-        var challenge = getChallenge();
+        var challenge = getSession();
 
         var invalidResponse = "xoxoxo";
 
@@ -91,16 +92,17 @@ class WebAuthnServiceTest {
 
     @Test
     void confirmRegistrationChallenge_should_return_RegistrationData_when_provided_valid_parameters() throws Exception {
-        var challenge = getChallenge();
+        var session = getSession();
+        var challenge = session.challenge();
         var registrationResponseJSON = WebAuthnTestHelper.generateValidRegistrationResponseJSON(challenge.challenge());
 
-        var res = webAuthnService.confirmRegistrationChallenge(registrationResponseJSON, challenge);
+        var res = webAuthnService.confirmRegistrationChallenge(registrationResponseJSON, session);
 
         assertNotNull(res);
         assertThat(res).usingRecursiveAssertion().hasNoNullFields().ignoringFields("transports", "extensions");
     }
 
-    private @NotNull Session getChallenge() {
+    private @NotNull Session getSession() {
         final Clock FIXED_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
         final Duration TTL = Duration.ofSeconds(60);
 

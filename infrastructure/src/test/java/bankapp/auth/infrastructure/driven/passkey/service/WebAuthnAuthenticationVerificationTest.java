@@ -34,25 +34,25 @@ class WebAuthnAuthenticationVerificationTest {
     @Test
     void confirmAuthenticationChallenge_should_throw_exception_when_invalid_response() {
         // Arrange
-        var challenge = getChallenge();
+        var session = getSession();
         var registeredPasskey = TestPasskeyProvider.createSamplePasskeyInfo(); // A valid passkey is required
         var invalidResponse = "this is not valid json";
 
         // Act & Assert
         assertThrows(AuthenticationConfirmAttemptException.class,
-                () -> webAuthnService.confirmAuthenticationChallenge(invalidResponse, challenge, registeredPasskey.passkey()));
+                () -> webAuthnService.confirmAuthenticationChallenge(invalidResponse, session, registeredPasskey.passkey()));
     }
 
     @Test
     void confirmAuthenticationChallenge_should_throw_exception_when_signature_is_invalid() throws Exception {
         // Arrange: Create a passkey with one keypair, but sign with a different one.
-        var challenge = getChallenge();
+        var session = getSession();
         var passkeyInfo = TestPasskeyProvider.createSamplePasskeyInfo(); // This contains the valid passkey data (public key A)
         var maliciousKeyPair = WebAuthnTestHelper.generatePasskeyKeyPair(); // Generate a second, different keypair (keypair B)
 
         // Generate response using the wrong private key (private key B)
         var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
-                challenge.challenge(),
+                session.challenge().challenge(),
                 "bankapp.online", // rpId must match
                 uuidToBytes(passkeyInfo.passkey().getId()),
                 maliciousKeyPair
@@ -60,18 +60,18 @@ class WebAuthnAuthenticationVerificationTest {
 
         // Act & Assert: Verification should fail because the signature doesn't match the stored public key.
         assertThrows(AuthenticationConfirmAttemptException.class,
-                () -> webAuthnService.confirmAuthenticationChallenge(authenticationResponseJSON, challenge, passkeyInfo.passkey()));
+                () -> webAuthnService.confirmAuthenticationChallenge(authenticationResponseJSON, session, passkeyInfo.passkey()));
     }
 
     @Test
     void confirmAuthenticationChallenge_should_return_updated_Passkey_when_provided_valid_parameters() throws Exception {
         // Arrange
-        var challenge = getChallenge();
+        var session = getSession();
         var passkeyInfo = TestPasskeyProvider.createSamplePasskeyInfo(); // Contains Passkey object, KeyPair, and credentialId bytes
         var rpId = "bankapp.online";
 
         var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
-                challenge.challenge(),
+                session.challenge().challenge(),
                 rpId,
                 passkeyInfo.credentialIdBytes(), // Use the byte[] version of the ID here
                 passkeyInfo.keyPair()
@@ -79,7 +79,7 @@ class WebAuthnAuthenticationVerificationTest {
 
         // Act
         var signCount = passkeyInfo.passkey().getSignCount();
-        var updatedPasskey = webAuthnService.confirmAuthenticationChallenge(authenticationResponseJSON, challenge, passkeyInfo.passkey());
+        var updatedPasskey = webAuthnService.confirmAuthenticationChallenge(authenticationResponseJSON, session, passkeyInfo.passkey());
 
         // Assert
         assertNotNull(updatedPasskey);
@@ -89,7 +89,7 @@ class WebAuthnAuthenticationVerificationTest {
     /**
      * Helper to generate a Session object for tests.
      */
-    private @NotNull Session getChallenge() {
+    private @NotNull Session getSession() {
         final Clock FIXED_CLOCK = Clock.fixed(Instant.now(), ZoneId.of("Z"));
         final Duration TTL = Duration.ofSeconds(60);
 
