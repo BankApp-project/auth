@@ -10,6 +10,8 @@ import com.webauthn4j.data.RegistrationParameters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class WebAuthnVerificationService implements WebAuthnVerificationPort {
@@ -26,10 +28,16 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
 
             var registrationData = getRegistrationData(registrationResponseJSON, registrationParameters);
 
-            return registrationDataMapper.toDomainEntity(registrationData, sessionData.userId());
+            return registrationDataMapper.toDomainEntity(registrationData, getUserId(sessionData));
         } catch (RuntimeException e) {
             throw new RegistrationConfirmAttemptException("Confirmation of registration attempt failed.");
         }
+    }
+
+    private UUID getUserId(Session sessionData) {
+        return sessionData.userId().orElseThrow(
+                () -> new RegistrationConfirmAttemptException("User ID is missing in session data")
+        );
     }
 
     private RegistrationParameters getRegistrationParameters(Session sessionData) {

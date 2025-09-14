@@ -1,29 +1,32 @@
 package bankapp.auth.application.shared.port.out.dto;
 
+import bankapp.auth.domain.model.annotations.Nullable;
+
 import java.time.Clock;
+import java.util.Optional;
 import java.util.UUID;
 
 public record Session(
         UUID sessionId,          // The key for the cache
         Challenge challenge,     // The challenge with expiration time
-        UUID userId    // ID of the related user
+        Optional<UUID> userId    // ID of the related user
 ) {
 
-//    public Session(UUID sessionId, Challenge challenge, UUID userId) {
-//        this(
-//                sessionId,
-//                challenge,
-//                Optional.of(userId)
-//        );
-//    }
-//
-//    public Session(UUID sessionId, Challenge challenge) {
-//        this(
-//                sessionId,
-//                challenge,
-//                Optional.empty()
-//        );
-//    }
+    public Session(UUID sessionId, Challenge challenge, @Nullable UUID userId) {
+        this(
+                sessionId,
+                challenge,
+                Optional.ofNullable(userId)
+        );
+    }
+
+    public Session(UUID sessionId, Challenge challenge) {
+        this(
+                sessionId,
+                challenge,
+                Optional.empty()
+        );
+    }
 
     public boolean isValid(Clock clock) {
         return challenge.isValid(clock);

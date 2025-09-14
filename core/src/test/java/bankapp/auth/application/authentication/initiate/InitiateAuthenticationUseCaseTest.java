@@ -61,7 +61,7 @@ public class InitiateAuthenticationUseCaseTest {
         useCase.handle();
 
         verify(challengeRepository).save(argThat(session ->
-                DEFAULT_CHALLENGE.equals(session.challenge()) && session.userId() == null));
+                DEFAULT_CHALLENGE.equals(session.challenge()) && session.userId().isEmpty()));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class InitiateAuthenticationUseCaseTest {
         useCase.handle();
 
         verify(credentialOptionsService).getPasskeyRequestOptions(argThat(session ->
-                DEFAULT_CHALLENGE.equals(session.challenge()) && session.userId() == null));
+                DEFAULT_CHALLENGE.equals(session.challenge()) && session.userId().isEmpty()));
     }
 
     @Test

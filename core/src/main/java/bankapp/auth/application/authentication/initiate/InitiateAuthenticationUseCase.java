@@ -43,8 +43,7 @@ public class InitiateAuthenticationUseCase {
 
         return new Session(
                 sessionId,
-                challenge,
-                null
+                challenge
         );
     }
 }
