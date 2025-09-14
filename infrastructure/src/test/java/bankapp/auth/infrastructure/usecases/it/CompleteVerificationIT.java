@@ -3,9 +3,8 @@ package bankapp.auth.infrastructure.usecases.it;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.domain.model.Otp;
@@ -32,6 +31,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Base64;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -75,7 +75,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
     private UserRepository userRepository;
 
     @Autowired
-    private ChallengeRepository challengeRepository;
+    private SessionRepository sessionRepository;
 
     @Test
     void completeVerification_should_return_valid_registration_response_when_new_user_provide_valid_otp() throws Exception {
@@ -101,6 +101,34 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
         // Additional Assertions
         // Note: Cannot assert specific challenge is saved because it's generated internally
         assertUserIsCreatedAndDisabled();
+    }
+
+    @Test
+    void completeVerification_should_save_session_when_new_user_provide_valid_otp() throws Exception {
+        // Arrange
+        var hashedOtp = hasher.hashSecurely(DEFAULT_OTP);
+        var otp = Otp.createNew(DEFAULT_EMAIL, hashedOtp, clock, otpProperties.ttl());
+        otpRepository.save(otp);
+
+        var challenge = createFixedChallenge();
+        Mockito.when(challengeGeneratorMock.generate()).thenReturn(challenge);
+
+        var completeVerificationRequest = new CompleteVerificationRequest(DEFAULT_EMAIL, DEFAULT_OTP);
+
+        // Act
+        var mvcResult = mockMvc.perform(post(VERIFICATION_COMPLETE_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(completeVerificationRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Extract sessionId from response
+        var responseContent = mvcResult.getResponse().getContentAsString();
+        var jsonResponse = objectMapper.readTree(responseContent);
+        var sessionId = UUID.fromString(jsonResponse.get("sessionId").asText());
+
+        // Assert
+        assertSessionIsSaved(sessionId, challenge);
     }
 
     private void assertUserIsCreatedAndDisabled() {
@@ -136,8 +164,37 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
                 .andExpect(jsonPath("$.loginOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.challenge())));
 
         // Additional Assertions
-        // Note: Cannot assert specific challenge is saved because it's generated internally
         assertUserIsCreatedAndEnabled();
+    }
+
+    @Test
+    void completeVerification_should_save_session_when_existing_user_provide_valid_otp() throws Exception {
+        // Arrange
+        var hashedOtp = hasher.hashSecurely(DEFAULT_OTP);
+        var otp = Otp.createNew(DEFAULT_EMAIL, hashedOtp, clock, otpProperties.ttl());
+        otpRepository.save(otp);
+
+        createAndActivateUser();
+
+        var challenge = createFixedChallenge();
+        Mockito.when(challengeGeneratorMock.generate()).thenReturn(challenge);
+
+        var completeVerificationRequest = new CompleteVerificationRequest(DEFAULT_EMAIL, DEFAULT_OTP);
+
+        // Act
+        var mvcResult = mockMvc.perform(post(VERIFICATION_COMPLETE_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(completeVerificationRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Extract sessionId from response
+        var responseContent = mvcResult.getResponse().getContentAsString();
+        var jsonResponse = objectMapper.readTree(responseContent);
+        var sessionId = UUID.fromString(jsonResponse.get("sessionId").asText());
+
+        // Assert
+        assertSessionIsSaved(sessionId, challenge);
     }
 
     private void createAndActivateUser() {
@@ -187,15 +244,14 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
         return new Challenge(challengeValue, CHALLENGE_TTL, FIXED_CLOCK);
     }
 
-    private void assertSessionIsSaved(Session expectedSession) {
-        var loadedSessionOptional = challengeRepository.load(expectedSession.sessionId());
+    private void assertSessionIsSaved(UUID expectedSessionId, Challenge challenge) {
+        var loadedSessionOptional = sessionRepository.load(expectedSessionId);
 
         assertThat(loadedSessionOptional)
                 .isPresent()
-                .hasValueSatisfying(loadedChallenge -> {
-                    assertThat(loadedChallenge.challenge()).isEqualTo(expectedSession.challenge());
-                    assertThat(loadedChallenge.sessionId()).isEqualTo(expectedSession.sessionId());
-                    assertThat(loadedChallenge.challenge().expirationTime()).isEqualTo(Instant.now(FIXED_CLOCK).plus(CHALLENGE_TTL));
+                .hasValueSatisfying(loadedSession -> {
+                    assertThat(loadedSession.challenge()).isEqualTo(challenge);
+                    assertThat(loadedSession.challenge().expirationTime()).isEqualTo(Instant.now(FIXED_CLOCK).plus(CHALLENGE_TTL));
                 });
     }
 }
