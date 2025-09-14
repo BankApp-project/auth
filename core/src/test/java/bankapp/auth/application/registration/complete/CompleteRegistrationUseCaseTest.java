@@ -5,6 +5,7 @@ import bankapp.auth.application.shared.exception.CredentialAlreadyExistsExceptio
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
@@ -27,11 +28,14 @@ class CompleteRegistrationUseCaseTest {
 
     private final static long DEFAULT_TTL = 90L;
     private final static UUID DEFAULT_SESSION_ID = UUID.randomUUID();
-    private final static Session DEFAULT_SESSION = new Session(
-            DEFAULT_SESSION_ID,
+    private final static Challenge DEFAULT_CHALLENGE = new Challenge(
             new byte[]{111},
             Duration.ofSeconds(DEFAULT_TTL),
-            Clock.systemUTC(),
+            Clock.systemUTC()
+    );
+    private final static Session DEFAULT_SESSION = new Session(
+            DEFAULT_SESSION_ID,
+            DEFAULT_CHALLENGE,
             UUID.randomUUID()
     );
     private Passkey stubRegistrationData;

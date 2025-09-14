@@ -30,7 +30,7 @@ class PasskeyRequestOptionsAssembler {
     private final Clock clock;
 
     public PublicKeyCredentialRequestOptions assemble(@Nullable List<Passkey> userCredentials, Session session) {
-        long timeoutMillis = getTimeoutMillis(session.expirationTime());
+        long timeoutMillis = getTimeoutMillis(session.challenge().expirationTime());
 
         return new PublicKeyCredentialRequestOptions(
                 session.challenge().challenge(),

@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.challenge.service;
 
-import bankapp.auth.application.shared.port.out.dto.Session;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.infrastructure.driven.challenge.config.ChallengeProperties;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.time.Clock;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -19,22 +18,15 @@ public class SecureRandomChallengeGenerator implements ChallengeGenerationPort {
     private final Clock clock;
 
     @Override
-    public Session generate(UUID userId) {
-        var sessionId = getSessionId();
+    public Challenge generate() {
 
         byte[] value = getRandomChallengeValue();
 
-        return new Session(
-                sessionId,
+        return new Challenge(
                 value,
                 properties.ttl(),
-                clock,
-                userId
+                clock
         );
-    }
-
-    private UUID getSessionId() {
-        return UUID.randomUUID();
     }
 
     private byte[] getRandomChallengeValue() {

@@ -1,6 +1,7 @@
 package bankapp.auth.application.verification.complete;
 
 import bankapp.auth.application.shared.UseCase;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
@@ -54,21 +55,32 @@ public class CompleteVerificationUseCase {
 
         User user = findOrCreateUser(command.key());
 
-        var challenge = generateAndSaveChallenge(user.getId());
+        var challenge = generateChallenge();
+        var session = prepareSession(challenge, user.getId());
+        challengeRepository.save(session);
 
-        return prepareResponse(user, challenge);
+        return prepareResponse(user, session);
+    }
+
+    private Challenge generateChallenge() {
+        return challengeGenerator.generate();
+    }
+
+    private Session prepareSession(Challenge challenge, UUID userId) {
+//        var sessionId = sessionIdGenerator.generate();
+        var sessionId = UUID.randomUUID();
+
+
+        return new Session(
+                sessionId,
+                challenge,
+                userId
+        );
     }
 
     private void verifyAndConsumeOtp(EmailAddress key, String value) {
         otpService.verifyAndConsumeOtp(key,value);
     }
-
-    private Session generateAndSaveChallenge(UUID userId) {
-        var challenge = challengeGenerator.generate(userId);
-        challengeRepository.save(challenge);
-        return challenge;
-    }
-
 
     private User findOrCreateUser(EmailAddress email) {
         var userOptional = userRepository.findByEmail(email);

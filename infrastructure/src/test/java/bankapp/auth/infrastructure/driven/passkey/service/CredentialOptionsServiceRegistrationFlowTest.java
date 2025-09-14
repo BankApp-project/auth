@@ -1,6 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.enums.AuthMode;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.User;
@@ -29,9 +30,7 @@ class CredentialOptionsServiceRegistrationFlowTest {
     public static final User TEST_USER = User.createNew(DEFAULT_EMAIL);
     private static final Session DEFAULT_SESSION = new Session(
             UUID.randomUUID(),
-            new byte[]{123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123},
-            DEFAULT_TIMEOUT,
-            DEFAULT_CLOCK,
+            new Challenge(new byte[]{123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123}, DEFAULT_TIMEOUT, DEFAULT_CLOCK),
             TEST_USER.getId()
     );
 

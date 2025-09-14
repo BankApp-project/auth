@@ -29,7 +29,8 @@ class PasskeyCreationOptionsAssembler {
     private final Clock clock;
 
     public PublicKeyCredentialCreationOptions assemble(User user, Session session) {
-        long timeoutMillis = getTimeoutMillis(session.expirationTime());
+        long timeoutMillis = getTimeoutMillis(session.challenge().expirationTime());
+
         String userDisplayName = user.getEmail().getValue();
         byte[] userHandle = getUserHandle(user.getId());
 

@@ -1,6 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.enums.AuthMode;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
@@ -47,9 +48,10 @@ public class CredentialOptionsServiceLoginFlowTest {
     ));
     private static final Session DEFAULT_SESSION = new Session(
             UUID.randomUUID(),
-            ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
-            DEFAULT_TIMEOUT,
-            DEFAULT_CLOCK,
+            new Challenge(
+                    ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
+                    DEFAULT_TIMEOUT,
+                    DEFAULT_CLOCK),
             DEFAULT_USER.getId()
     );
 

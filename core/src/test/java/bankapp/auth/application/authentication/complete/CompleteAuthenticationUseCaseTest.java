@@ -3,6 +3,7 @@ package bankapp.auth.application.authentication.complete;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,11 +35,10 @@ public class CompleteAuthenticationUseCaseTest {
     private final String authenticationResponseJSON = "blob";
 
     private final static byte[] DEFAULT_RAW_CHALLENGE = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
+    private final static Challenge DEFAULT_CHALLENGE = new Challenge(DEFAULT_RAW_CHALLENGE, DEFAULT_EXPIRATION_TIME);
     private final static Session TEST_SESSION = new Session(
             DEFAULT_SESSION_ID,
-            DEFAULT_RAW_CHALLENGE,
-            Duration.ofSeconds(DEFAULT_TTL),
-            DEFAULT_CLOCK,
+            DEFAULT_CHALLENGE,
             DEFAULT_USER_ID
     );
 

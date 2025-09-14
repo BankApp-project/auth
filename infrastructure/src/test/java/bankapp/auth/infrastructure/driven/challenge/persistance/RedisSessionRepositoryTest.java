@@ -1,5 +1,6 @@
 package bankapp.auth.infrastructure.driven.challenge.persistance;
 
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.infrastructure.utils.WithRedisContainer;
 import org.junit.jupiter.api.Assertions;
@@ -43,15 +44,15 @@ class RedisSessionRepositoryTest implements WithRedisContainer {
     @Test
     void shouldSaveChallengeAndSetTtl() {
         // given
-        var challenge = new Session(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
-        var key = "challenge:" + challenge.sessionId();
+        var session = new Session(UUID.randomUUID(), new Challenge("challenge".getBytes(), TTL, FIXED_CLOCK), UUID.randomUUID());
+        var key = "session:" + session.sessionId();
 
         // when
-        redisChallengeRepository.save(challenge);
+        redisChallengeRepository.save(session);
 
         // then
         var savedChallenge = redisTemplate.opsForValue().get(key);
-        assertThat(savedChallenge).isEqualTo(challenge);
+        assertThat(savedChallenge).isEqualTo(session);
 
         var ttl = redisTemplate.getExpire(key);
         assertEquals(TTL.getSeconds(), ttl);
@@ -60,24 +61,24 @@ class RedisSessionRepositoryTest implements WithRedisContainer {
     @Test
     void shouldLoadChallenge() {
         // given
-        var challenge = new Session(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
-        var key = "challenge:" + challenge.sessionId();
-        redisTemplate.opsForValue().set(key, challenge);
+        var session = new Session(UUID.randomUUID(), new Challenge("session".getBytes(), TTL, FIXED_CLOCK), UUID.randomUUID());
+        var key = "session:" + session.sessionId();
+        redisTemplate.opsForValue().set(key, session);
 
         // when
-        var result = redisChallengeRepository.load(challenge.sessionId());
+        var result = redisChallengeRepository.load(session.sessionId());
 
         // then
-        assertThat(result).isPresent().contains(challenge);
+        assertThat(result).isPresent().contains(session);
     }
 
     @Test
     void shouldDeleteChallenge() {
         // given
-        var challenge = new Session(UUID.randomUUID(), "challenge".getBytes(), TTL, FIXED_CLOCK, UUID.randomUUID());
-        var sessionId = challenge.sessionId();
-        var key = "challenge:" + sessionId;
-        redisTemplate.opsForValue().set(key, challenge);
+        var session = new Session(UUID.randomUUID(), new Challenge("session".getBytes(), TTL, FIXED_CLOCK), UUID.randomUUID());
+        var sessionId = session.sessionId();
+        var key = "session:" + sessionId;
+        redisTemplate.opsForValue().set(key, session);
 
         // when
         redisChallengeRepository.delete(sessionId);

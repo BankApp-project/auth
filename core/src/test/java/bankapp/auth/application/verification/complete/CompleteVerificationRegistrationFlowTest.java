@@ -1,6 +1,6 @@
 package bankapp.auth.application.verification.complete;
 
-import bankapp.auth.application.shared.port.out.dto.Session;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
@@ -8,22 +8,18 @@ import bankapp.auth.application.verification.complete.port.out.dto.RegistrationR
 import bankapp.auth.domain.model.User;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 public class CompleteVerificationRegistrationFlowTest extends CompleteVerificationBaseTest {
 
-    Session session = new Session(
-            UUID.randomUUID(),
+    Challenge challenge = new Challenge(
             new byte[]{123},
             challengeTtl,
-            DEFAULT_CLOCK,
-            UUID.randomUUID()
+            DEFAULT_CLOCK
     );
 
     @Test
@@ -70,7 +66,7 @@ public class CompleteVerificationRegistrationFlowTest extends CompleteVerificati
         // Given
         var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
         var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
-        when(mockChallengeGenerator.generate(any(UUID.class))).thenReturn(session);
+        when(mockChallengeGenerator.generate()).thenReturn(challenge);
 
         var useCase = new CompleteVerificationUseCase(
                 challengeRepository, passkeyRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator,
@@ -80,6 +76,6 @@ public class CompleteVerificationRegistrationFlowTest extends CompleteVerificati
         useCase.handle(defaultCommand);
 
         // Then
-        verify(mockCredentialOptionsService).getPasskeyCreationOptions(any(User.class), eq(session));
+        verify(mockCredentialOptionsService).getPasskeyCreationOptions(any(User.class), argThat(s -> s.challenge().equals(challenge)));
     }
 }

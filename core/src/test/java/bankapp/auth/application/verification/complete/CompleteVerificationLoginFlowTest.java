@@ -1,6 +1,6 @@
 package bankapp.auth.application.verification.complete;
 
-import bankapp.auth.application.shared.port.out.dto.Session;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseTest {
@@ -71,15 +70,13 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
         var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
 
-        var challenge = new Session(
-                UUID.randomUUID(),
+        var challenge = new Challenge(
                 new byte[]{123},
                 challengeTtl,
-                DEFAULT_CLOCK,
-                defaultUser.getId()
+                DEFAULT_CLOCK
         );
 
-        when(mockChallengeGenerator.generate(defaultUser.getId())).thenReturn(challenge);
+        when(mockChallengeGenerator.generate()).thenReturn(challenge);
 
         var useCase = new CompleteVerificationUseCase(
                 challengeRepository, passkeyRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator,
@@ -89,7 +86,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         useCase.handle(defaultCommand);
 
         // Then
-        verify(mockCredentialOptionsService).getPasskeyRequestOptions(any(), eq(challenge));
+        verify(mockCredentialOptionsService).getPasskeyRequestOptions(any(), argThat(s -> s.challenge().equals(challenge)));
     }
 
     private List<Passkey> getPasskeys() {

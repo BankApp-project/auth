@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.challenge.service;
 
-import bankapp.auth.application.shared.port.out.dto.Session;
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.infrastructure.driven.challenge.config.ChallengeProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,45 +31,36 @@ class SecureRandomChallengeGeneratorTest {
     @Test
     void generate_should_return_challenge() {
 
-        var res = secureRandomChallengeGenerator.generate(UUID.randomUUID());
+        var res = secureRandomChallengeGenerator.generate();
 
         assertNotNull(res);
-        assertInstanceOf(Session.class, res);
+        assertInstanceOf(Challenge.class, res);
     }
 
     @Test
     void generate_should_return_challenge_with_not_null_values() {
 
-        var res = secureRandomChallengeGenerator.generate(UUID.randomUUID());
+        var res = secureRandomChallengeGenerator.generate();
 
         assertThat(res)
                 .hasNoNullFieldsOrProperties();
     }
 
     @Test
-    void generate_should_return_challenge_with_unique_sessionId() {
-
-        var res = secureRandomChallengeGenerator.generate(UUID.randomUUID());
-        var res2 = secureRandomChallengeGenerator.generate(UUID.randomUUID());
-
-        assertNotEquals(res.sessionId(), res2.sessionId());
-    }
-
-    @Test
     void generate_should_return_challenge_with_unique_value() {
 
-        var res = secureRandomChallengeGenerator.generate(UUID.randomUUID());
-        var res2 = secureRandomChallengeGenerator.generate(UUID.randomUUID());
+        var res = secureRandomChallengeGenerator.generate();
+        var res2 = secureRandomChallengeGenerator.generate();
 
-        assertFalse(Arrays.equals(res.challenge().challenge(), res2.challenge().challenge()));
+        assertFalse(Arrays.equals(res.challenge(), res2.challenge()));
     }
 
     @Test
     void generate_should_return_challenge_with_32byte_long_value() {
 
-        var res = secureRandomChallengeGenerator.generate(UUID.randomUUID());
+        var res = secureRandomChallengeGenerator.generate();
 
-        assertThat(res.challenge().challenge()).hasSizeGreaterThanOrEqualTo(32);
+        assertThat(res.challenge()).hasSizeGreaterThanOrEqualTo(32);
     }
 
     @Test
@@ -78,7 +68,7 @@ class SecureRandomChallengeGeneratorTest {
 
         secureRandomChallengeGenerator = new SecureRandomChallengeGenerator(properties,new SecureRandom(), FIXED_CLOCK);
 
-        var res = secureRandomChallengeGenerator.generate(UUID.randomUUID());
+        var res = secureRandomChallengeGenerator.generate();
 
         var resultExpirationTime = res.expirationTime();
         var expectedExpTime = Instant.now(FIXED_CLOCK).plus(properties.ttl());

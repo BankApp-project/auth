@@ -1,6 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 
+import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
@@ -98,6 +99,6 @@ class WebAuthnAuthenticationVerificationTest {
         var challengeVal = new byte[32];
         new SecureRandom().nextBytes(challengeVal);
 
-        return new Session(sessionId, challengeVal, TTL, FIXED_CLOCK, UUID.randomUUID());
+        return new Session(sessionId, new Challenge(challengeVal, TTL, FIXED_CLOCK), UUID.randomUUID());
     }
 }

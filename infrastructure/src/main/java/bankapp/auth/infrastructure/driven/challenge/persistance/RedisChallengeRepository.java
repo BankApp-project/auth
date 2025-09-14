@@ -16,7 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RedisChallengeRepository implements ChallengeRepository {
 
-    private static final String KEY_PREFIX = "challenge:";
+    private static final String KEY_PREFIX = "session:";
 
     private final RedisTemplate<String, Session> redisTemplate;
     private final Clock clock;
@@ -24,7 +24,7 @@ public class RedisChallengeRepository implements ChallengeRepository {
     @Override
     public void save(Session session) {
         var key = KEY_PREFIX + session.sessionId().toString();
-        var timeout = Duration.between(Instant.now(clock), session.expirationTime());
+        var timeout = Duration.between(Instant.now(clock), session.challenge().expirationTime());
         redisTemplate.opsForValue().set(key, session, timeout);
     }
 
