@@ -92,3 +92,23 @@ Key technologies and patterns include:
 -   **Type-Safe Configuration**: Uses `@ConfigurationProperties` to bind settings from `application.yaml` to immutable Java records, ensuring configuration is robust and easy to manage.
  
 For a comprehensive technical breakdown of specific features, design decisions, and class responsibilities, please refer to our **[Implementation Details Wiki Page](https://github.com/BankApp-project/auth/wiki/Implementation-Details)**.
+
+## Troubleshooting
+
+### Login Issues for Registered Users
+
+**Problem**: Users may experience UX difficulties when attempting to log in after registration.
+
+**Solution**: If login issues occur, implement credential-based authentication by:
+
+1. **Add `allowCredentials` list** to `PublicKeyCredentialRequestOptions` containing the user's registered credentials
+2. **Update `Session` object** in `CompleteVerificationUseCase` to include the user's credential data
+3. **Modify `InitiateAuthenticationUseCase`** to:
+    - Fetch user data and their associated credential list
+    - Pass this information to the `Session` object
+
+**Implementation Notes**:
+
+- The `Session` DTO already contains a `credentialId` field of type `List<UUID>` to support this functionality
+- This approach ensures WebAuthn ceremonies can reference specific user credentials, improving authentication
+  reliability

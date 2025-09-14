@@ -3,20 +3,32 @@ package bankapp.auth.application.shared.port.out.dto;
 import bankapp.auth.domain.model.annotations.Nullable;
 
 import java.time.Clock;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public record Session(
-        UUID sessionId,          // The key for the cache
-        Challenge challenge,     // The challenge with expiration time
-        Optional<UUID> userId    // ID of the related user
+        UUID sessionId,                 // The key for the cache
+        Challenge challenge,            // The challenge with expiration time
+        Optional<UUID> userId,          // ID of the related user
+        Optional<List<UUID>> credentialId     // ID of the related credential record
 ) {
+
+    public Session(UUID sessionId, Challenge challenge, @Nullable UUID userId, @Nullable List<UUID> credentialId) {
+        this(
+                sessionId,
+                challenge,
+                Optional.ofNullable(userId),
+                Optional.ofNullable(credentialId)
+        );
+    }
 
     public Session(UUID sessionId, Challenge challenge, @Nullable UUID userId) {
         this(
                 sessionId,
                 challenge,
-                Optional.ofNullable(userId)
+                Optional.ofNullable(userId),
+                Optional.empty()
         );
     }
 
@@ -24,6 +36,7 @@ public record Session(
         this(
                 sessionId,
                 challenge,
+                Optional.empty(),
                 Optional.empty()
         );
     }
