@@ -6,6 +6,7 @@ import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
+import bankapp.auth.application.verification.complete.port.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
@@ -30,6 +31,7 @@ public class CompleteVerificationUseCase {
 
     private final CredentialOptionsPort credentialOptionsPort;
     private final ChallengeGenerationPort challengeGenerator;
+    private final SessionIdGenerationPort sessionIdGenerator;
 
     public CompleteVerificationUseCase(
             @NotNull ChallengeRepository challengeRepository,
@@ -37,7 +39,8 @@ public class CompleteVerificationUseCase {
             @NotNull UserRepository userRepository,
             @NotNull CredentialOptionsPort credentialOptionsPort,
             @NotNull ChallengeGenerationPort challengeGenerator,
-            @NotNull OtpService otpService
+            @NotNull OtpService otpService,
+            SessionIdGenerationPort sessionIdGenerator
     ) {
         this.challengeRepository = challengeRepository;
         this.passkeyRepository = passkeyRepository;
@@ -45,6 +48,7 @@ public class CompleteVerificationUseCase {
         this.credentialOptionsPort = credentialOptionsPort;
         this.challengeGenerator = challengeGenerator;
         this.otpService = otpService;
+        this.sessionIdGenerator = sessionIdGenerator;
     }
 
     //TODO THINK ABOUT DIVIDING IT TO VERIFICATION_COMPLETE AND REGISTRATION_INITIATE / AUTHENTICATION_INITIATE
@@ -67,9 +71,7 @@ public class CompleteVerificationUseCase {
     }
 
     private Session prepareSession(Challenge challenge, UUID userId) {
-//        var sessionId = sessionIdGenerator.generate();
-        var sessionId = UUID.randomUUID();
-
+        var sessionId = sessionIdGenerator.generate();
 
         return new Session(
                 sessionId,

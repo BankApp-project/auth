@@ -29,6 +29,7 @@ This use case relies on a set of interfaces (Ports) and repositories to interact
     *   `CredentialOptionsPort`: To generate passkey creation or request options.
     *   `ChallengeGenerationPort`: For creating secure challenges.
     *   `HashingPort`: To securely verify the OTP.
+    * `SessionIdGenerationPort`: For generating unique session identifiers.
 *   **Repositories**:
     *   `OtpRepository`: Manages the storage and retrieval of OTPs.
     *   `ChallengeRepository`: Manages authentication challenge data.

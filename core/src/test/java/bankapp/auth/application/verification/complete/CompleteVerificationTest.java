@@ -35,7 +35,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        var useCase = new CompleteVerificationUseCase(challengeRepository, passkeyRepository, userRepositoryMock, credentialOptionsPort, challengeGenerator, otpService);
+        var useCase = new CompleteVerificationUseCase(challengeRepository, passkeyRepository, userRepositoryMock, credentialOptionsPort, challengeGenerator, otpService, sessionIdGenerator);
 
         // When
         useCase.handle(defaultCommand);
@@ -73,7 +73,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
         // Given
         var useCase = new CompleteVerificationUseCase(
                 challengeRepository, passkeyRepository, userRepository, credentialOptionsPort, challengeGenerator,
-                otpService);
+                otpService, sessionIdGenerator);
         // When
         var res = useCase.handle(defaultCommand);
 

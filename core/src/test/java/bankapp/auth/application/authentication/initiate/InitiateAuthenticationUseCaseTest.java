@@ -2,6 +2,7 @@ package bankapp.auth.application.authentication.initiate;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
+import bankapp.auth.application.verification.complete.port.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.Clock;
 import java.time.Duration;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -39,14 +41,18 @@ public class InitiateAuthenticationUseCaseTest {
     @Mock
     CredentialOptionsPort credentialOptionsService;
 
+    @Mock
+    SessionIdGenerationPort sessionIdGenerator;
+
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
 
 
         when(challengeGenerator.generate()).thenReturn(DEFAULT_CHALLENGE);
+        when(sessionIdGenerator.generate()).thenReturn(UUID.randomUUID());
 
-        useCase = new InitiateAuthenticationUseCase(challengeGenerator, challengeRepository, credentialOptionsService);
+        useCase = new InitiateAuthenticationUseCase(challengeGenerator, challengeRepository, credentialOptionsService, sessionIdGenerator);
     }
 
     @Test
@@ -77,5 +83,12 @@ public class InitiateAuthenticationUseCaseTest {
         var res = useCase.handle();
 
         assertNotNull(res.sessionId());
+    }
+
+    @Test
+    void should_generate_sessionId() {
+        useCase.handle();
+
+        verify(sessionIdGenerator).generate();
     }
 }

@@ -70,7 +70,7 @@ public class CompleteVerificationRegistrationFlowTest extends CompleteVerificati
 
         var useCase = new CompleteVerificationUseCase(
                 challengeRepository, passkeyRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator,
-                otpService);
+                otpService, sessionIdGenerator);
 
         // When
         useCase.handle(defaultCommand);

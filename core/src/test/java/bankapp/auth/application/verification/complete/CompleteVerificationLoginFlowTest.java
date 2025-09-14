@@ -55,7 +55,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
 
         var useCase = new CompleteVerificationUseCase(
                 challengeRepository, mockCredentialRepository, userRepository, mockCredentialOptionsService, challengeGenerator,
-                otpService);
+                otpService, sessionIdGenerator);
 
         // When
         useCase.handle(defaultCommand);
@@ -80,7 +80,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
 
         var useCase = new CompleteVerificationUseCase(
                 challengeRepository, passkeyRepository, userRepository, mockCredentialOptionsService, mockChallengeGenerator,
-                otpService);
+                otpService, sessionIdGenerator);
 
         // When
         useCase.handle(defaultCommand);

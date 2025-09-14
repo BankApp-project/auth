@@ -19,5 +19,6 @@ This use case relies on a set of interfaces (Ports) and repositories to perform 
 *   **Ports**:
     *   `ChallengeGenerationPort`: For creating secure, random challenges.
     *   `CredentialOptionsPort`: To generate the FIDO2/WebAuthn-compliant passkey request options.
+    * `SessionIdGenerationPort`: For generating unique session identifiers.
 *   **Repositories**:
     *   `ChallengeRepository`: Manages the storage and retrieval of authentication challenges.

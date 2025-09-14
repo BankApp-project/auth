@@ -88,7 +88,8 @@ Key technologies and patterns include:
 -   **Domain vs. Persistence Models**: A strict separation is maintained between pure domain models (e.g., `Passkey`) and their corresponding JPA persistence entities (e.g., `JpaPasskey`). This is enforced via dedicated `Mapper` classes, ensuring the business logic remains entirely independent of the database schema.
 -   **Spring Boot 3 & Virtual Threads**: The application is configured to use virtual threads (`spring.threads.virtual.enabled: true`) for improved scalability and throughput under high I/O loads.
 -   **PostgreSQL with Spring Data JPA**: Used as the primary relational data store for persistent entities like users and passkey credentials.
--   **Redis for State Management**: Used for high-performance, temporary storage of data like authentication `Challenges`, leveraging its native TTL (Time-To-Live) feature for automatic expiration.
+- **Redis for State Management**: Used for high-performance, temporary storage of data like authentication `Sessions`,
+  leveraging its native TTL (Time-To-Live) feature for automatic expiration.
 -   **Type-Safe Configuration**: Uses `@ConfigurationProperties` to bind settings from `application.yaml` to immutable Java records, ensuring configuration is robust and easy to manage.
  
 For a comprehensive technical breakdown of specific features, design decisions, and class responsibilities, please refer to our **[Implementation Details Wiki Page](https://github.com/BankApp-project/auth/wiki/Implementation-Details)**.

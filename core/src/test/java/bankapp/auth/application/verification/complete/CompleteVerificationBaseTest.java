@@ -1,14 +1,14 @@
 package bankapp.auth.application.verification.complete;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
-import bankapp.auth.application.shared.port.out.LoggerPort;
 import bankapp.auth.application.shared.port.out.persistance.ChallengeRepository;
-import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubChallengeRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubHasher;
 import bankapp.auth.application.shared.port.out.stubs.StubOtpRepository;
+import bankapp.auth.application.verification.complete.port.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
@@ -50,7 +50,7 @@ public abstract class CompleteVerificationBaseTest {
     protected PasskeyRepository passkeyRepository;
     protected ChallengeGenerationPort challengeGenerator;
     protected ChallengeRepository challengeRepository;
-    protected LoggerPort log;
+    protected SessionIdGenerationPort sessionIdGenerator;
 
     // --- SHARED TEST DATA ---
     protected String hashedOtpValue;
@@ -67,8 +67,9 @@ public abstract class CompleteVerificationBaseTest {
         passkeyRepository = mock(PasskeyRepository.class);
         challengeGenerator = new StubChallengeGenerator(DEFAULT_TTL_IN_SECONDS, DEFAULT_CLOCK);
         challengeRepository = new StubChallengeRepository();
-        log = mock(LoggerPort.class);
         otpService = mock(OtpService.class);
+        sessionIdGenerator = mock(SessionIdGenerationPort.class);
+
 
         // Create and save a valid OTP
         hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);
@@ -79,6 +80,6 @@ public abstract class CompleteVerificationBaseTest {
         defaultCommand = new CompleteVerificationCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
         defaultUseCase = new CompleteVerificationUseCase(
                 challengeRepository, passkeyRepository, userRepository, credentialOptionsPort, challengeGenerator,
-                otpService);
+                otpService, sessionIdGenerator);
     }
 }
