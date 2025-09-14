@@ -3,34 +3,28 @@ package bankapp.auth.infrastructure.driven.passkey.service;
 import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.domain.model.Passkey;
-import bankapp.auth.infrastructure.driven.passkey.config.PasskeyConfiguration;
 import com.webauthn4j.WebAuthnManager;
-import com.webauthn4j.credential.CredentialRecord;
 import com.webauthn4j.data.AuthenticationParameters;
+import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.RegistrationParameters;
-import com.webauthn4j.data.client.challenge.DefaultChallenge;
-import com.webauthn4j.server.ServerProperty;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class WebAuthnVerificationService implements WebAuthnVerificationPort {
 
     private final WebAuthnManager webAuthnManager = WebAuthnManager.createNonStrictWebAuthnManager();
-    private final PasskeyConfiguration passkeyConfig;
+    private final AuthenticationParametersProvider authenticationParametersProvider;
+    private final RegistrationParametersProvider registrationParametersProvider;
     private final RegistrationDataMapper registrationDataMapper;
-    private final PasskeyToCredentialRecordMapper passkeyToCredentialRecordMapper;
 
     @Override
     public Passkey confirmRegistrationChallenge(String registrationResponseJSON, Challenge challengeData) {
         try {
             var registrationParameters = getRegistrationParameters(challengeData);
 
-            var registrationData = webAuthnManager.verifyRegistrationResponseJSON(registrationResponseJSON, registrationParameters);
+            var registrationData = getRegistrationData(registrationResponseJSON, registrationParameters);
 
             return registrationDataMapper.toDomainEntity(registrationData, challengeData.userId());
         } catch (RuntimeException e) {
@@ -39,44 +33,27 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
     }
 
     private RegistrationParameters getRegistrationParameters(Challenge challengeData) {
-        var serverProperty = getServerProperty(challengeData);
-
-        return getRegistrationParameters(serverProperty);
+        return registrationParametersProvider.getRegistrationParameters(challengeData);
     }
 
-    private ServerProperty getServerProperty(Challenge challengeData) {
-        var challenge = new DefaultChallenge(challengeData.value());
-        return new ServerProperty(passkeyConfig.origin(), passkeyConfig.rpId(), challenge);
-    }
-
-    private RegistrationParameters getRegistrationParameters(ServerProperty serverProperty) {
-        return new RegistrationParameters(serverProperty,
-                PublicKeyCredentialParametersProvider.getInfraPubKeyCredParams(),
-                passkeyConfig.userVerificationRequired(),
-                passkeyConfig.userPresenceRequired());
+    private RegistrationData getRegistrationData(String registrationResponseJSON, RegistrationParameters registrationParameters) {
+        return webAuthnManager.verifyRegistrationResponseJSON(registrationResponseJSON, registrationParameters);
     }
 
 
     @Override
     public Passkey confirmAuthenticationChallenge(String authenticationResponseJSON, Challenge challengeData, Passkey passkey) {
 
-        var authParams = new AuthenticationParameters(
-                getServerProperty(challengeData),
-                getCredentialRecord(passkey),
-                getAllowedCredentials(),
-                passkeyConfig.userVerificationRequired(),
-                passkeyConfig.userPresenceRequired());
+        var authParams = getAuthenticationParameters(challengeData, passkey);
 
         webAuthnManager.verifyAuthenticationResponseJSON(authenticationResponseJSON, authParams);
         passkey.signCountIncrement();
         return passkey;
     }
 
-    private @Nullable List<byte[]> getAllowedCredentials() {
-        throw new UnsupportedOperationException(); //not implemented yet!
+    private AuthenticationParameters getAuthenticationParameters(Challenge challengeData, Passkey passkey) {
+        return authenticationParametersProvider.getAuthenticationParameters(challengeData, passkey);
     }
 
-    private CredentialRecord getCredentialRecord(Passkey source) {
-        return passkeyToCredentialRecordMapper.from(source);
-    }
+
 }
