@@ -36,18 +36,18 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
         }
     }
 
-    private UUID getUserId(Session sessionData) {
-        return sessionData.userId().orElseThrow(
-                () -> new RegistrationConfirmAttemptException("User ID is missing in session data")
-        );
-    }
-
     private RegistrationParameters getRegistrationParameters(Session sessionData) {
         return registrationParametersProvider.getRegistrationParameters(sessionData);
     }
 
     private RegistrationData getRegistrationData(String registrationResponseJSON, RegistrationParameters registrationParameters) {
         return webAuthnManager.verifyRegistrationResponseJSON(registrationResponseJSON, registrationParameters);
+    }
+
+    private UUID getUserId(Session sessionData) {
+        return sessionData.userId().orElseThrow(
+                () -> new RegistrationConfirmAttemptException("User ID is missing in session data")
+        );
     }
 
 
