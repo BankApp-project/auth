@@ -81,7 +81,7 @@ class CompleteRegistrationUseCaseTest {
         );
 
 
-        when(webAuthnVerificationPort.confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), any())).thenReturn(stubRegistrationData);
+        when(webAuthnVerificationPort.handleRegistrationConfirmation(eq(command.RegistrationResponseJSON()), any())).thenReturn(stubRegistrationData);
         when(userRepository.findById(any())).thenReturn(Optional.of(testUser));
     }
 
@@ -100,7 +100,7 @@ class CompleteRegistrationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnVerificationPort).confirmRegistrationChallenge(eq(command.RegistrationResponseJSON()), eq(DEFAULT_SESSION));
+        verify(webAuthnVerificationPort).handleRegistrationConfirmation(eq(command.RegistrationResponseJSON()), eq(DEFAULT_SESSION));
     }
 
     @Test
@@ -116,7 +116,7 @@ class CompleteRegistrationUseCaseTest {
     void should_throw_CompleteRegistrationException_when_challenge_verification_fails() {
         // Given
         String exceptionMsg = "Session verification failed";
-        when(webAuthnVerificationPort.confirmRegistrationChallenge(any(), any())).thenThrow(new RuntimeException(exceptionMsg));
+        when(webAuthnVerificationPort.handleRegistrationConfirmation(any(), any())).thenThrow(new RuntimeException(exceptionMsg));
         // When
         // Then
         var exceptionThrowed = assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));
@@ -141,7 +141,7 @@ class CompleteRegistrationUseCaseTest {
     @Test
     void should_not_delete_challenge_when_user_fails_to_register_new_credential() {
         // Given
-        when(webAuthnVerificationPort.confirmRegistrationChallenge(any(), any())).thenThrow(new RuntimeException("Verification failed"));
+        when(webAuthnVerificationPort.handleRegistrationConfirmation(any(), any())).thenThrow(new RuntimeException("Verification failed"));
 
         // When & Then
         assertThrows(CompleteRegistrationException.class, () -> useCase.handle(command));

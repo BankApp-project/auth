@@ -48,7 +48,7 @@ public class CompleteAuthenticationUseCase {
 
             var credentialRecord = credentialRecordOpt.orElseThrow();
 
-            return webAuthnVerificationPort.confirmAuthenticationChallenge(command.AuthenticationResponseJSON(), session, credentialRecord);
+            return webAuthnVerificationPort.handleAuthenticationConfirmation(command.AuthenticationResponseJSON(), session, credentialRecord);
         } catch (RuntimeException e) {
             throw new CompleteAuthenticationException("Failed to confirm authentication challenge: " + e.getMessage(), e);
         }

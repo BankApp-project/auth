@@ -62,7 +62,7 @@ public class CompleteAuthenticationUseCaseTest {
         passkey = getCredentialRecord();
         credentialId = passkey.getId();
         when(passkeyRepository.load(credentialId)).thenReturn(Optional.of(passkey));
-        when(webAuthnVerificationPort.confirmAuthenticationChallenge(
+        when(webAuthnVerificationPort.handleAuthenticationConfirmation(
                 authenticationResponseJSON,
                 TEST_SESSION,
                 passkey
@@ -110,7 +110,7 @@ public class CompleteAuthenticationUseCaseTest {
         useCase.handle(command);
 
         // Then
-        verify(webAuthnVerificationPort).confirmAuthenticationChallenge(eq(command.AuthenticationResponseJSON()), eq(TEST_SESSION), any());
+        verify(webAuthnVerificationPort).handleAuthenticationConfirmation(eq(command.AuthenticationResponseJSON()), eq(TEST_SESSION), any());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class CompleteAuthenticationUseCaseTest {
     void should_throw_CompleteAuthenticationException_when_challenge_verification_fails() {
         // Given
         String exceptionMsg = "Session verification failed";
-        when(webAuthnVerificationPort.confirmAuthenticationChallenge(any(), any(), any())).thenThrow(new RuntimeException(exceptionMsg));
+        when(webAuthnVerificationPort.handleAuthenticationConfirmation(any(), any(), any())).thenThrow(new RuntimeException(exceptionMsg));
         // When
         // Then
         var exceptionThrowed = assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));
@@ -147,7 +147,7 @@ public class CompleteAuthenticationUseCaseTest {
     void should_save_updated_credentialRecord() {
         // When
         var updatedCredential = passkey.signCountIncrement();
-        when(webAuthnVerificationPort.confirmAuthenticationChallenge(eq(authenticationResponseJSON), any(), eq(passkey)))
+        when(webAuthnVerificationPort.handleAuthenticationConfirmation(eq(authenticationResponseJSON), any(), eq(passkey)))
                 .thenReturn(updatedCredential);
         useCase.handle(command);
         // Then
@@ -168,7 +168,7 @@ public class CompleteAuthenticationUseCaseTest {
     @Test
     void should_not_delete_challenge_when_user_fails_to_register_new_credential() {
         // Given
-        when(webAuthnVerificationPort.confirmAuthenticationChallenge(any(), any(), any())).thenThrow(new RuntimeException("Verification failed"));
+        when(webAuthnVerificationPort.handleAuthenticationConfirmation(any(), any(), any())).thenThrow(new RuntimeException("Verification failed"));
 
         // When & Then
         assertThrows(CompleteAuthenticationException.class, () -> useCase.handle(command));

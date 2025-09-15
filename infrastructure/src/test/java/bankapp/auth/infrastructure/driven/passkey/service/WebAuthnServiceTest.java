@@ -49,7 +49,7 @@ class WebAuthnServiceTest {
 
         // 2. ACT
         // Call the service method under test
-        var passkeyRegistrationData = webAuthnService.confirmRegistrationChallenge(registrationResponseJSON, session);
+        var passkeyRegistrationData = webAuthnService.handleRegistrationConfirmation(registrationResponseJSON, session);
 
 
         // 3. ASSERT
@@ -88,7 +88,7 @@ class WebAuthnServiceTest {
 
         var invalidResponse = "xoxoxo";
 
-        assertThrows(RegistrationConfirmAttemptException.class, () -> webAuthnService.confirmRegistrationChallenge(invalidResponse, challenge));
+        assertThrows(RegistrationConfirmAttemptException.class, () -> webAuthnService.handleRegistrationConfirmation(invalidResponse, challenge));
     }
 
     @Test
@@ -97,7 +97,7 @@ class WebAuthnServiceTest {
         var challenge = session.challenge();
         var registrationResponseJSON = WebAuthnTestHelper.generateValidRegistrationResponseJSON(challenge.challenge());
 
-        var res = webAuthnService.confirmRegistrationChallenge(registrationResponseJSON, session);
+        var res = webAuthnService.handleRegistrationConfirmation(registrationResponseJSON, session);
 
         assertNotNull(res);
         assertThat(res).usingRecursiveAssertion().hasNoNullFields().ignoringFields("transports", "extensions");

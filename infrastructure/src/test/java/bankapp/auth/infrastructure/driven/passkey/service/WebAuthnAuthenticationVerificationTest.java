@@ -51,7 +51,7 @@ class WebAuthnAuthenticationVerificationTest {
 
         // Act & Assert
         assertThrows(DataConversionException.class,
-                () -> webAuthnService.confirmAuthenticationChallenge(invalidResponse, session, passkeyInfo.passkey()));
+                () -> webAuthnService.handleAuthenticationConfirmation(invalidResponse, session, passkeyInfo.passkey()));
     }
 
     @Test
@@ -70,7 +70,7 @@ class WebAuthnAuthenticationVerificationTest {
 
         // Act & Assert: Verification should fail because the signature doesn't match the stored public key.
         assertThrows(BadSignatureException.class,
-                () -> webAuthnService.confirmAuthenticationChallenge(authenticationResponseJSON, session, passkeyInfo.passkey()));
+                () -> webAuthnService.handleAuthenticationConfirmation(authenticationResponseJSON, session, passkeyInfo.passkey()));
     }
 
     @Test
@@ -85,7 +85,7 @@ class WebAuthnAuthenticationVerificationTest {
         );
 
         assertThrows(MaliciousCounterException.class,
-                () -> webAuthnService.confirmAuthenticationChallenge(authenticationResponseJSON, session, passkeyInfo.passkey()));
+                () -> webAuthnService.handleAuthenticationConfirmation(authenticationResponseJSON, session, passkeyInfo.passkey()));
     }
 
     @Test
@@ -101,7 +101,7 @@ class WebAuthnAuthenticationVerificationTest {
 
         // Act
         var signCount = passkeyInfo.passkey().getSignCount();
-        var updatedPasskey = webAuthnService.confirmAuthenticationChallenge(authenticationResponseJSON, session, passkeyInfo.passkey());
+        var updatedPasskey = webAuthnService.handleAuthenticationConfirmation(authenticationResponseJSON, session, passkeyInfo.passkey());
 
         // Assert
         assertNotNull(updatedPasskey);

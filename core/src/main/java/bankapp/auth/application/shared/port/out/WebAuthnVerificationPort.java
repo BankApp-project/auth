@@ -6,11 +6,11 @@ import bankapp.auth.domain.model.Passkey;
 
 public interface WebAuthnVerificationPort {
 
-    Passkey confirmRegistrationChallenge(String registrationResponseJSON, Session sessionData);
+    Passkey handleRegistrationConfirmation(String registrationResponseJSON, Session sessionData);
 
     /**
      *
      * @return updated `Passkey` with `signCount`++
      */
-    Passkey confirmAuthenticationChallenge(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException;
+    Passkey handleAuthenticationConfirmation(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException;
 }

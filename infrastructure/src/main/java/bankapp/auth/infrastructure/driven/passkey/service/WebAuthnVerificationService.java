@@ -27,7 +27,7 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
     private final RegistrationDataMapper registrationDataMapper;
 
     @Override
-    public Passkey confirmRegistrationChallenge(String registrationResponseJSON, Session sessionData) {
+    public Passkey handleRegistrationConfirmation(String registrationResponseJSON, Session sessionData) {
         try {
             var registrationParameters = getRegistrationParameters(sessionData);
 
@@ -58,7 +58,7 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
     }
 
     @Override
-    public Passkey confirmAuthenticationChallenge(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException {
+    public Passkey handleAuthenticationConfirmation(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException {
         try {
 
             var authParams = getAuthenticationParameters(sessionData, passkey);
