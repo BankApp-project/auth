@@ -1,5 +1,6 @@
 package bankapp.auth.infrastructure.utils;
 
+import bankapp.auth.application.shared.service.ByteArrayUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
@@ -192,7 +193,7 @@ public class WebAuthnTestHelper {
      * @return A JSON string representing the full response from the client.
      * @throws Exception if any cryptographic or serialization error occurs.
      */
-    public static String generateValidAuthenticationResponseJSON(byte[] challenge, String rpId, byte[] credentialId, KeyPair keyPair) throws Exception {
+    public static String generateValidAuthenticationResponseJSON(byte[] challenge, String rpId, byte[] credentialId, KeyPair keyPair, long counter) throws Exception {
         // --- 1. Define Constants ---
         String origin = "https://bankapp.online";
 
@@ -209,7 +210,8 @@ public class WebAuthnTestHelper {
         // --- 3. Construct Authenticator Data (authData) ---
         byte[] rpIdHash = MessageDigest.getInstance("SHA-256").digest(rpId.getBytes());
         byte flags = 0b00000101; // UP and UV flags set
-        byte[] signCount = {0, 0, 0, 1};
+
+        byte[] signCount = ByteArrayUtil.intToBytes((int) counter);
 
         ByteArrayOutputStream authDataStream = new ByteArrayOutputStream();
         authDataStream.write(rpIdHash);
