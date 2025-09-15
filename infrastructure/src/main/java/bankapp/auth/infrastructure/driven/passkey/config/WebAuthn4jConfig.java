@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.crosscutting.config;
+package bankapp.auth.infrastructure.driven.passkey.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
