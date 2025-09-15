@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service.credential.options;
+package bankapp.auth.infrastructure.driven.passkey.service.options;
 
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
