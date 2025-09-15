@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.passkey.persistance.converters;
 
-import bankapp.auth.application.shared.enums.AuthenticatorTransport;
+import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 import org.junit.Test;
 
 import java.util.Arrays;

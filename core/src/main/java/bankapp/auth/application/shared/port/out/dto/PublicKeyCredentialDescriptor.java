@@ -1,7 +1,7 @@
 package bankapp.auth.application.shared.port.out.dto;
 
 
-import bankapp.auth.application.shared.enums.AuthenticatorTransport;
+import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 
 import java.util.List;
 

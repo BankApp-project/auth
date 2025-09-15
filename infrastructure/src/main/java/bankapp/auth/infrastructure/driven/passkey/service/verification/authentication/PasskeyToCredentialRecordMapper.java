@@ -38,7 +38,7 @@ public class PasskeyToCredentialRecordMapper {
         return webAuthnMapper.mapToClientExtensions(extensions);
     }
 
-    private Set<AuthenticatorTransport> parseTransports(List<bankapp.auth.application.shared.enums.AuthenticatorTransport> transports) {
+    private Set<AuthenticatorTransport> parseTransports(List<bankapp.auth.domain.model.enums.AuthenticatorTransport> transports) {
         return webAuthnMapper.mapToWebAuthnTransports(transports);
     }
 }

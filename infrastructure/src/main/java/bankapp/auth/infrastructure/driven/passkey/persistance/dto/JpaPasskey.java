@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.passkey.persistance.dto;
 
-import bankapp.auth.application.shared.enums.AuthenticatorTransport;
+import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 import bankapp.auth.infrastructure.driven.passkey.persistance.converters.AuthenticatorTransportConverter;
 import jakarta.persistence.*;
 import lombok.Getter;

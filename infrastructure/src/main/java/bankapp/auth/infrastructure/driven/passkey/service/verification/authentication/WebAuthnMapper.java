@@ -37,7 +37,7 @@ public class WebAuthnMapper {
                 });
     }
 
-    public Set<AuthenticatorTransport> mapToWebAuthnTransports(List<bankapp.auth.application.shared.enums.AuthenticatorTransport> transports) {
+    public Set<AuthenticatorTransport> mapToWebAuthnTransports(List<bankapp.auth.domain.model.enums.AuthenticatorTransport> transports) {
 
         if (transports == null) {
             return new HashSet<>();

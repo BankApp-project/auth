@@ -1,6 +1,6 @@
 package bankapp.auth.domain.model;
 
-import bankapp.auth.application.shared.enums.AuthenticatorTransport;
+import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

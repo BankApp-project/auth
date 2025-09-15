@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.utils;
 
-import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.domain.model.Passkey;
+import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 import com.webauthn4j.converter.AttestationObjectConverter;
 import com.webauthn4j.converter.AuthenticatorDataConverter;
 import com.webauthn4j.converter.CollectedClientDataConverter;

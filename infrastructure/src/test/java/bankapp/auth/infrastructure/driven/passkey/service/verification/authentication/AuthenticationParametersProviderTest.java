@@ -126,7 +126,7 @@ class AuthenticationParametersProviderTest {
 
     private List<String> getNormalisedTransports(Passkey passkey) {
         return passkey.getTransports().stream()
-                .map(bankapp.auth.application.shared.enums.AuthenticatorTransport::getValue)
+                .map(bankapp.auth.domain.model.enums.AuthenticatorTransport::getValue)
                 .toList();
     }
 

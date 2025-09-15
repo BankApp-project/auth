@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service.verification.registration;
 
-import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.domain.model.Passkey;
+import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
 import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;

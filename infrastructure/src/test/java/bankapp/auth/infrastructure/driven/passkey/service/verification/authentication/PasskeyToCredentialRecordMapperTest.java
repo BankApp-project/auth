@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.passkey.service.verification.authentication;
 
-import bankapp.auth.application.shared.enums.AuthenticatorTransport;
+import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import com.webauthn4j.converter.util.ObjectConverter;
 import com.webauthn4j.util.UUIDUtil;
