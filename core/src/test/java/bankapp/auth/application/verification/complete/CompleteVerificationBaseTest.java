@@ -22,8 +22,10 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.time.Clock;
 import java.time.Duration;
+import java.util.UUID;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * An abstract base class for tests related to the CompleteVerificationUseCase.
@@ -70,6 +72,7 @@ public abstract class CompleteVerificationBaseTest {
         otpService = mock(OtpService.class);
         sessionIdGenerator = mock(SessionIdGenerationPort.class);
 
+        when(sessionIdGenerator.generate()).thenReturn(UUID.randomUUID());
 
         // Create and save a valid OTP
         hashedOtpValue = hasher.hashSecurely(DEFAULT_OTP_VALUE);

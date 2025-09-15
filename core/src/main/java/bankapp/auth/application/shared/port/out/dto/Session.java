@@ -1,18 +1,27 @@
 package bankapp.auth.application.shared.port.out.dto;
 
+import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.annotations.Nullable;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 public record Session(
-        UUID sessionId,                     // The key for the cache
-        Challenge challenge,                // The challenge with expiration time
-        Optional<UUID> userId,              // ID of the related user
-        Optional<List<UUID>> credentialId   // ID of the related credential record
+        @NotNull UUID sessionId,                     // The key for the cache
+        @NotNull Challenge challenge,                // The challenge with expiration time
+        @NotNull Optional<UUID> userId,              // ID of the related user
+        @NotNull Optional<List<UUID>> credentialId   // ID of the related credential record
 ) {
+
+    public Session {
+        Objects.requireNonNull(sessionId, "Session ID cannot be null");
+        Objects.requireNonNull(challenge, "Challenge cannot be null");
+        Objects.requireNonNull(userId, "User ID cannot be null");
+        Objects.requireNonNull(credentialId, "Credential ID cannot be null");
+    }
 
     public Session(UUID sessionId, Challenge challenge, @Nullable UUID userId, @Nullable List<UUID> credentialId) {
         this(
@@ -43,20 +52,5 @@ public record Session(
 
     public boolean isValid(Clock clock) {
         return challenge.isValid(clock);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Session session)) return false;
-
-        return java.util.Objects.equals(userId, session.userId) && sessionId.equals(session.sessionId) && challenge.equals(session.challenge);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = sessionId.hashCode();
-        result = 31 * result + challenge.hashCode();
-        result = 31 * result + java.util.Objects.hashCode(userId);
-        return result;
     }
 }
