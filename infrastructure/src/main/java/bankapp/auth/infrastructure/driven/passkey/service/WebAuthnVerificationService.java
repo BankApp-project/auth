@@ -56,9 +56,9 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
 
         var authParams = getAuthenticationParameters(sessionData, passkey);
 
-        var res = webAuthnManager.verifyAuthenticationResponseJSON(authenticationResponseJSON, authParams);
+        var authenticationData = webAuthnManager.verifyAuthenticationResponseJSON(authenticationResponseJSON, authParams);
 
-        setSignCount(passkey, res);
+        setSignCount(passkey, authenticationData);
 
         return passkey;
     }
