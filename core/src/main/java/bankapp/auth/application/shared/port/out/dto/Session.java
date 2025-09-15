@@ -13,14 +13,14 @@ public record Session(
         @NotNull UUID sessionId,                     // The key for the cache
         @NotNull Challenge challenge,                // The challenge with expiration time
         @NotNull Optional<UUID> userId,              // ID of the related user
-        @NotNull Optional<List<UUID>> credentialId   // ID of the related credential record
+        @NotNull Optional<List<UUID>> credentialsIds   // ID of the related credential record
 ) {
 
     public Session {
         Objects.requireNonNull(sessionId, "Session ID cannot be null");
         Objects.requireNonNull(challenge, "Challenge cannot be null");
         Objects.requireNonNull(userId, "User ID cannot be null");
-        Objects.requireNonNull(credentialId, "Credential ID cannot be null");
+        Objects.requireNonNull(credentialsIds, "Credential ID cannot be null");
     }
 
     public Session(UUID sessionId, Challenge challenge, @Nullable UUID userId, @Nullable List<UUID> credentialId) {
