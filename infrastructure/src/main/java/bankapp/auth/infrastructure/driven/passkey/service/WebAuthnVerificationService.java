@@ -9,6 +9,7 @@ import com.webauthn4j.data.AuthenticationData;
 import com.webauthn4j.data.AuthenticationParameters;
 import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.RegistrationParameters;
+import com.webauthn4j.util.exception.WebAuthnException;
 import com.webauthn4j.verifier.exception.MaliciousCounterValueException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
             var registrationData = verifyRegistrationResponse(registrationResponseJSON, registrationParameters);
 
             return mapToPasskey(sessionData, registrationData);
-        } catch (RuntimeException e) {
+        } catch (WebAuthnException e) {
             throw new RegistrationConfirmAttemptException("Confirmation of registration attempt failed.");
         }
     }
@@ -69,6 +70,8 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
             return passkey;
         } catch (MaliciousCounterValueException e) {
             throw new MaliciousCounterException("Malicious counter value detected in authentication response.");
+        } catch (WebAuthnException e) {
+            throw new AuthenticationConfirmAttemptException("Authentication attempt failed", e);
         }
     }
 
