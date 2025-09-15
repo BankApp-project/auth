@@ -6,10 +6,10 @@ import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
-import bankapp.auth.application.verification.complete.port.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.dto.LoginResponse;
 import bankapp.auth.application.verification.complete.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.OtpService;
@@ -40,7 +40,7 @@ public class CompleteVerificationUseCase {
             @NotNull PasskeyOptionsPort passkeyOptionsPort,
             @NotNull ChallengeGenerationPort challengeGenerator,
             @NotNull OtpService otpService,
-            SessionIdGenerationPort sessionIdGenerator
+            @NotNull SessionIdGenerationPort sessionIdGenerator
     ) {
         this.sessionRepository = sessionRepository;
         this.passkeyRepository = passkeyRepository;
@@ -51,7 +51,6 @@ public class CompleteVerificationUseCase {
         this.sessionIdGenerator = sessionIdGenerator;
     }
 
-    //TODO THINK ABOUT DIVIDING IT TO VERIFICATION_COMPLETE AND REGISTRATION_INITIATE / AUTHENTICATION_INITIATE
     @TransactionalUseCase
     public CompleteVerificationResponse handle(CompleteVerificationCommand command) {
 
@@ -61,7 +60,7 @@ public class CompleteVerificationUseCase {
 
         var challenge = generateChallenge();
         var session = prepareSession(challenge, user.getId());
-        sessionRepository.save(session);
+        saveSession(session);
 
         return prepareResponse(user, session);
     }
@@ -93,6 +92,10 @@ public class CompleteVerificationUseCase {
         User user = User.createNew(email);
         userRepository.save(user);
         return user;
+    }
+
+    private void saveSession(Session session) {
+        sessionRepository.save(session);
     }
 
     private CompleteVerificationResponse prepareResponse(User user, Session session) {

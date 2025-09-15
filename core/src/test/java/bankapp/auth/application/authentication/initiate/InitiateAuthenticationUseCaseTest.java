@@ -2,9 +2,9 @@ package bankapp.auth.application.authentication.initiate;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
-import bankapp.auth.application.verification.complete.port.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.SessionIdGenerationPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
