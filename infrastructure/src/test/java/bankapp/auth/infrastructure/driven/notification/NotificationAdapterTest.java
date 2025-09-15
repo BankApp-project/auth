@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driving.notification;
+package bankapp.auth.infrastructure.driven.notification;
 
 import bankapp.auth.application.shared.port.out.NotificationPort;
 import bankapp.auth.domain.model.vo.EmailAddress;

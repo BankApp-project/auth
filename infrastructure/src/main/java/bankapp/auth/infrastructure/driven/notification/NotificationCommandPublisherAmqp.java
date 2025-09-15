@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driving.notification;
+package bankapp.auth.infrastructure.driven.notification;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

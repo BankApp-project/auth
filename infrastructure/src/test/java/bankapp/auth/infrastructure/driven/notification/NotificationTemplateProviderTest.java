@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driving.notification;
+package bankapp.auth.infrastructure.driven.notification;
 
 import org.junit.jupiter.api.Test;
 
