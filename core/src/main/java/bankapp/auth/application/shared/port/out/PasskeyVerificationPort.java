@@ -4,13 +4,13 @@ import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.domain.model.Passkey;
 
-public interface WebAuthnVerificationPort {
+public interface PasskeyVerificationPort {
 
-    Passkey handleRegistrationConfirmation(String registrationResponseJSON, Session sessionData);
+    Passkey handleRegistration(String registrationResponseJSON, Session sessionData);
 
     /**
      *
      * @return updated `Passkey` with `signCount`++
      */
-    Passkey handleAuthenticationConfirmation(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException;
+    Passkey handleAuthentication(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException;
 }

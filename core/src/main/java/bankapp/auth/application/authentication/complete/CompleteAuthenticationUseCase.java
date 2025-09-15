@@ -1,7 +1,7 @@
 package bankapp.auth.application.authentication.complete;
 
+import bankapp.auth.application.shared.port.out.PasskeyVerificationPort;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
-import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.shared.port.out.dto.Session;
@@ -16,12 +16,12 @@ public class CompleteAuthenticationUseCase {
 
     private final SessionRepository sessionRepository;
     private final PasskeyRepository passkeyRepository;
-    private final WebAuthnVerificationPort webAuthnVerificationPort;
+    private final PasskeyVerificationPort passkeyVerificationPort;
     private final TokenIssuingPort tokenIssuingPort;
 
-    public CompleteAuthenticationUseCase(SessionRepository sessionRepo, WebAuthnVerificationPort webAuthnVerificationPort, PasskeyRepository passkeyRepository, TokenIssuingPort tokenIssuingPort) {
+    public CompleteAuthenticationUseCase(SessionRepository sessionRepo, PasskeyVerificationPort passkeyVerificationPort, PasskeyRepository passkeyRepository, TokenIssuingPort tokenIssuingPort) {
         this.sessionRepository = sessionRepo;
-        this.webAuthnVerificationPort = webAuthnVerificationPort;
+        this.passkeyVerificationPort = passkeyVerificationPort;
         this.passkeyRepository = passkeyRepository;
         this.tokenIssuingPort = tokenIssuingPort;
     }
@@ -48,7 +48,7 @@ public class CompleteAuthenticationUseCase {
 
             var credentialRecord = credentialRecordOpt.orElseThrow();
 
-            return webAuthnVerificationPort.handleAuthenticationConfirmation(command.AuthenticationResponseJSON(), session, credentialRecord);
+            return passkeyVerificationPort.handleAuthentication(command.AuthenticationResponseJSON(), session, credentialRecord);
         } catch (RuntimeException e) {
             throw new CompleteAuthenticationException("Failed to confirm authentication challenge: " + e.getMessage(), e);
         }

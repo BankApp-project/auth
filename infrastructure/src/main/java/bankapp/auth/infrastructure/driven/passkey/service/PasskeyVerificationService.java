@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.exception.MaliciousCounterException;
-import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
+import bankapp.auth.application.shared.port.out.PasskeyVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.domain.model.Passkey;
 import com.webauthn4j.util.exception.WebAuthnException;
@@ -11,24 +11,24 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class WebAuthnVerificationService implements WebAuthnVerificationPort {
+public class PasskeyVerificationService implements PasskeyVerificationPort {
 
-    private final RegistrationConfirmationHandler registrationConfirmationHandler;
-    private final AuthenticationConfirmationHandler authenticationConfirmationHandler;
+    private final PasskeyRegistrationHandler passkeyRegistrationHandler;
+    private final PasskeyAuthenticationHandler passkeyAuthenticationHandler;
 
     @Override
-    public Passkey handleRegistrationConfirmation(String registrationResponseJSON, Session sessionData) {
+    public Passkey handleRegistration(String registrationResponseJSON, Session sessionData) {
         try {
-            return registrationConfirmationHandler.handle(registrationResponseJSON, sessionData);
+            return passkeyRegistrationHandler.handle(registrationResponseJSON, sessionData);
         } catch (WebAuthnException e) {
             throw new RegistrationConfirmAttemptException("Confirmation of registration attempt failed.");
         }
     }
 
     @Override
-    public Passkey handleAuthenticationConfirmation(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException {
+    public Passkey handleAuthentication(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException {
         try {
-            return authenticationConfirmationHandler.handle(
+            return passkeyAuthenticationHandler.handle(
                     authenticationResponseJSON,
                     sessionData,
                     passkey

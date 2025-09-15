@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class AuthenticationConfirmationHandler {
+public class PasskeyAuthenticationHandler {
 
     private final WebAuthnAuthenticationManager webAuthnManager = new WebAuthnAuthenticationManager();
 

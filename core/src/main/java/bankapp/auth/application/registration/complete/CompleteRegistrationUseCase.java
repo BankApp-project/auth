@@ -2,8 +2,8 @@ package bankapp.auth.application.registration.complete;
 
 import bankapp.auth.application.registration.complete.port.in.CompleteRegistrationCommand;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
+import bankapp.auth.application.shared.port.out.PasskeyVerificationPort;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
-import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.shared.port.out.dto.Session;
@@ -20,20 +20,20 @@ import java.util.UUID;
 public class CompleteRegistrationUseCase {
 
     private final SessionRepository sessionRepository;
-    private final WebAuthnVerificationPort webAuthnVerificationPort;
+    private final PasskeyVerificationPort passkeyVerificationPort;
     private final PasskeyRepository passkeyRepository;
     private final UserRepository userRepository;
     private final TokenIssuingPort tokenIssuer;
 
     public CompleteRegistrationUseCase(
             SessionRepository sessionRepository,
-            WebAuthnVerificationPort webAuthnVerificationPort,
+            PasskeyVerificationPort passkeyVerificationPort,
             PasskeyRepository passkeyRepository,
             UserRepository userRepository,
             TokenIssuingPort tokenIssuingPort
     ) {
         this.sessionRepository = sessionRepository;
-        this.webAuthnVerificationPort = webAuthnVerificationPort;
+        this.passkeyVerificationPort = passkeyVerificationPort;
         this.passkeyRepository = passkeyRepository;
         this.userRepository = userRepository;
         this.tokenIssuer = tokenIssuingPort;
@@ -83,7 +83,7 @@ public class CompleteRegistrationUseCase {
     private Passkey verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Session session) {
         Passkey credential;
         try {
-            credential = webAuthnVerificationPort.handleRegistrationConfirmation(command.RegistrationResponseJSON(), session);
+            credential = passkeyVerificationPort.handleRegistration(command.RegistrationResponseJSON(), session);
         } catch (Exception e) {
             throw new CompleteRegistrationException("Failed to confirm new credential registration: " + e.getMessage(), e);
         }

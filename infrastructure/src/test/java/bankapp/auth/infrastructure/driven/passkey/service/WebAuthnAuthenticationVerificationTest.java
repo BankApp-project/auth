@@ -31,7 +31,7 @@ class WebAuthnAuthenticationVerificationTest {
 
     public static final String RP_ID = "bankapp.online";
     @Autowired
-    private WebAuthnVerificationService webAuthnService;
+    private PasskeyVerificationService webAuthnService;
 
     private Session session;
     private TestPasskeyProvider.PasskeyInfo passkeyInfo;
@@ -49,7 +49,7 @@ class WebAuthnAuthenticationVerificationTest {
 
         // Act & Assert
         assertThrows(AuthenticationConfirmAttemptException.class,
-                () -> webAuthnService.handleAuthenticationConfirmation(invalidResponse, session, passkeyInfo.passkey()));
+                () -> webAuthnService.handleAuthentication(invalidResponse, session, passkeyInfo.passkey()));
     }
 
     @Test
@@ -68,7 +68,7 @@ class WebAuthnAuthenticationVerificationTest {
 
         // Act & Assert: Verification should fail because the signature doesn't match the stored public key.
         assertThrows(AuthenticationConfirmAttemptException.class,
-                () -> webAuthnService.handleAuthenticationConfirmation(authenticationResponseJSON, session, passkeyInfo.passkey()));
+                () -> webAuthnService.handleAuthentication(authenticationResponseJSON, session, passkeyInfo.passkey()));
     }
 
     @Test
@@ -83,7 +83,7 @@ class WebAuthnAuthenticationVerificationTest {
         );
 
         assertThrows(MaliciousCounterException.class,
-                () -> webAuthnService.handleAuthenticationConfirmation(authenticationResponseJSON, session, passkeyInfo.passkey()));
+                () -> webAuthnService.handleAuthentication(authenticationResponseJSON, session, passkeyInfo.passkey()));
     }
 
     @Test
@@ -99,7 +99,7 @@ class WebAuthnAuthenticationVerificationTest {
 
         // Act
         var signCount = passkeyInfo.passkey().getSignCount();
-        var updatedPasskey = webAuthnService.handleAuthenticationConfirmation(authenticationResponseJSON, session, passkeyInfo.passkey());
+        var updatedPasskey = webAuthnService.handleAuthentication(authenticationResponseJSON, session, passkeyInfo.passkey());
 
         // Assert
         assertNotNull(updatedPasskey);
