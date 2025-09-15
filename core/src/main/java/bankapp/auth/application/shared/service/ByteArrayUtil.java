@@ -27,4 +27,10 @@ public class ByteArrayUtil {
         long leastSigBits = bb.getLong();
         return new UUID(mostSigBits, leastSigBits);
     }
+
+    public static byte[] intToBytes(int value) {
+        var buffer = ByteBuffer.allocate(Integer.BYTES);
+        buffer.putInt(value);
+        return buffer.array();
+    }
 }
