@@ -1,7 +1,6 @@
 package bankapp.auth.application.authentication.initiate;
 
 import bankapp.auth.application.shared.UseCase;
-import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
@@ -32,21 +31,21 @@ public class InitiateAuthenticationUseCase {
 
     @TransactionalUseCase
     public LoginResponse handle() {
-        var challenge = challengeGenerator.generate();
-        var session = generateSession(challenge);
-
-        sessionRepository.save(session);
+        var session = generateSessionWithChallenge();
 
         var passkeyRequestOptions = credentialOptionsService.getPasskeyRequestOptions(session);
+
         return new LoginResponse(passkeyRequestOptions, session.sessionId());
     }
 
-    private Session generateSession(Challenge challenge) {
+    private Session generateSessionWithChallenge() {
+        var challenge = challengeGenerator.generate();
         var sessionId = sessionIdGenerator.generate();
-
-        return new Session(
+        var session = new Session(
                 sessionId,
                 challenge
         );
+        sessionRepository.save(session);
+        return session;
     }
 }
