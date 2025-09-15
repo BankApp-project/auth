@@ -5,8 +5,11 @@ import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
+import com.webauthn4j.converter.exception.DataConversionException;
+import com.webauthn4j.verifier.exception.BadSignatureException;
+import com.webauthn4j.verifier.exception.MaliciousCounterValueException;
 import jakarta.validation.constraints.NotNull;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,58 +27,76 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Disabled
 @SpringBootTest
 @ActiveProfiles("test")
 class WebAuthnAuthenticationVerificationTest {
 
+    public static final String RP_ID = "bankapp.online";
     @Autowired
     private WebAuthnVerificationService webAuthnService;
+
+    private Session session;
+    private TestPasskeyProvider.PasskeyInfo passkeyInfo;
+
+    @BeforeEach
+    void setup() {
+        session = getSession();
+        passkeyInfo = TestPasskeyProvider.createSamplePasskeyInfo();
+    }
 
     @Test
     void confirmAuthenticationChallenge_should_throw_exception_when_invalid_response() {
         // Arrange
-        var session = getSession();
-        var registeredPasskey = TestPasskeyProvider.createSamplePasskeyInfo(); // A valid passkey is required
         var invalidResponse = "this is not valid json";
 
         // Act & Assert
-        assertThrows(AuthenticationConfirmAttemptException.class,
-                () -> webAuthnService.confirmAuthenticationChallenge(invalidResponse, session, registeredPasskey.passkey()));
+        assertThrows(DataConversionException.class,
+                () -> webAuthnService.confirmAuthenticationChallenge(invalidResponse, session, passkeyInfo.passkey()));
     }
 
     @Test
     void confirmAuthenticationChallenge_should_throw_exception_when_signature_is_invalid() throws Exception {
         // Arrange: Create a passkey with one keypair, but sign with a different one.
-        var session = getSession();
-        var passkeyInfo = TestPasskeyProvider.createSamplePasskeyInfo(); // This contains the valid passkey data (public key A)
         var maliciousKeyPair = WebAuthnTestHelper.generatePasskeyKeyPair(); // Generate a second, different keypair (keypair B)
 
         // Generate response using the wrong private key (private key B)
         var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
                 session.challenge().challenge(),
-                "bankapp.online", // rpId must match
+                RP_ID,
                 uuidToBytes(passkeyInfo.passkey().getId()),
-                maliciousKeyPair
+                maliciousKeyPair,
+                passkeyInfo.passkey().getSignCount()
         );
 
         // Act & Assert: Verification should fail because the signature doesn't match the stored public key.
-        assertThrows(AuthenticationConfirmAttemptException.class,
+        assertThrows(BadSignatureException.class,
+                () -> webAuthnService.confirmAuthenticationChallenge(authenticationResponseJSON, session, passkeyInfo.passkey()));
+    }
+
+    @Test
+    void confirmAuthenticationChallenge_should_throw_when_sign_count_lower_than_the_one_in_passkey() throws Exception {
+
+        var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
+                session.challenge().challenge(),
+                RP_ID,
+                passkeyInfo.credentialIdBytes(),
+                passkeyInfo.keyPair(),
+                passkeyInfo.passkey().getSignCount() - 1
+        );
+
+        assertThrows(MaliciousCounterValueException.class,
                 () -> webAuthnService.confirmAuthenticationChallenge(authenticationResponseJSON, session, passkeyInfo.passkey()));
     }
 
     @Test
     void confirmAuthenticationChallenge_should_return_updated_Passkey_when_provided_valid_parameters() throws Exception {
-        // Arrange
-        var session = getSession();
-        var passkeyInfo = TestPasskeyProvider.createSamplePasskeyInfo(); // Contains Passkey object, KeyPair, and credentialId bytes
-        var rpId = "bankapp.online";
 
         var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
                 session.challenge().challenge(),
-                rpId,
+                RP_ID,
                 passkeyInfo.credentialIdBytes(), // Use the byte[] version of the ID here
-                passkeyInfo.keyPair()
+                passkeyInfo.keyPair(),
+                passkeyInfo.passkey().getSignCount() + 1
         );
 
         // Act
