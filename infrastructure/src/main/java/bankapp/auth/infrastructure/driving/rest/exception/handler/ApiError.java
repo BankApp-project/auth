@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driving.rest.exception;
+package bankapp.auth.infrastructure.driving.rest.exception.handler;
 
 import org.springframework.http.HttpStatus;
 
