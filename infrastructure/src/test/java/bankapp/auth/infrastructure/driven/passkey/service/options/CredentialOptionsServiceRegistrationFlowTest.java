@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.options;
 
 import bankapp.auth.application.shared.enums.AuthMode;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
@@ -7,7 +7,6 @@ import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
-import bankapp.auth.infrastructure.driven.passkey.service.options.PasskeyOptionsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

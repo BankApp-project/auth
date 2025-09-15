@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.verification.authentication;
 
 import bankapp.auth.domain.model.Passkey;
 import com.webauthn4j.credential.CredentialRecord;

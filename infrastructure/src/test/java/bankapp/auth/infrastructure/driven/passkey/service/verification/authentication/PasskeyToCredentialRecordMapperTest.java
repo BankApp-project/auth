@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.verification.authentication;
 
 import bankapp.auth.application.shared.enums.AuthenticatorTransport;
 import bankapp.auth.infrastructure.utils.TestPasskeyProvider;

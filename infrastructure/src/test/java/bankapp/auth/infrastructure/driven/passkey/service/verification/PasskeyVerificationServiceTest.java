@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.verification;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
@@ -27,10 +27,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class WebAuthnServiceTest {
+class PasskeyVerificationServiceTest {
 
     @Autowired
-    private PasskeyVerificationService webAuthnService;
+    private PasskeyVerificationService passkeyVerificationService;
 
     private static final ObjectConverter objectConverter = new ObjectConverter();
     private static final AttestationObjectConverter attObjConv = new AttestationObjectConverter(objectConverter);
@@ -50,7 +50,7 @@ class WebAuthnServiceTest {
 
         // 2. ACT
         // Call the service method under test
-        var passkeyRegistrationData = webAuthnService.handleRegistration(registrationResponseJSON, session);
+        var passkeyRegistrationData = passkeyVerificationService.handleRegistration(registrationResponseJSON, session);
 
 
         // 3. ASSERT
@@ -89,7 +89,7 @@ class WebAuthnServiceTest {
 
         var invalidResponse = "xoxoxo";
 
-        assertThrows(RegistrationConfirmAttemptException.class, () -> webAuthnService.handleRegistration(invalidResponse, challenge));
+        assertThrows(RegistrationConfirmAttemptException.class, () -> passkeyVerificationService.handleRegistration(invalidResponse, challenge));
     }
 
     @Test
@@ -98,7 +98,7 @@ class WebAuthnServiceTest {
         var challenge = session.challenge();
         var registrationResponseJSON = WebAuthnTestHelper.generateValidRegistrationResponseJSON(challenge.challenge());
 
-        var res = webAuthnService.handleRegistration(registrationResponseJSON, session);
+        var res = passkeyVerificationService.handleRegistration(registrationResponseJSON, session);
 
         assertNotNull(res);
         assertThat(res).usingRecursiveAssertion().hasNoNullFields().ignoringFields("transports", "extensions");

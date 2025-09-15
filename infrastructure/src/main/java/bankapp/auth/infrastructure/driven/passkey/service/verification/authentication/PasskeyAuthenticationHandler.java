@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.verification.authentication;
 
 import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.dto.Session;

@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.verification.authentication;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.webauthn4j.converter.AttestationObjectConverter;

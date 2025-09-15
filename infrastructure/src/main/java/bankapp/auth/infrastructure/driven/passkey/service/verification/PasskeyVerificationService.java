@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.verification;
 
 import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.PasskeyVerificationPort;
@@ -6,6 +6,8 @@ import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.driven.passkey.exception.AuthenticationConfirmAttemptException;
 import bankapp.auth.infrastructure.driven.passkey.exception.RegistrationConfirmAttemptException;
+import bankapp.auth.infrastructure.driven.passkey.service.verification.authentication.PasskeyAuthenticationHandler;
+import bankapp.auth.infrastructure.driven.passkey.service.verification.registration.PasskeyRegistrationHandler;
 import com.webauthn4j.util.exception.WebAuthnException;
 import com.webauthn4j.verifier.exception.MaliciousCounterValueException;
 import lombok.RequiredArgsConstructor;

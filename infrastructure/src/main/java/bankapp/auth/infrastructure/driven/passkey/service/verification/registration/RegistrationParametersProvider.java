@@ -1,7 +1,8 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.verification.registration;
 
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyConfiguration;
+import bankapp.auth.infrastructure.driven.passkey.service.PublicKeyCredentialParametersProvider;
 import com.webauthn4j.data.RegistrationParameters;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
 import com.webauthn4j.server.ServerProperty;

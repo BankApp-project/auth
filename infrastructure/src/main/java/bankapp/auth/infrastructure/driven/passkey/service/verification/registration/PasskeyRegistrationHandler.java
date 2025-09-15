@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.verification.registration;
 
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.domain.model.Passkey;
