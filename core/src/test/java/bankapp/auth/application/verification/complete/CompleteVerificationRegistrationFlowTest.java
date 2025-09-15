@@ -3,7 +3,7 @@ package bankapp.auth.application.verification.complete;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
 import bankapp.auth.application.verification.complete.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.model.User;
 import org.junit.jupiter.api.Test;
@@ -64,7 +64,7 @@ public class CompleteVerificationRegistrationFlowTest extends CompleteVerificati
     @Test
     void should_pass_generated_challenge_to_CredentialOptionsService_for_new_user() {
         // Given
-        var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
+        var mockCredentialOptionsService = mock(PasskeyOptionsPort.class);
         var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
         when(mockChallengeGenerator.generate()).thenReturn(challenge);
 

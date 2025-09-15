@@ -4,7 +4,7 @@ import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.verification.complete.port.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -39,7 +39,7 @@ public class InitiateAuthenticationUseCaseTest {
     SessionRepository sessionRepository;
 
     @Mock
-    CredentialOptionsPort credentialOptionsService;
+    PasskeyOptionsPort credentialOptionsService;
 
     @Mock
     SessionIdGenerationPort sessionIdGenerator;

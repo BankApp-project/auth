@@ -4,13 +4,13 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationO
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
-import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 
 import java.util.List;
 
-public class StubCredentialOptionsService implements CredentialOptionsPort {
+public class StubPasskeyOptionsService implements PasskeyOptionsPort {
     @Override
     public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Session session) {
         return new PublicKeyCredentialCreationOptions(

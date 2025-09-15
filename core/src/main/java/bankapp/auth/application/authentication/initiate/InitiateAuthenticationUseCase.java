@@ -6,7 +6,7 @@ import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.verification.complete.port.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
 import bankapp.auth.application.verification.complete.port.out.dto.LoginResponse;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 
@@ -15,13 +15,13 @@ public class InitiateAuthenticationUseCase {
 
     private final ChallengeGenerationPort challengeGenerator;
     private final SessionRepository sessionRepository;
-    private final CredentialOptionsPort credentialOptionsService;
+    private final PasskeyOptionsPort credentialOptionsService;
     private final SessionIdGenerationPort sessionIdGenerator;
 
     public InitiateAuthenticationUseCase(
             ChallengeGenerationPort challengeGenerator,
             SessionRepository sessionRepository,
-            CredentialOptionsPort credentialOptionsService,
+            PasskeyOptionsPort credentialOptionsService,
             SessionIdGenerationPort sessionIdGenerator
     ) {
         this.challengeGenerator = challengeGenerator;

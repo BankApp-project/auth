@@ -35,7 +35,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
     void should_check_if_user_with_given_email_exists() {
         // Given
         UserRepository userRepositoryMock = mock(UserRepository.class);
-        var useCase = new CompleteVerificationUseCase(sessionRepository, passkeyRepository, userRepositoryMock, credentialOptionsPort, challengeGenerator, otpService, sessionIdGenerator);
+        var useCase = new CompleteVerificationUseCase(sessionRepository, passkeyRepository, userRepositoryMock, passkeyOptionsPort, challengeGenerator, otpService, sessionIdGenerator);
 
         // When
         useCase.handle(defaultCommand);
@@ -72,7 +72,7 @@ public class CompleteVerificationTest extends CompleteVerificationBaseTest {
     void should_make_session_valid_for_defaultTtl_value_in_seconds() {
         // Given
         var useCase = new CompleteVerificationUseCase(
-                sessionRepository, passkeyRepository, userRepository, credentialOptionsPort, challengeGenerator,
+                sessionRepository, passkeyRepository, userRepository, passkeyOptionsPort, challengeGenerator,
                 otpService, sessionIdGenerator);
         // When
         var res = useCase.handle(defaultCommand);

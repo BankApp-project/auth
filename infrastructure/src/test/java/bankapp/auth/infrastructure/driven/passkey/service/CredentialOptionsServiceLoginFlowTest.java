@@ -8,6 +8,7 @@ import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
+import bankapp.auth.infrastructure.driven.passkey.service.credential.options.PasskeyOptionsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +56,7 @@ public class CredentialOptionsServiceLoginFlowTest {
             DEFAULT_USER.getId()
     );
 
-    CredentialOptionsService passkeyOptionsService;
+    PasskeyOptionsService passkeyOptionsService;
 
     @BeforeEach
     void setup() {
@@ -64,7 +65,7 @@ public class CredentialOptionsServiceLoginFlowTest {
                 DEFAULT_AUTH_MODE
         );
 
-        passkeyOptionsService = new CredentialOptionsService(
+        passkeyOptionsService = new PasskeyOptionsService(
                 passkeyOptionsProperties,
                 DEFAULT_CLOCK
         );

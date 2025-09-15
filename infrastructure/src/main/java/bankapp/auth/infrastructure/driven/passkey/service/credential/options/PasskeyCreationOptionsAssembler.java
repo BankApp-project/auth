@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.credential.options;
 
 import bankapp.auth.application.shared.enums.AuthMode;
 import bankapp.auth.application.shared.enums.UserVerificationRequirement;
@@ -8,6 +8,7 @@ import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
+import bankapp.auth.infrastructure.driven.passkey.service.PublicKeyCredentialParametersProvider;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Clock;

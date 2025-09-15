@@ -3,7 +3,7 @@ package bankapp.auth.application.verification.complete;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
 import bankapp.auth.application.verification.complete.port.out.dto.LoginResponse;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
@@ -50,7 +50,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
         var credentials = getPasskeys();
 
         var mockCredentialRepository = mock(PasskeyRepository.class);
-        var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
+        var mockCredentialOptionsService = mock(PasskeyOptionsPort.class);
         when(mockCredentialRepository.loadForUserId(defaultUser.getId())).thenReturn(credentials);
 
         var useCase = new CompleteVerificationUseCase(
@@ -67,7 +67,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
     @Test
     void should_generate_and_pass_challenge_to_service_when_user_exists() {
         // Given
-        var mockCredentialOptionsService = mock(CredentialOptionsPort.class);
+        var mockCredentialOptionsService = mock(PasskeyOptionsPort.class);
         var mockChallengeGenerator = mock(ChallengeGenerationPort.class);
 
         var challenge = new Challenge(

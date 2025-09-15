@@ -1,9 +1,9 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.credential.options;
 
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.Nullable;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class CredentialOptionsService implements CredentialOptionsPort {
+public class PasskeyOptionsService implements PasskeyOptionsPort {
 
     private final PasskeyRpProperties properties;
     private final Clock clock;

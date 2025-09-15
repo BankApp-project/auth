@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.service;
+package bankapp.auth.infrastructure.driven.passkey.service.credential.options;
 
 import bankapp.auth.application.shared.enums.UserVerificationRequirement;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialDescriptor;

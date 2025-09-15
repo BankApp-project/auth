@@ -11,9 +11,9 @@ import bankapp.auth.application.shared.port.out.stubs.StubSessionRepository;
 import bankapp.auth.application.verification.complete.port.SessionIdGenerationPort;
 import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.CredentialOptionsPort;
+import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
 import bankapp.auth.application.verification.complete.port.out.stubs.StubChallengeGenerator;
-import bankapp.auth.application.verification.complete.port.out.stubs.StubCredentialOptionsService;
+import bankapp.auth.application.verification.complete.port.out.stubs.StubPasskeyOptionsService;
 import bankapp.auth.application.verification.complete.port.out.stubs.StubUserRepository;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.Otp;
@@ -48,7 +48,7 @@ public abstract class CompleteVerificationBaseTest {
     protected OtpRepository otpRepository;
     protected HashingPort hasher;
     protected UserRepository userRepository;
-    protected CredentialOptionsPort credentialOptionsPort;
+    protected PasskeyOptionsPort passkeyOptionsPort;
     protected PasskeyRepository passkeyRepository;
     protected ChallengeGenerationPort challengeGenerator;
     protected SessionRepository sessionRepository;
@@ -65,7 +65,7 @@ public abstract class CompleteVerificationBaseTest {
         otpRepository = new StubOtpRepository();
         hasher = new StubHasher();
         userRepository = new StubUserRepository();
-        credentialOptionsPort = new StubCredentialOptionsService();
+        passkeyOptionsPort = new StubPasskeyOptionsService();
         passkeyRepository = mock(PasskeyRepository.class);
         challengeGenerator = new StubChallengeGenerator(DEFAULT_TTL_IN_SECONDS, DEFAULT_CLOCK);
         sessionRepository = new StubSessionRepository();
@@ -82,7 +82,7 @@ public abstract class CompleteVerificationBaseTest {
         // Prepare the default command and use case instance
         defaultCommand = new CompleteVerificationCommand(DEFAULT_EMAIL, DEFAULT_OTP_VALUE);
         defaultUseCase = new CompleteVerificationUseCase(
-                sessionRepository, passkeyRepository, userRepository, credentialOptionsPort, challengeGenerator,
+                sessionRepository, passkeyRepository, userRepository, passkeyOptionsPort, challengeGenerator,
                 otpService, sessionIdGenerator);
     }
 }

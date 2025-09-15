@@ -9,7 +9,7 @@ import bankapp.auth.domain.model.annotations.Nullable;
 
 import java.util.List;
 
-public interface CredentialOptionsPort {
+public interface PasskeyOptionsPort {
     PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Session session);
 
     PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, Session session);
