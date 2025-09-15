@@ -26,7 +26,7 @@ public class AuthenticationParametersProvider {
     public AuthenticationParameters getAuthenticationParameters(@NotNull Session sessionData, @NotNull Passkey passkey) {
         return new AuthenticationParameters(
                 getServerProperty(sessionData),
-                getCredentialRecord(passkey),
+                mapToCredentialRecord(passkey),
                 getAllowedCredentials(sessionData.credentialsIds()),
                 passkeyConfig.userVerificationRequired(),
                 passkeyConfig.userPresenceRequired()
@@ -38,7 +38,7 @@ public class AuthenticationParametersProvider {
         return new ServerProperty(passkeyConfig.origin(), passkeyConfig.rpId(), challenge);
     }
 
-    private CredentialRecord getCredentialRecord(Passkey source) {
+    private CredentialRecord mapToCredentialRecord(Passkey source) {
         return passkeyToCredentialRecordMapper.from(source);
     }
 
