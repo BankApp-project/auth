@@ -47,29 +47,15 @@ public class CompleteRegistrationUseCase {
 
         saveCredentialRecord(credential);
 
-        sessionRepository.delete(command.sessionId());
+        deleteSession(command.sessionId());
 
         User user = fetchUser(credential.getUserHandle());
 
-        user.activate();
-
-        userRepository.save(user);
+        activateUser(user);
 
         var tokens = generateTokensForUser(user);
 
         return new AuthenticationGrant(tokens);
-    }
-
-    private AuthTokens generateTokensForUser(User activatedUser) {
-        return tokenIssuer.issueTokensForUser(activatedUser.getId());
-    }
-
-    private User fetchUser(UUID userId) {
-        var userOpt = userRepository.findById(userId);
-        if (userOpt.isEmpty()) {
-            throw new CompleteRegistrationException("User does not exists for userId: " + userId);
-        }
-        return userOpt.get();
     }
 
     private Session getChallenge(CompleteRegistrationCommand command) {
@@ -100,4 +86,27 @@ public class CompleteRegistrationUseCase {
             throw new CompleteRegistrationException("Failed to save credential: " + e.getMessage(), e);
         }
     }
+
+    private void deleteSession(UUID sessionId) {
+        sessionRepository.delete(sessionId);
+    }
+
+    private User fetchUser(UUID userId) {
+        var userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new CompleteRegistrationException("User does not exists for userId: " + userId);
+        }
+        return userOpt.get();
+    }
+
+    private void activateUser(User user) {
+        user.activate();
+
+        userRepository.save(user);
+    }
+
+    private AuthTokens generateTokensForUser(User activatedUser) {
+        return tokenIssuer.issueTokensForUser(activatedUser.getId());
+    }
+
 }
