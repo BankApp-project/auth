@@ -5,9 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A library-agnostic representation of a Credential Record, which is the data
@@ -118,19 +116,32 @@ public class Passkey {
             byte[] attestationObject,
             byte[] attestationClientDataJSON
     ) {
-        //todo validate passkey here.
-        this.id = id;
-        this.userHandle = userHandle;
-        this.type = type;
-        this.publicKey = publicKey;
+        this.id = Objects.requireNonNull(id);
+
+        this.userHandle = Objects.requireNonNull(userHandle, "User handle cannot be null");
+
+        this.type = Objects.requireNonNull(type, "Type cannot be null");
+
+        this.publicKey = Objects.requireNonNull(publicKey, "Public key cannot be null");
+
+        if (signCount < 0) {
+            throw new IllegalArgumentException("Sign count cannot be negative: " + signCount);
+        }
         this.signCount = signCount;
+
         this.uvInitialized = uvInitialized;
+
         this.backupEligible = backupEligible;
+
         this.backupState = backupState;
-        this.transports = transports;
-        this.extensions = extensions;
-        this.attestationObject = attestationObject;
-        this.attestationClientDataJSON = attestationClientDataJSON;
+
+        this.transports = Objects.requireNonNullElse(transports, new ArrayList<>());
+
+        this.extensions = Objects.requireNonNullElse(extensions, new HashMap<>());
+
+        this.attestationObject = Objects.requireNonNull(attestationObject, "Attestation object cannot be null");
+
+        this.attestationClientDataJSON = Objects.requireNonNull(attestationClientDataJSON, "Attestation client data JSON cannot be null");
     }
 
     public Passkey signCountIncrement() {
