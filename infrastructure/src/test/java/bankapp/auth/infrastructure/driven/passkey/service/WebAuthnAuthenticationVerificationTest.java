@@ -6,8 +6,6 @@ import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
-import com.webauthn4j.converter.exception.DataConversionException;
-import com.webauthn4j.verifier.exception.BadSignatureException;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +48,7 @@ class WebAuthnAuthenticationVerificationTest {
         var invalidResponse = "this is not valid json";
 
         // Act & Assert
-        assertThrows(DataConversionException.class,
+        assertThrows(AuthenticationConfirmAttemptException.class,
                 () -> webAuthnService.handleAuthenticationConfirmation(invalidResponse, session, passkeyInfo.passkey()));
     }
 
@@ -69,7 +67,7 @@ class WebAuthnAuthenticationVerificationTest {
         );
 
         // Act & Assert: Verification should fail because the signature doesn't match the stored public key.
-        assertThrows(BadSignatureException.class,
+        assertThrows(AuthenticationConfirmAttemptException.class,
                 () -> webAuthnService.handleAuthenticationConfirmation(authenticationResponseJSON, session, passkeyInfo.passkey()));
     }
 
