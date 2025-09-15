@@ -37,15 +37,18 @@ public class TestPasskeyProvider {
     private static final CollectedClientDataConverter clientDataConv = new CollectedClientDataConverter(objConv);
     private static final AuthenticatorDataConverter authenticatorDataConverter = new AuthenticatorDataConverter(objConv);
 
-    /**
-     * Creates a sample Passkey object populated with cryptographically valid and
-     * internally consistent data using the webauthn4j-test utility library.
-     * <p>
-     * This implementation uses the precise, recommended factory methods for each
-     * component, ensuring the test data is as realistic as possible.
-     *
-     * @return A Passkey instance with valid data.
-     */
+    /// Creates a sample Passkey object populated with cryptographically valid and
+    /// internally consistent data using the webauthn4j-test utility library.
+    ///
+    /// This implementation uses the precise, recommended factory methods for each
+    /// component, ensuring the test data is as realistic as possible.
+    ///
+    /// Known issue:
+    /// - This method will create 16 bytes long credentialId, but attestationObjectBytes will be 32 bytes long.
+    ///   Their values are same (0's), so it's important, to only validate
+    ///   first 16 bytes of credentialId from attestationObjectBytes in test suite
+    ///
+    /// @return A Passkey instance with valid data.
     public static Passkey createSamplePasskey() {
         // STEP 1: Create the CollectedClientData for a registration ceremony.
         // We must specify the type as `WEBAUTHN_CREATE`.
