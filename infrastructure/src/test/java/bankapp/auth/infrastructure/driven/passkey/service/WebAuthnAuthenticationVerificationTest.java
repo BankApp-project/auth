@@ -1,13 +1,13 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
 
+import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
 import com.webauthn4j.converter.exception.DataConversionException;
 import com.webauthn4j.verifier.exception.BadSignatureException;
-import com.webauthn4j.verifier.exception.MaliciousCounterValueException;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,7 +74,7 @@ class WebAuthnAuthenticationVerificationTest {
     }
 
     @Test
-    void confirmAuthenticationChallenge_should_throw_when_sign_count_lower_than_the_one_in_passkey() throws Exception {
+    void confirmAuthenticationChallenge_should_throw_exception_when_sign_count_lower_than_the_one_in_passkey() throws Exception {
 
         var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
                 session.challenge().challenge(),
@@ -84,7 +84,7 @@ class WebAuthnAuthenticationVerificationTest {
                 passkeyInfo.passkey().getSignCount() - 1
         );
 
-        assertThrows(MaliciousCounterValueException.class,
+        assertThrows(MaliciousCounterException.class,
                 () -> webAuthnService.confirmAuthenticationChallenge(authenticationResponseJSON, session, passkeyInfo.passkey()));
     }
 

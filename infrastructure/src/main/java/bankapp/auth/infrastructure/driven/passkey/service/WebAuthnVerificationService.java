@@ -1,5 +1,6 @@
 package bankapp.auth.infrastructure.driven.passkey.service;
 
+import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.domain.model.Passkey;
@@ -8,6 +9,7 @@ import com.webauthn4j.data.AuthenticationData;
 import com.webauthn4j.data.AuthenticationParameters;
 import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.RegistrationParameters;
+import com.webauthn4j.verifier.exception.MaliciousCounterValueException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +30,9 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
         try {
             var registrationParameters = getRegistrationParameters(sessionData);
 
-            var registrationData = getRegistrationData(registrationResponseJSON, registrationParameters);
+            var registrationData = verifyRegistrationResponse(registrationResponseJSON, registrationParameters);
 
-            return registrationDataMapper.toDomainEntity(registrationData, getUserId(sessionData));
+            return mapToPasskey(sessionData, registrationData);
         } catch (RuntimeException e) {
             throw new RegistrationConfirmAttemptException("Confirmation of registration attempt failed.");
         }
@@ -40,7 +42,7 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
         return registrationParametersProvider.getRegistrationParameters(sessionData);
     }
 
-    private RegistrationData getRegistrationData(String registrationResponseJSON, RegistrationParameters registrationParameters) {
+    private RegistrationData verifyRegistrationResponse(String registrationResponseJSON, RegistrationParameters registrationParameters) {
         return webAuthnManager.verifyRegistrationResponseJSON(registrationResponseJSON, registrationParameters);
     }
 
@@ -50,17 +52,28 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
         );
     }
 
+    private Passkey mapToPasskey(Session sessionData, RegistrationData registrationData) {
+        return registrationDataMapper.toDomainEntity(registrationData, getUserId(sessionData));
+    }
 
     @Override
-    public Passkey confirmAuthenticationChallenge(String authenticationResponseJSON, Session sessionData, Passkey passkey) {
+    public Passkey confirmAuthenticationChallenge(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException {
+        try {
 
-        var authParams = getAuthenticationParameters(sessionData, passkey);
+            var authParams = getAuthenticationParameters(sessionData, passkey);
 
-        var authenticationData = webAuthnManager.verifyAuthenticationResponseJSON(authenticationResponseJSON, authParams);
+            var authenticationData = verifyAuthenticationResponse(authenticationResponseJSON, authParams);
 
-        setSignCount(passkey, authenticationData);
+            setSignCount(passkey, authenticationData);
 
-        return passkey;
+            return passkey;
+        } catch (MaliciousCounterValueException e) {
+            throw new MaliciousCounterException("Malicious counter value detected in authentication response.");
+        }
+    }
+
+    private AuthenticationData verifyAuthenticationResponse(String authenticationResponseJSON, AuthenticationParameters authParams) {
+        return webAuthnManager.verifyAuthenticationResponseJSON(authenticationResponseJSON, authParams);
     }
 
     private AuthenticationParameters getAuthenticationParameters(Session sessionData, Passkey passkey) {
