@@ -181,9 +181,8 @@ public class JpaPasskey {
         // for JPA
     }
 
-    public JpaPasskey signCountUpdate(long signCount) {
+    public void signCountUpdate(long signCount) {
         this.signCount = signCount;
-        return this;
     }
 
     @Override
