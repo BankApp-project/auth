@@ -2,7 +2,7 @@ package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.domain.model.Passkey;
-import com.webauthn4j.WebAuthnManager;
+import com.webauthn4j.WebAuthnRegistrationManager;
 import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.RegistrationParameters;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RegistrationConfirmationHandler {
 
-    private final WebAuthnManager webAuthnManager = WebAuthnManager.createNonStrictWebAuthnManager();
+    private final WebAuthnRegistrationManager webAuthnManager = WebAuthnRegistrationManager.createNonStrictWebAuthnRegistrationManager();
 
     private final RegistrationParametersProvider registrationParametersProvider;
     private final RegistrationDataMapper registrationDataMapper;
@@ -32,7 +32,7 @@ public class RegistrationConfirmationHandler {
     }
 
     private RegistrationData verifyRegistrationResponse(String registrationResponseJSON, RegistrationParameters registrationParameters) {
-        return webAuthnManager.verifyRegistrationResponseJSON(registrationResponseJSON, registrationParameters);
+        return webAuthnManager.verify(registrationResponseJSON, registrationParameters);
     }
 
     private Passkey mapToPasskey(Session sessionData, RegistrationData registrationData) {

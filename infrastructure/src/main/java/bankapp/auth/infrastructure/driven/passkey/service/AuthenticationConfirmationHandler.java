@@ -3,7 +3,7 @@ package bankapp.auth.infrastructure.driven.passkey.service;
 import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.domain.model.Passkey;
-import com.webauthn4j.WebAuthnManager;
+import com.webauthn4j.WebAuthnAuthenticationManager;
 import com.webauthn4j.data.AuthenticationData;
 import com.webauthn4j.data.AuthenticationParameters;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthenticationConfirmationHandler {
 
-    private final WebAuthnManager webAuthnManager = WebAuthnManager.createNonStrictWebAuthnManager();
+    private final WebAuthnAuthenticationManager webAuthnManager = new WebAuthnAuthenticationManager();
 
     private final AuthenticationParametersProvider authenticationParametersProvider;
 
@@ -29,12 +29,12 @@ public class AuthenticationConfirmationHandler {
         return passkey;
     }
 
-    private AuthenticationData verifyAuthenticationResponse(String authenticationResponseJSON, AuthenticationParameters authParams) {
-        return webAuthnManager.verifyAuthenticationResponseJSON(authenticationResponseJSON, authParams);
-    }
-
     private AuthenticationParameters getAuthenticationParameters(Session sessionData, Passkey passkey) {
         return authenticationParametersProvider.getAuthenticationParameters(sessionData, passkey);
+    }
+
+    private AuthenticationData verifyAuthenticationResponse(String authenticationResponseJSON, AuthenticationParameters authParams) {
+        return webAuthnManager.verify(authenticationResponseJSON, authParams);
     }
 
     private void setSignCount(Passkey passkey, AuthenticationData res) {
