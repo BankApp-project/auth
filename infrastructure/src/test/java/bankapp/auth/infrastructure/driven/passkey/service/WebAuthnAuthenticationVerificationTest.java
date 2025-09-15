@@ -4,6 +4,7 @@ package bankapp.auth.infrastructure.driven.passkey.service;
 import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
+import bankapp.auth.infrastructure.driven.passkey.exception.AuthenticationConfirmAttemptException;
 import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
 import jakarta.validation.constraints.NotNull;

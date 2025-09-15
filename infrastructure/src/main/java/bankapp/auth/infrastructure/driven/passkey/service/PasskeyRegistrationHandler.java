@@ -2,6 +2,7 @@ package bankapp.auth.infrastructure.driven.passkey.service;
 
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.domain.model.Passkey;
+import bankapp.auth.infrastructure.driven.passkey.exception.RegistrationConfirmAttemptException;
 import com.webauthn4j.WebAuthnRegistrationManager;
 import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.RegistrationParameters;
