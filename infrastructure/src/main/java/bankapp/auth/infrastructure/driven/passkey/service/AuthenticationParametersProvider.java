@@ -44,12 +44,9 @@ public class AuthenticationParametersProvider {
 
     private List<byte[]> getAllowedCredentials(Optional<List<UUID>> uuids) {
 
-        if (uuids.isEmpty()) {
-            return null;
-        }
-
-        return uuids.get().stream()
+        return uuids.map(uuidList -> uuidList.stream()
                 .map(ByteArrayUtil::uuidToBytes)
-                .toList();
+                .toList()).orElse(null);
+
     }
 }
