@@ -4,12 +4,14 @@ import bankapp.auth.application.shared.port.out.WebAuthnVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.domain.model.Passkey;
 import com.webauthn4j.WebAuthnManager;
+import com.webauthn4j.data.AuthenticationData;
 import com.webauthn4j.data.AuthenticationParameters;
 import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.RegistrationParameters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -54,13 +56,20 @@ public class WebAuthnVerificationService implements WebAuthnVerificationPort {
 
         var authParams = getAuthenticationParameters(sessionData, passkey);
 
-        webAuthnManager.verifyAuthenticationResponseJSON(authenticationResponseJSON, authParams);
-        passkey.signCountIncrement();
+        var res = webAuthnManager.verifyAuthenticationResponseJSON(authenticationResponseJSON, authParams);
+
+        setSignCount(passkey, res);
+
         return passkey;
     }
 
     private AuthenticationParameters getAuthenticationParameters(Session sessionData, Passkey passkey) {
         return authenticationParametersProvider.getAuthenticationParameters(sessionData, passkey);
+    }
+
+    private void setSignCount(Passkey passkey, AuthenticationData res) {
+        Objects.requireNonNull(res.getAuthenticatorData());
+        passkey.setSignCount(res.getAuthenticatorData().getSignCount());
     }
 
 
