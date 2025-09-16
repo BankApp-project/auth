@@ -15,7 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PasskeyRegistrationHandler {
 
-    private final WebAuthnRegistrationManager webAuthnRegistrationManager;
+    private final WebAuthnRegistrationManager registrationManager;
 
     private final RegistrationParametersProvider registrationParametersProvider;
     private final RegistrationDataMapper registrationDataMapper;
@@ -33,7 +33,7 @@ public class PasskeyRegistrationHandler {
     }
 
     private RegistrationData verifyRegistrationResponse(String registrationResponseJSON, RegistrationParameters registrationParameters) {
-        return webAuthnRegistrationManager.verify(registrationResponseJSON, registrationParameters);
+        return registrationManager.verify(registrationResponseJSON, registrationParameters);
     }
 
     private Passkey mapToPasskey(Session sessionData, RegistrationData registrationData) {
