@@ -1,100 +1,169 @@
-## Rules
+# 🏦 BankApp Authentication Service
 
-### Use Case's beans
-After finishing implementation of all use case's ports, add `@UseCase` annotation on class level of specific use case:
+> Modern, secure WebAuthn-based authentication microservice built with Spring Boot 4 and Hexagonal Architecture.
+
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
+[![WebAuthn](https://img.shields.io/badge/WebAuthn-FIDO2-blue.svg)](https://webauthn.guide/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue.svg)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-Cache-red.svg)](https://redis.io/)
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+//placeholder
+
+### 🐳 Docker Quick Start
+
+//placeholder
+
+## 🎯 What Does This Service Do?
+
+BankApp Auth provides **passwordless authentication** using modern WebAuthn/FIDO2 standards:
+
+- 📧 **Email Verification**: OTP-based user verification
+- 🔐 **WebAuthn Authentication**: Biometric and hardware key support
+- 📱 **Multi-Device Support**: Smartphone, desktop, and hardware authenticators
+- 🎫 **JWT Token Management**: Secure token issuance and validation
+- 🔔 **Event-Driven Notifications**: Asynchronous messaging via RabbitMQ
+
+## 📊 Authentication Flows
+
+```mermaid
+flowchart LR
+    A[New User] --> B[Email Verification]
+    B --> C[WebAuthn Registration]
+    C --> D[✅ Authenticated]
+
+E[Existing User] --> F[WebAuthn Login]
+F --> G[✅ Authenticated]
+```
+
+**Supported Flows:**
+
+- `Email Verification → WebAuthn Registration` (New Users)
+- `WebAuthn Authentication` (Existing Users)
+- `Email Verification → WebAuthn Authentication` (Alternative)
+
+## 🏗️ Architecture
+
+Built with **Hexagonal Architecture** (Ports & Adapters):
+
+- **Clean separation** between business logic and infrastructure
+- **Technology independence** - easily swap databases or frameworks
+- **High testability** with mocked adapters and pure domain logic
+
+### Tech Stack
+
+- **Framework**: Spring Boot 4 with Virtual Threads
+- **Database**: PostgreSQL + Spring Data JPA
+- **Database versioning**: Flyway
+- **Cache**: Redis with TTL-based session management
+- **Messaging**: RabbitMQ (AMQP)
+- **Authentication**: WebAuthn4J (FIDO2)
+
+## 🛠️ Configuration
+
+### Required Environment Variables
+
+| Variable                     | Description               | Example                                         |
+|------------------------------|---------------------------|-------------------------------------------------|
+| `SPRING_DATASOURCE_URL`      | PostgreSQL connection URL | `jdbc:postgresql://localhost:5432/bankapp_auth` |
+| `SPRING_DATASOURCE_USERNAME` | Database username         | `bankapp`                                       |
+| `SPRING_DATASOURCE_PASSWORD` | Database password         | `secure_password`                               |
+| `SPRING_REDIS_HOST`          | Redis hostname            | `localhost`                                     |
+| `SPRING_REDIS_PORT`          | Redis port                | `6379`                                          |
+
+### Optional Configuration
+
+| Variable            | Default      | Description                                         |
+|---------------------|--------------|-----------------------------------------------------|
+| `DEFAULT_AUTH_MODE` | `smartphone` | WebAuthn flow preference (`smartphone` or `device`) |
+
+## 📝 API Endpoints
+
+| Endpoint                       | Method | Description                               |
+|--------------------------------|--------|-------------------------------------------|
+| `/api/verification/initiate`   | POST   | Start email verification with OTP         |
+| `/api/verification/complete`   | POST   | Validate OTP and create session           |
+| `/api/authentication/initiate` | GET    | Begin WebAuthn authentication             |
+| `/api/authentication/complete` | POST   | Complete WebAuthn and get tokens          |
+| `/api/registration/complete`   | POST   | Finalize user registration and get tokens |
+
+## 🧪 Testing
+
+```bash
+# Run unit tests
+./mvnw test
+
+# Run integration tests
+./mvnw verify -Dspring.profiles.active=test
+
+# Run specific test class
+./mvnw test -Dtest=InitiateVerificationUseCaseTest
+```
+
+## 📚 Documentation
+
+For detailed technical documentation:
+
+- **[📖 Wiki Home](wiki/Home.md)** - Comprehensive service overview
+- **[🔧 Implementation Details](wiki/Implementation-Details.md)** - Architecture deep dive
+- **[📋 Use Cases](wiki/)** - Detailed use case documentation
+
+### Development Guidelines
+
+#### Use Case Implementation
 ```java
-@UseCase //this
+
+@UseCase  // Always annotate use case classes
 public class InitiateVerificationUseCase {
-//(...)
+    // Implementation
 }
 ```
 
-### EmailAddress VO
-We use VO `EmailAddress` for all email addresses at whole application level. 
-Security and data integrity measures.
-
-**FLOW:**
-```
-outside world format -> Adapter -> EmailAddress email -> IN -> 
-some bussiness logic -> OUT -> outside world format
-```
-
-### @RequiredArgsConstructor usage
-We use `@RequiredArgsConstructor` in favor of `@Autowired` or writing constructors if it is feasible.
-
-#### GOOD
-
+#### Dependency Injection
 ```java
-@RequiredArgsConstructor
-public class VerificationController {
 
+@RequiredArgsConstructor  // Preferred over @Autowired
+public class VerificationController {
     private final InitiateVerificationUseCase initiateVerificationUseCase;
-    private final CompleteVerificationUseCase completeVerificationUseCase;
-//(...)
 }
 ```
 
-#### BAD
+#### Email Handling
 ```java
-public class VerificationController {
-
-    private final InitiateVerificationUseCase initiateVerificationUseCase;
-    private final CompleteVerificationUseCase completeVerificationUseCase;
-
-    public VerificationController(
-            @Autowired InitiateVerificationUseCase initiateVerificationUseCase, 
-            @Autowired CompleteVerificationUseCase completeVerificationUseCase) {
-        this.initiateVerificationUseCase = initiateVerificationUseCase;
-        this.completeVerificationUseCase = completeVerificationUseCase;
-    }
-//(...)
-}
+// Always use EmailAddress VO for type safety
+EmailAddress email = EmailAddress.of("user@example.com");
 ```
 
-## Configuration
+## 🔐 Security Considerations
 
-### Application Flags
-- `DEFAULT_AUTH_MODE`: smartphone
-    this flag is to ensure that default auth flow for webauthn ceremonies will be smartphone first. 
-    It means that user will be prompted to scan QR code with his mobile device on DEFAULT.
-    Any other value will result with flow using current user device - for e.g.: on Windows it will be Windows Hello.
+### Development vs Production
 
-### Environment Variables
-The application requires the following environment variables to be set for connecting to external services:
+**⚠️ Current Setup (Development)**
 
--   `SPRING_DATASOURCE_URL`: The JDBC URL for the PostgreSQL database.
--   `SPRING_DATASOURCE_USERNAME`: The username for the database connection.
--   `SPRING_DATASOURCE_PASSWORD`: The password for the database connection.
--   `SPRING_REDIS_HOST`: The hostname of the Redis server.
--   `SPRING_REDIS_PORT`: The port of the Redis server.
+- Uses `WebAuthnRegistrationManager.createNonStrictWebAuthnRegistrationManager()`
+- Bypasses attestation verification for easier development
 
-## Use Cases Descriptions
+**🛡️ Production Requirements**
 
-For detailed technical documentation on each use case, see the corresponding page in the wiki:
+- Configure strict `WebAuthnRegistrationManager` with:
+    - Attestation statement verifiers
+    - Certificate path validators
+    - Trust anchor configuration
+    - Certificate chain validation
 
-- [Use Case: Initiate Verification](../../wiki/Use-Case-Initiate-Verification)
-- [Use Case: Complete Verification](../../wiki/Use-Case-Complete-Verification)
-- [Use Case: Initiate Authentication](../../wiki/Use-Case-Initiate-Authentication)
-- [Use Case: Complete Authentication](../../wiki/Use-Case-Complete-Authentication)
-- [Use Case: Complete Registration](../../wiki/Use-Case-Complete-Registration)
+### Security Features
 
-## Implementation Details
+- **WebAuthn FIDO2 Compliance**: Industry-standard passwordless authentication
+- **Secure OTP Generation**: Cryptographically secure random numbers
+- **BCrypt Password Hashing**: Industry-standard hashing algorithm
+- **JWT Security**: Signed tokens with proper expiration
+- **Input Validation**: Comprehensive request sanitization
 
-This project is built on a modern Spring Boot stack, emphasizing clean architecture and testability. Our core architectural philosophy is based on the **Hexagonal Architecture (Ports and Adapters)** pattern, which isolates the core business logic from external infrastructure concerns like databases, message brokers, and web frameworks.
-
-Key technologies and patterns include:
-
--   **Hexagonal Architecture**: Business logic is defined in the core application layer, communicating with the outside world through `ports` (interfaces). Infrastructure-specific components are implemented as `adapters`.
--   **Domain vs. Persistence Models**: A strict separation is maintained between pure domain models (e.g., `Passkey`) and their corresponding JPA persistence entities (e.g., `JpaPasskey`). This is enforced via dedicated `Mapper` classes, ensuring the business logic remains entirely independent of the database schema.
--   **Spring Boot 3 & Virtual Threads**: The application is configured to use virtual threads (`spring.threads.virtual.enabled: true`) for improved scalability and throughput under high I/O loads.
--   **PostgreSQL with Spring Data JPA**: Used as the primary relational data store for persistent entities like users and passkey credentials.
-- **Redis for State Management**: Used for high-performance, temporary storage of data like authentication `Sessions`,
-  leveraging its native TTL (Time-To-Live) feature for automatic expiration.
--   **Type-Safe Configuration**: Uses `@ConfigurationProperties` to bind settings from `application.yaml` to immutable Java records, ensuring configuration is robust and easy to manage.
- 
-For a comprehensive technical breakdown of specific features, design decisions, and class responsibilities, please refer to our **[Implementation Details Wiki Page](https://github.com/BankApp-project/auth/wiki/Implementation-Details)**.
-
-## Troubleshooting
+## 🔧 Troubleshooting
 
 ### Login Issues for Registered Users
 
@@ -114,45 +183,23 @@ For a comprehensive technical breakdown of specific features, design decisions, 
 - This approach ensures WebAuthn ceremonies can reference specific user credentials, improving authentication
   reliability
 
-### Security Considerations for WebAuthn Registration Manager
+## 🤝 Contributing
 
-**Problem**: The current implementation uses `WebAuthnRegistrationManager.createNonStrictWebAuthnRegistrationManager()`
-in `PasskeyRegistrationHandler.java:18` which bypasses attestation verification.
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Follow the coding guidelines in this README
+4. Add tests for new functionality
+5. Submit a pull request
 
-**Security Risks**:
+## 📄 License
 
-- **No Attestation Verification**: The non-strict manager doesn't verify the authenticity or trustworthiness of
-  authenticators
-- **Reduced Security Assurance**: Cannot validate the provenance of authenticators or detect potentially compromised
-  devices
-- **Missing Enterprise-Grade Validation**: Lacks verification of attestation certificates and certificate chains
-- **Potential Attack Vector**: Malicious or weakened authenticators could be accepted without detection
+This project is under MIT license.
 
-**Production Security Improvement**:
+## 🔗 Related Projects
 
-For production environments requiring enhanced security, consider replacing the non-strict manager with a properly
-configured `WebAuthnRegistrationManager` bean that includes:
+- **BankApp Gateway** - API gateway and routing
+- **BankApp Notification** - Notification service
 
-- Explicit attestation statement verifiers for your target authenticator types
-- Certificate path validators with appropriate trust anchors
-- Self-attestation trustworthiness verification
-- Certificate chain validation
+---
 
-**Research Required**:
-
-- Analyze your target authenticator ecosystem (FIDO2, platform authenticators, etc.)
-- Determine appropriate attestation statement verifiers for your use case
-- Configure trust anchors and certificate validation policies
-- Evaluate attestation requirements based on security policies
-
-**When to Use Strict Verification**:
-
-- Enterprise applications requiring authenticator attestation
-- High-security environments (banking, healthcare, government)
-- Applications needing to restrict specific authenticator models
-- Compliance requirements mandating attestation verification
-
-**References**:
-
-- [W3C WebAuthn Attestation Security](https://www.w3.org/TR/webauthn-1/#sctn-no-attestation-security-attestation)
-- [WebAuthn4J Documentation](https://webauthn4j.github.io/webauthn4j/en/)
+*Need help? Check our [Wiki](wiki/Home.md) or open an issue!*
