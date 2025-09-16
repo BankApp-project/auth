@@ -113,3 +113,46 @@ For a comprehensive technical breakdown of specific features, design decisions, 
 - The `Session` DTO already contains a `credentialId` field of type `List<UUID>` to support this functionality
 - This approach ensures WebAuthn ceremonies can reference specific user credentials, improving authentication
   reliability
+
+### Security Considerations for WebAuthn Registration Manager
+
+**Problem**: The current implementation uses `WebAuthnRegistrationManager.createNonStrictWebAuthnRegistrationManager()`
+in `PasskeyRegistrationHandler.java:18` which bypasses attestation verification.
+
+**Security Risks**:
+
+- **No Attestation Verification**: The non-strict manager doesn't verify the authenticity or trustworthiness of
+  authenticators
+- **Reduced Security Assurance**: Cannot validate the provenance of authenticators or detect potentially compromised
+  devices
+- **Missing Enterprise-Grade Validation**: Lacks verification of attestation certificates and certificate chains
+- **Potential Attack Vector**: Malicious or weakened authenticators could be accepted without detection
+
+**Production Security Improvement**:
+
+For production environments requiring enhanced security, consider replacing the non-strict manager with a properly
+configured `WebAuthnRegistrationManager` bean that includes:
+
+- Explicit attestation statement verifiers for your target authenticator types
+- Certificate path validators with appropriate trust anchors
+- Self-attestation trustworthiness verification
+- Certificate chain validation
+
+**Research Required**:
+
+- Analyze your target authenticator ecosystem (FIDO2, platform authenticators, etc.)
+- Determine appropriate attestation statement verifiers for your use case
+- Configure trust anchors and certificate validation policies
+- Evaluate attestation requirements based on security policies
+
+**When to Use Strict Verification**:
+
+- Enterprise applications requiring authenticator attestation
+- High-security environments (banking, healthcare, government)
+- Applications needing to restrict specific authenticator models
+- Compliance requirements mandating attestation verification
+
+**References**:
+
+- [W3C WebAuthn Attestation Security](https://www.w3.org/TR/webauthn-1/#sctn-no-attestation-security-attestation)
+- [WebAuthn4J Documentation](https://webauthn4j.github.io/webauthn4j/en/)
