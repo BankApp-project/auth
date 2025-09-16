@@ -1,0 +1,205 @@
+name: 🤖 Automated Documentation with Claude
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'wiki/**'
+      - '*.md'
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force documentation update'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  DOCS_BRANCH: 'docs-auto-update'
+
+jobs:
+  analyze-and-document:
+    name: 📝 Analyze & Generate Documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Detect significant changes
+        id: changes
+        run: |
+          # Define patterns for significant changes
+          PATTERNS="src/main/java/|src/main/resources/|pom.xml|build.gradle|Dockerfile|\.java$|\.sql$|\.properties$|application\.(yml|yaml)"
+          
+          # Get changed files based on the event type
+          if [ "${{ github.event_name }}" == "push" ]; then
+            BEFORE_SHA="${{ github.event.before }}"
+            AFTER_SHA="${{ github.event.after }}"
+          
+            # Handle new branch or force push
+            if [ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]; then
+              echo "New branch detected, comparing with default branch..."
+              DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+              if [ -n "$DEFAULT_BRANCH" ]; then
+                CHANGED_FILES=$(git diff --name-only origin/$DEFAULT_BRANCH..HEAD 2>/dev/null || git ls-files)
+              else
+                CHANGED_FILES=$(git ls-files) # Fallback for safety
+              fi
+            else
+              echo "Comparing $BEFORE_SHA..$AFTER_SHA"
+              if git rev-parse --verify $BEFORE_SHA >/dev/null 2>&1 && git rev-parse --verify $AFTER_SHA >/dev/null 2>&1; then
+                CHANGED_FILES=$(git diff --name-only $BEFORE_SHA..$AFTER_SHA)
+              else
+                echo "Warning: Could not find one or both commits, falling back to HEAD~1"
+                CHANGED_FILES=$(git diff --name-only HEAD~1..HEAD 2>/dev/null || git ls-files)
+              fi
+            fi
+          
+            # Get commit messages for context
+            DELIMITER="EOF_COMMITS_$RANDOM"
+            echo "commit_messages<<$DELIMITER" >> $GITHUB_OUTPUT
+            if git rev-parse --verify $BEFORE_SHA >/dev/null 2>&1 && git rev-parse --verify $AFTER_SHA >/dev/null 2>&1; then
+              git log --oneline $BEFORE_SHA..$AFTER_SHA >> $GITHUB_OUTPUT
+            else
+              echo "No commit messages available" >> $GITHUB_OUTPUT
+            fi
+            echo "$DELIMITER" >> $GITHUB_OUTPUT
+          else
+            # Manual workflow dispatch - consider all relevant files
+            CHANGED_FILES=$(git ls-files)
+            echo "commit_messages=Manual documentation update triggered" >> $GITHUB_OUTPUT
+          fi
+          
+          # Filter for significant changes, excluding docs to prevent loops
+          if [ -n "$CHANGED_FILES" ]; then
+            SIGNIFICANT=$(echo "$CHANGED_FILES" | grep -E "$PATTERNS" | grep -v "^README\.md$" | grep -v "^wiki/" || echo "")
+          else
+            SIGNIFICANT=""
+          fi
+          
+          if [ -n "$SIGNIFICANT" ] || [ "${{ github.event.inputs.force_update }}" == "true" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            DELIMITER="EOF_FILES_$RANDOM"
+            echo "files<<$DELIMITER" >> $GITHUB_OUTPUT
+            echo "$SIGNIFICANT" >> $GITHUB_OUTPUT
+            echo "$DELIMITER" >> $GITHUB_OUTPUT
+            COUNT=$(echo "$SIGNIFICANT" | grep -c . || echo "0")
+            echo "summary=Found $COUNT significant changes" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "summary=No significant changes detected" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Analyze README structure
+        id: readme
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          if [ -f "README.md" ]; then
+            echo "readme_exists=true" >> $GITHUB_OUTPUT
+            DELIMITER="EOF_README_$RANDOM"
+            echo "structure<<$DELIMITER" >> $GITHUB_OUTPUT
+            if [ -s "README.md" ]; then
+              head -50 README.md >> $GITHUB_OUTPUT || echo "Error reading README.md" >> $GITHUB_OUTPUT
+            else
+              echo "README.md is empty" >> $GITHUB_OUTPUT
+            fi
+            echo "$DELIMITER" >> $GITHUB_OUTPUT
+          else
+            echo "readme_exists=false" >> $GITHUB_OUTPUT
+            echo "structure=No README.md found" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate documentation with Claude
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          # CORRECTED: Use the correct input for an OAuth token
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          prompt: |
+            You are a Spring Boot documentation expert specializing in hexagonal architecture.
+            Focus on updating documentation based on code changes while maintaining consistency.
+            Follow the project's conventions: @UseCase annotations, EmailAddress VOs, clean architecture.
+            IMPORTANT: Always preserve the existing structure and style of documentation files.
+
+            # Documentation Update Task
+            
+            ## Changed Files:
+            ```
+            ${{ steps.changes.outputs.files }}
+            ```
+            
+            ## Commit Messages:
+            ```
+            ${{ steps.changes.outputs.commit_messages }}
+            ```
+            
+            ## Current README.md Structure:
+            ```markdown
+            ${{ steps.readme.outputs.structure }}
+            ```
+            
+            ## Instructions:
+            1. Analyze ALL the changed files for documentation impact.
+            2. Review commit messages to understand the intent of the changes.
+            3. Update BOTH the main `./README.md` file and the wiki documentation in the `/wiki/` directory.
+            
+            ## For README.md Updates:
+            - **PRESERVE the existing structure and sections.**
+            - Only update relevant sections based on changes (e.g., Rules, Configuration, Use Cases, Implementation Details).
+            - Keep the same formatting, heading styles, and organization. Do not reorganize.
+            
+            ## For Wiki Documentation (/wiki/):
+            - `Home.md` - Project overview
+            - `Getting-Started.md` - Setup guide
+            - `Implementation-Details.md` - Technical architecture
+            - `Configuration.md` - Environment variables
+            - `API-Reference.md` - REST endpoints
+            - `Use-Case-*.md` - Individual use case docs
+            
+            ## What to Update:
+            - New/modified @UseCase classes
+            - API endpoint changes
+            - Configuration changes (env vars, application.yml)
+            - Domain model updates
+            - Architecture patterns
+            
+            ## Standards:
+            - Match the existing documentation tone and style.
+            - Include compilable Java examples where appropriate.
+            - Maintain cross-references between the README and the wiki.
+            
+            IMPORTANT: Make sure to document ALL changes found in the file list above,
+            not just the most recent ones. Each changed file may require documentation updates.
+            
+            Please analyze changes and update documentation as needed.
+
+      - name: Create PR summary
+        if: always()
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'SUMMARY_EOF'
+          ## 🤖 Documentation Generation Summary
+
+          | Status | Value |
+          |--------|-------|
+          | **Changes Detected** | ${{ steps.changes.outputs.has_changes }} |
+          | **Summary** | ${{ steps.changes.outputs.summary }} |
+          | **Workflow Run** | #${{ github.run_number }} |
+          SUMMARY_EOF
+
+          if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY # Add a newline
+            echo "### Changed Files" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "${{ steps.changes.outputs.files }}" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
