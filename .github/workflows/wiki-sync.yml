@@ -1,0 +1,85 @@
+# .github/workflows/wiki-sync.yml
+name: Sync Wiki from /wiki Directory
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'wiki/**'
+  workflow_dispatch:
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Checkout wiki repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: wiki-repo
+
+      - name: Sync wiki content
+        run: |
+          # Copy all markdown files from /wiki to wiki repository
+          if [ -d "wiki/" ]; then
+            echo "Syncing wiki content..."
+          
+            # Copy all .md files
+            find wiki/ -name "*.md" -exec cp {} wiki-repo/ \;
+          
+            # Copy any assets (images, etc.)
+            if [ -d "wiki/assets" ]; then
+              cp -r wiki/assets wiki-repo/ 2>/dev/null || true
+            fi
+          
+            cd wiki-repo
+          
+            # Generate table of contents for Home.md if it doesn't exist
+            if [ ! -f "Home.md" ]; then
+              echo "# Wiki Home" > Home.md
+              echo "" >> Home.md
+              echo "## Pages" >> Home.md
+              for file in *.md; do
+                if [ "$file" != "Home.md" ] && [ -f "$file" ]; then
+                  name=$(basename "$file" .md)
+                  title=$(head -1 "$file" | sed 's/^# //' 2>/dev/null || echo "$name")
+                  echo "- [$title]($name)" >> Home.md
+                fi
+              done
+              echo "" >> Home.md
+              echo "*Last updated: $(date)*" >> Home.md
+            fi
+          
+            # Configure git
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+            # Commit changes if any
+            if [ -n "$(git status --porcelain)" ]; then
+              git add .
+              git commit -m "Sync wiki from /wiki directory
+          
+              Updated from commit: ${{ github.sha }}
+              Triggered by: ${{ github.actor }}"
+              git push
+              echo "✅ Wiki updated successfully!"
+            else
+              echo "ℹ️ No changes to sync"
+            fi
+          else
+            echo "❌ No /wiki directory found"
+            exit 1
+          fi
+
+      - name: Summary
+        run: |
+          echo "## Wiki Sync Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Source**: /wiki directory" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target**: ${{ github.repository }}.wiki" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Files synced**: $(find wiki/ -name "*.md" | wc -l) pages" >> $GITHUB_STEP_SUMMARY
