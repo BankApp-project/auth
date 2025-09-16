@@ -1,13 +1,13 @@
 package bankapp.auth.infrastructure.driven.passkey.service.verification.authentication;
 
 
-import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.infrastructure.driven.passkey.exception.AuthenticationConfirmAttemptException;
-import bankapp.auth.infrastructure.driven.passkey.service.verification.PasskeyVerificationService;
 import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
+import com.webauthn4j.converter.exception.DataConversionException;
+import com.webauthn4j.verifier.exception.BadSignatureException;
+import com.webauthn4j.verifier.exception.MaliciousCounterValueException;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,11 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class WebAuthnAuthenticationVerificationTest {
+class PasskeyAuthenticationHandlerTest {
 
     public static final String RP_ID = "bankapp.online";
     @Autowired
-    private PasskeyVerificationService webAuthnService;
+    private PasskeyAuthenticationHandler passkeyAuthenticationHandler;
 
     private Session session;
     private TestPasskeyProvider.PasskeyInfo passkeyInfo;
@@ -50,8 +50,8 @@ class WebAuthnAuthenticationVerificationTest {
         var invalidResponse = "this is not valid json";
 
         // Act & Assert
-        assertThrows(AuthenticationConfirmAttemptException.class,
-                () -> webAuthnService.handleAuthentication(invalidResponse, session, passkeyInfo.passkey()));
+        assertThrows(DataConversionException.class,
+                () -> passkeyAuthenticationHandler.handle(invalidResponse, session, passkeyInfo.passkey()));
     }
 
     @Test
@@ -69,8 +69,8 @@ class WebAuthnAuthenticationVerificationTest {
         );
 
         // Act & Assert: Verification should fail because the signature doesn't match the stored public key.
-        assertThrows(AuthenticationConfirmAttemptException.class,
-                () -> webAuthnService.handleAuthentication(authenticationResponseJSON, session, passkeyInfo.passkey()));
+        assertThrows(BadSignatureException.class,
+                () -> passkeyAuthenticationHandler.handle(authenticationResponseJSON, session, passkeyInfo.passkey()));
     }
 
     @Test
@@ -84,8 +84,8 @@ class WebAuthnAuthenticationVerificationTest {
                 passkeyInfo.passkey().getSignCount() - 1
         );
 
-        assertThrows(MaliciousCounterException.class,
-                () -> webAuthnService.handleAuthentication(authenticationResponseJSON, session, passkeyInfo.passkey()));
+        assertThrows(MaliciousCounterValueException.class,
+                () -> passkeyAuthenticationHandler.handle(authenticationResponseJSON, session, passkeyInfo.passkey()));
     }
 
     @Test
@@ -101,7 +101,7 @@ class WebAuthnAuthenticationVerificationTest {
 
         // Act
         var signCount = passkeyInfo.passkey().getSignCount();
-        var updatedPasskey = webAuthnService.handleAuthentication(authenticationResponseJSON, session, passkeyInfo.passkey());
+        var updatedPasskey = passkeyAuthenticationHandler.handle(authenticationResponseJSON, session, passkeyInfo.passkey());
 
         // Assert
         assertNotNull(updatedPasskey);

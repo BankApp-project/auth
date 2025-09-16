@@ -1,8 +1,11 @@
 package bankapp.auth.infrastructure.driven.passkey.service.verification;
 
+import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
+import bankapp.auth.infrastructure.driven.passkey.exception.AuthenticationConfirmAttemptException;
 import bankapp.auth.infrastructure.driven.passkey.exception.RegistrationConfirmAttemptException;
+import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import bankapp.auth.infrastructure.utils.WebAuthnTestHelper;
 import com.webauthn4j.converter.AttestationObjectConverter;
 import com.webauthn4j.converter.CollectedClientDataConverter;
@@ -10,7 +13,8 @@ import com.webauthn4j.converter.util.ObjectConverter;
 import com.webauthn4j.data.attestation.AttestationObject;
 import com.webauthn4j.data.client.CollectedClientData;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,13 +26,16 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static bankapp.auth.application.shared.service.ByteArrayUtil.uuidToBytes;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class PasskeyVerificationServiceTest {
 
+    public static final String RP_ID = "bankapp.online";
+    
     @Autowired
     private PasskeyVerificationService passkeyVerificationService;
 
@@ -36,6 +43,83 @@ class PasskeyVerificationServiceTest {
     private static final AttestationObjectConverter attObjConv = new AttestationObjectConverter(objectConverter);
     private static final CollectedClientDataConverter collCltDataConv = new CollectedClientDataConverter(objectConverter);
 
+    private Session session;
+    private TestPasskeyProvider.PasskeyInfo passkeyInfo;
+
+    @BeforeEach
+    void setup() {
+        session = getSession();
+        passkeyInfo = TestPasskeyProvider.createSamplePasskeyInfo();
+    }
+
+
+    // ===== Authentication Tests =====
+
+    @Test
+    void confirmAuthenticationChallenge_should_throw_exception_when_invalid_response() {
+        // Arrange
+        var invalidResponse = "this is not valid json";
+
+        // Act & Assert
+        assertThrows(AuthenticationConfirmAttemptException.class,
+                () -> passkeyVerificationService.handleAuthentication(invalidResponse, session, passkeyInfo.passkey()));
+    }
+
+    @Test
+    void confirmAuthenticationChallenge_should_throw_exception_when_signature_is_invalid() throws Exception {
+        // Arrange: Create a passkey with one keypair, but sign with a different one.
+        var maliciousKeyPair = WebAuthnTestHelper.generatePasskeyKeyPair(); // Generate a second, different keypair (keypair B)
+
+        // Generate response using the wrong private key (private key B)
+        var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
+                session.challenge().challenge(),
+                RP_ID,
+                uuidToBytes(passkeyInfo.passkey().getId()),
+                maliciousKeyPair,
+                passkeyInfo.passkey().getSignCount()
+        );
+
+        // Act & Assert: Verification should fail because the signature doesn't match the stored public key.
+        assertThrows(AuthenticationConfirmAttemptException.class,
+                () -> passkeyVerificationService.handleAuthentication(authenticationResponseJSON, session, passkeyInfo.passkey()));
+    }
+
+    @Test
+    void confirmAuthenticationChallenge_should_throw_exception_when_sign_count_lower_than_the_one_in_passkey() throws Exception {
+
+        var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
+                session.challenge().challenge(),
+                RP_ID,
+                passkeyInfo.credentialIdBytes(),
+                passkeyInfo.keyPair(),
+                passkeyInfo.passkey().getSignCount() - 1
+        );
+
+        assertThrows(MaliciousCounterException.class,
+                () -> passkeyVerificationService.handleAuthentication(authenticationResponseJSON, session, passkeyInfo.passkey()));
+    }
+
+    @Test
+    void confirmAuthenticationChallenge_should_return_updated_Passkey_when_provided_valid_parameters() throws Exception {
+
+        var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
+                session.challenge().challenge(),
+                RP_ID,
+                passkeyInfo.credentialIdBytes(), // Use the byte[] version of the ID here
+                passkeyInfo.keyPair(),
+                passkeyInfo.passkey().getSignCount() + 1
+        );
+
+        // Act
+        var signCount = passkeyInfo.passkey().getSignCount();
+        var updatedPasskey = passkeyVerificationService.handleAuthentication(authenticationResponseJSON, session, passkeyInfo.passkey());
+
+        // Assert
+        assertNotNull(updatedPasskey);
+        assertThat(updatedPasskey.getSignCount()).isGreaterThan(signCount);
+    }
+
+    // ===== Registration Tests =====
 
     @Test
     void confirmRegistrationChallenge_should_return_data_parsable_by_webauthn4j() throws Exception {
@@ -112,5 +196,4 @@ class PasskeyVerificationServiceTest {
         var challengeVal = new byte[] {123,111};
         return new Session(sessionId, new Challenge(challengeVal, TTL, FIXED_CLOCK), UUID.randomUUID());
     }
-
 }
