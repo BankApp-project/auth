@@ -15,7 +15,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class PasskeyAuthenticationHandler {
 
-    private final WebAuthnAuthenticationManager webAuthnManager = new WebAuthnAuthenticationManager();
+    private final WebAuthnAuthenticationManager authenticationManager;
 
     private final AuthenticationParametersProvider authenticationParametersProvider;
 
@@ -34,7 +34,7 @@ public class PasskeyAuthenticationHandler {
     }
 
     private AuthenticationData verifyAuthenticationResponse(String authenticationResponseJSON, AuthenticationParameters authParams) {
-        return webAuthnManager.verify(authenticationResponseJSON, authParams);
+        return authenticationManager.verify(authenticationResponseJSON, authParams);
     }
 
     private void setSignCount(Passkey passkey, AuthenticationData res) {

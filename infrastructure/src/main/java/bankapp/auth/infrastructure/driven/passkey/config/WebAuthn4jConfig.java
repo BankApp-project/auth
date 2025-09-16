@@ -2,6 +2,7 @@ package bankapp.auth.infrastructure.driven.passkey.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
+import com.webauthn4j.WebAuthnAuthenticationManager;
 import com.webauthn4j.WebAuthnRegistrationManager;
 import com.webauthn4j.converter.util.ObjectConverter;
 import org.springframework.context.annotation.Bean;
@@ -20,5 +21,10 @@ public class WebAuthn4jConfig {
     @Bean
     public WebAuthnRegistrationManager webAuthnRegistrationManager() {
         return WebAuthnRegistrationManager.createNonStrictWebAuthnRegistrationManager();
+    }
+
+    @Bean
+    public WebAuthnAuthenticationManager webAuthnAuthenticationManager() {
+        return new WebAuthnAuthenticationManager();
     }
 }
