@@ -32,13 +32,15 @@ ports are detailed in the main technical documentation.
     * `ChallengeGenerationPort`: An outgoing port used to create a cryptographically secure, time-bound challenge.
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#challenge-generation-and-caching)
-    * `CredentialOptionsPort`: An outgoing port responsible for generating the complex server-side options for WebAuthn
+    * `PasskeyOptionsPort`: An outgoing port responsible for generating the complex server-side options for WebAuthn
       authentication ceremonies.
         * [**View Technical Implementation Details
-          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#passkey-options-generation-credentialoptionsservice--assemblers)
-    * `ChallengeRepository`: A port for saving and retrieving temporary `Challenge` objects from the cache.
+          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#passkey-options-generation)
+    * `SessionIdGenerationPort`: For generating unique session identifiers.
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#challenge-generation-and-caching)
-    * `SessionIdGenerationPort`: For generating unique session identifiers.
+
+* **Repositories**:
+    * `SessionRepository`: A port for saving and retrieving temporary `Session` objects from the cache.
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#challenge-generation-and-caching)

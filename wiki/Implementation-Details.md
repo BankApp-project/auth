@@ -155,7 +155,8 @@ which is implemented by an adapter that handles the specifics of RabbitMQ.
       ```
 
 2. **The Primary Adapter (`NotificationAdapter.java`)**
-    - **Role**: The main adapter that implements the `NotificationPort`.
+    - **Role**: The main driven adapter that implements the `NotificationPort`, located in the
+      `infrastructure.driven.notification` package.
     - **Purpose**: To bridge the gap between the business request (e.g., "send this OTP to this user") and the messaging
       infrastructure.
     - **Mechanism**: It takes the domain-level inputs, uses the `NotificationTemplateProvider` to construct the email
@@ -164,7 +165,7 @@ which is implemented by an adapter that handles the specifics of RabbitMQ.
       low-level broker interaction.
 
 3. **The Message Publisher (`NotificationCommandPublisherAmqp.java`)**
-    - **Role**: The infrastructure-specific adapter that communicates directly with RabbitMQ.
+    - **Role**: The infrastructure-specific driven adapter that communicates directly with RabbitMQ.
     - **Purpose**: Implements the `NotificationCommandPublisher` interface, abstracting away the details of the
       `RabbitTemplate`.
     - **Mechanism**: It uses Spring AMQP's `RabbitTemplate` to send the `SendEmailNotificationCommand` object to a
@@ -300,8 +301,8 @@ validity while handling the conversion between different data representations.
     - **Purpose**: Handles the verification of passkey registration responses and converts the verified data into domain
       models.
     - **Mechanism**:
-        - Uses `WebAuthnRegistrationManager.createNonStrictWebAuthnRegistrationManager()` for flexible validation
-          suitable for development and testing environments.
+        - Injects `WebAuthnRegistrationManager` bean configured in `WebAuthn4jConfig.java`. The current configuration
+          uses the non-strict manager for flexible validation suitable for development and testing environments.
         - Leverages `RegistrationParametersProvider` to construct the verification parameters from session data and
           configuration.
         - Delegates the final conversion from WebAuthn4J's `RegistrationData` to our domain `Passkey` object to
@@ -312,7 +313,8 @@ validity while handling the conversion between different data representations.
     - **Purpose**: Validates authentication responses and updates the passkey's security state (specifically the sign
       count).
     - **Mechanism**:
-        - Uses `WebAuthnAuthenticationManager` for standard WebAuthn authentication verification.
+        - Injects `WebAuthnAuthenticationManager` bean configured in `WebAuthn4jConfig.java` for standard WebAuthn
+          authentication verification.
         - Relies on `AuthenticationParametersProvider` to build verification parameters from session data, passkey
           information, and configuration.
         - **Sign Count Update**: Automatically extracts and updates the passkey's sign count from the authentication
@@ -326,6 +328,17 @@ validity while handling the conversion between different data representations.
     - **`AuthenticationParametersProvider.java`**: Builds `AuthenticationParameters` for authentication verification by
       combining session data, passkey information, and configuration. It includes credential allowlists from session
       data to ensure only valid credentials are accepted for the authentication attempt.
+
+- **WebAuthn4J Configuration (`WebAuthn4jConfig.java`)**:
+    - **Purpose**: Provides centralized configuration for WebAuthn4J library components as Spring beans.
+    - **Key Beans**:
+        - `WebAuthnRegistrationManager`: Currently configured as a non-strict manager using
+          `createNonStrictWebAuthnRegistrationManager()` for flexible validation during development. This can be
+          replaced with stricter configuration for production environments.
+        - `WebAuthnAuthenticationManager`: Standard authentication manager for verifying authentication assertions.
+        - `ObjectConverter`: Provides JSON and CBOR converters required by WebAuthn4J for data serialization.
+    - **Benefits**: Proper dependency injection allows for easier testing, configuration management, and potential
+      runtime switching between strict and non-strict validation modes.
 
 - **Data Mapping and Conversion**:
     - **`RegistrationDataMapper.java`**: Converts WebAuthn4J's `RegistrationData` into our domain `Passkey` model. This

@@ -43,28 +43,36 @@ This use case relies on a set of interfaces (Ports) to interact with external sy
 adapters that implement these ports are detailed in the main technical documentation.
 
 * **Ports**:
-    * `CredentialOptionsPort`: An outgoing port responsible for generating the complex server-side options for WebAuthn
+    * `PasskeyOptionsPort`: An outgoing port responsible for generating the complex server-side options for WebAuthn
       registration or authentication ceremonies.
         * [**View Technical Implementation Details
-          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#passkey-options-generation-credentialoptionsservice--assemblers)
+          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#passkey-options-generation)
     * `ChallengeGenerationPort`: An outgoing port used to create a cryptographically secure, time-bound challenge.
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#challenge-generation-and-caching)
     * `HashingPort`: An outgoing port for securely verifying the user-submitted OTP against its stored hash.
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#otp-hashing)
+    * `SessionIdGenerationPort`: An outgoing port for generating unique session identifiers.
+        * [**View Technical Implementation Details
+          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#challenge-generation-and-caching)
+
+* **Repositories**:
     * `OtpRepository`: A port for saving, loading, and deleting `Otp` objects from persistence.
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#otp-storage-and-repository)
-    * `ChallengeRepository`: A port for saving and retrieving temporary `Challenge` objects from the cache.
+    * `SessionRepository`: A port for saving and retrieving temporary `Session` objects from the cache.
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#challenge-generation-and-caching)
     * `UserRepository`: A port for finding and creating `User` objects in the database.
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#user-and-passkey-persistence)
-    * `CredentialRepository`: A port for loading a user's existing passkey credentials from the database.
+    * `PasskeyRepository`: A port for loading a user's existing passkey credentials from the database.
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#user-and-passkey-persistence)
+
+* **Domain Services**:
+    * `OtpService`: Encapsulates the business rules for OTP verification including timing and security validations.
 
 * **Other System Beans**:
     * `Clock`: Provides a consistent source of time. Injecting a `Clock` is critical for deterministically testing

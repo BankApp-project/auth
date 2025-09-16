@@ -38,9 +38,15 @@ This use case relies on a set of interfaces (Ports) and repositories to perform 
     * `PasskeyVerificationPort`: Handles WebAuthn credential registration and authentication verification with signature
       counter validation.
         * [**View Technical Implementation Details
-          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#passkey-verification)
+          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#5-feature-passkey-management-and-authentication-webauthn)
     * `TokenIssuingPort`: Responsible for creating and signing authentication tokens.
 * **Repositories**:
     * `SessionRepository`: Manages the storage and retrieval of registration process related data.
-    * `CredentialRepository`: Manages the persistence of user passkey credentials.
+        * [**View Technical Implementation Details
+          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#challenge-generation-and-caching)
+    * `PasskeyRepository`: Manages the persistence of user passkey credentials.
+        * [**View Technical Implementation Details
+          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#user-and-passkey-persistence)
     * `UserRepository`: Handles user data persistence and status updates.
+        * [**View Technical Implementation Details
+          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#user-and-passkey-persistence)

@@ -34,3 +34,14 @@ ports are detailed in the main technical documentation.
     * `NotificationPort`: An outgoing port responsible for dispatching the raw OTP code to the user's email address.
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#4-feature-asynchronous-notifications-rabbitmq)
+
+**Note**: The `OtpService` internally uses several ports that are documented in the Implementation Details:
+
+* `OtpGenerationPort` - [**View Technical Implementation Details
+  **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#otp-generation)
+* `HashingPort` - [**View Technical Implementation Details
+  **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#otp-hashing)
+* `OtpConfigPort` - [**View Technical Implementation Details
+  **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#otp-configuration)
+* `OtpRepository` - [**View Technical Implementation Details
+  **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#otp-storage-and-repository)

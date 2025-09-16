@@ -72,11 +72,11 @@ The application requires the following environment variables to be set for conne
 
 For detailed technical documentation on each use case, see the corresponding page in the wiki:
 
-- [Use Case: Initiate Verification](../../wiki/Use-Case:-Initiate-Verification)
-- [Use Case: Complete Verification](../../wiki/Use-Case:-Complete-Verification)
-- [Use Case: Initiate Authentication](../../wiki/Use-Case:-Initiate-Authentication)
-- [Use Case: Complete Authentication](../../wiki/Use-Case:-Complete-Authentication)
-- [Use Case: Registration Complete](../../wiki/Use-Case:-Registration-Complete)
+- [Use Case: Initiate Verification](../../wiki/Use-Case-Initiate-Verification)
+- [Use Case: Complete Verification](../../wiki/Use-Case-Complete-Verification)
+- [Use Case: Initiate Authentication](../../wiki/Use-Case-Initiate-Authentication)
+- [Use Case: Complete Authentication](../../wiki/Use-Case-Complete-Authentication)
+- [Use Case: Complete Registration](../../wiki/Use-Case-Complete-Registration)
 
 ## Implementation Details
 
