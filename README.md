@@ -41,7 +41,6 @@ F --> G[✅ Authenticated]
 ```
 
 **Supported Flows:**
-
 - `Email Verification → WebAuthn Registration` (New Users)
 - `WebAuthn Authentication` (Existing Users)
 - `Email Verification → WebAuthn Authentication` (Alternative)
@@ -49,13 +48,11 @@ F --> G[✅ Authenticated]
 ## 🏗️ Architecture
 
 Built with **Hexagonal Architecture** (Ports & Adapters):
-
 - **Clean separation** between business logic and infrastructure
 - **Technology independence** - easily swap databases or frameworks
 - **High testability** with mocked adapters and pure domain logic
 
 ### Tech Stack
-
 - **Framework**: Spring Boot 4 with Virtual Threads
 - **Database**: PostgreSQL + Spring Data JPA
 - **Database versioning**: Flyway
@@ -116,7 +113,6 @@ For detailed technical documentation:
 
 #### Use Case Implementation
 ```java
-
 @UseCase  // Always annotate use case classes
 public class InitiateVerificationUseCase {
     // Implementation
@@ -125,7 +121,6 @@ public class InitiateVerificationUseCase {
 
 #### Dependency Injection
 ```java
-
 @RequiredArgsConstructor  // Preferred over @Autowired
 public class VerificationController {
     private final InitiateVerificationUseCase initiateVerificationUseCase;
@@ -143,12 +138,10 @@ EmailAddress email = EmailAddress.of("user@example.com");
 ### Development vs Production
 
 **⚠️ Current Setup (Development)**
-
 - Uses `WebAuthnRegistrationManager.createNonStrictWebAuthnRegistrationManager()`
 - Bypasses attestation verification for easier development
 
 **🛡️ Production Requirements**
-
 - Configure strict `WebAuthnRegistrationManager` with:
     - Attestation statement verifiers
     - Certificate path validators
@@ -156,7 +149,6 @@ EmailAddress email = EmailAddress.of("user@example.com");
     - Certificate chain validation
 
 ### Security Features
-
 - **WebAuthn FIDO2 Compliance**: Industry-standard passwordless authentication
 - **Secure OTP Generation**: Cryptographically secure random numbers
 - **BCrypt Password Hashing**: Industry-standard hashing algorithm

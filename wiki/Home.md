@@ -58,78 +58,70 @@ The following diagram shows the possible authentication paths users can take:
 ```mermaid
 flowchart TD
     Start([User Starts]) --> Choice{Device known by system?}
-%% New User Registration Flow
+    
+    %% New User Registration Flow
     Choice -->|New User| IV[Initiate Verification]
     IV --> CV[Complete Verification]
     CV --> CR[Complete Registration]
     CR --> Success1[✅ Registered & Authenticated]
-
-%% Existing User Authentication Flow
-Choice -->|Existing User|IA[Initiate Authentication]
-IA --> CA[Complete Authentication]
-CA --> Success2[✅ Authenticated]
-
-%% Alternative Flow: Verification then Authentication
-CV -->|User Already Has Passkey|CA3[Complete Authentication]
-CA3 --> Success3[✅ Authenticated]
-
-%% Styling
-classDef useCase fill: #e1f5fe, stroke: #01579b, stroke-width: 2px
-classDef success fill: #e8f5e8, stroke: #2e7d32, stroke-width: 2px
-classDef decision fill: #fff3e0, stroke: #ef6c00, stroke-width: 2px
-
-class IV, CV, IA, CA, CR, CA3 useCase
-class Success1,Success2, Success3 success
-class Choice decision
+    
+    %% Existing User Authentication Flow
+    Choice -->|Existing User| IA[Initiate Authentication]
+    IA --> CA[Complete Authentication]
+    CA --> Success2[✅ Authenticated]
+    
+    %% Alternative Flow: Verification then Authentication
+    CV -->|User Already Has Passkey| CA3[Complete Authentication]
+    CA3 --> Success3[✅ Authenticated]
+    
+    %% Styling
+    classDef useCase fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef success fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    
+    class IV,CV,IA,CA,CR,CA3 useCase
+    class Success1,Success2,Success3 success
+    class Choice decision
 ```
 
 ### Flow Descriptions
 
 **🆕 New User Registration Path:**
-
 ```
 Initiate Verification → Complete Verification → Complete Registration
 ```
-
 - User provides email for verification
 - Validates OTP and creates session
 - Registers WebAuthn credential and completes setup
 
 **🔐 Existing User Authentication Path:**
-
 ```
 Initiate Authentication → Complete Authentication
 ```
-
 - User initiates WebAuthn ceremony
 - Validates passkey and issues authentication tokens
 
 **🔄 Alternative Path (Verified User with Existing Passkey):**
-
 ```
 Initiate Verification → Complete Verification → Complete Authentication
 ```
-
 - User goes through email verification first
 - Then directly proceeds with WebAuthn authentication using existing passkey (no separate initiation needed)
 
 ## 🎯 Key Features
 
 ### WebAuthn Integration
-
 - **FIDO2 Compliance**: Full WebAuthn Level 2 support
 - **Cross-Platform**: Works with platform authenticators (Face ID, Windows Hello) and roaming authenticators
 - **Security Modes**: Configurable attestation verification (non-strict for development, strict for production)
 
 ### OTP System
-
 - **Secure Generation**: Cryptographically secure random number generation
 - **Configurable Length**: Adjustable OTP length and expiration
 - **BCrypt Hashing**: Industry-standard password hashing for OTP storage
 - **Redis TTL**: Automatic expiration handling
 
 ### Event-Driven Notifications
-
 - **Asynchronous Processing**: Non-blocking notification delivery
 - **RabbitMQ Integration**: Reliable message queuing with dead letter handling
 - **Extensible**: Easy to add new notification channels (SMS, push notifications)
@@ -137,18 +129,14 @@ Initiate Verification → Complete Verification → Complete Authentication
 ## 📚 Documentation Structure
 
 ### Getting Started
-
 - **[Main](Home)** - This comprehensive introduction (you are here)
 
 ### Technical Deep Dive
-
 - **[Implementation Details](Implementation-Details)** - Detailed architecture, patterns, and code organization
 - **Configuration** - Environment setup, properties, and deployment guide
 
 ### Use Case Documentation
-
 Each use case has dedicated documentation with:
-
 - Business logic overview
 - Port/adapter relationships
 - Request/response formats
