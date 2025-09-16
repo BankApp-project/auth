@@ -1,5 +1,6 @@
 package bankapp.auth.application.authentication.complete;
 
+import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.PasskeyVerificationPort;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
@@ -28,30 +29,33 @@ public class CompleteAuthenticationUseCase {
 
     @TransactionalUseCase
     public AuthenticationGrant handle(CompleteAuthenticationCommand command) {
-        var session = getSession(command);
+        var verifiedPasskey = verifyAndUpdatePasskey(command);
 
-        var updatedCredential = verifyChallengeAndUpdateCredentialRecord(command, session);
+        deleteSession(command.sessionId());
 
-        UUID userId = updatedCredential.getUserHandle();
-
-        passkeyRepository.updateSignCount(updatedCredential);
-
-        sessionRepository.delete(command.sessionId());
-
-        AuthTokens tokens = tokenIssuingPort.issueTokensForUser(userId);
+        AuthTokens tokens = generateTokensForUser(verifiedPasskey.getUserHandle());
         return new AuthenticationGrant(tokens);
     }
 
-    private Passkey verifyChallengeAndUpdateCredentialRecord(CompleteAuthenticationCommand command, Session session) {
+    private Passkey verifyAndUpdatePasskey(CompleteAuthenticationCommand command) {
         try {
-            var credentialRecordOpt = passkeyRepository.load(command.credentialId());
-
-            var credentialRecord = credentialRecordOpt.orElseThrow();
-
-            return passkeyVerificationPort.handleAuthentication(command.AuthenticationResponseJSON(), session, credentialRecord);
+            return verifyPasskeyAndUpdateSignCount(command);
+        } catch (MaliciousCounterException e) {
+            //todo add logic for dealing with malicious counters
+            throw e;
         } catch (RuntimeException e) {
             throw new CompleteAuthenticationException("Failed to confirm authentication challenge: " + e.getMessage(), e);
         }
+    }
+
+    private Passkey verifyPasskeyAndUpdateSignCount(CompleteAuthenticationCommand command) {
+        var session = getSession(command);
+        var passkey = getPasskey(command);
+
+        var verifiedPasskey = passkeyVerificationPort.handleAuthentication(command.AuthenticationResponseJSON(), session, passkey);
+        passkeyRepository.updateSignCount(verifiedPasskey);
+
+        return verifiedPasskey;
     }
 
     private Session getSession(CompleteAuthenticationCommand command) {
@@ -60,5 +64,19 @@ public class CompleteAuthenticationUseCase {
             throw new CompleteAuthenticationException("No such session with ID: " + command.sessionId());
         }
         return sessionOptional.get();
+    }
+
+    private Passkey getPasskey(CompleteAuthenticationCommand command) {
+        var passkeyOptional = passkeyRepository.load(command.credentialId());
+
+        return passkeyOptional.orElseThrow();
+    }
+
+    private void deleteSession(UUID sessionId) {
+        sessionRepository.delete(sessionId);
+    }
+
+    private AuthTokens generateTokensForUser(UUID userId) {
+        return tokenIssuingPort.issueTokensForUser(userId);
     }
 }
