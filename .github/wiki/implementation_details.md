@@ -19,6 +19,7 @@ core features.
 5. [Feature: Passkey Management and Authentication (WebAuthn)](#5-feature-passkey-management-and-authentication-webauthn)
     - [Challenge Generation and Caching](#challenge-generation-and-caching)
     - [Passkey Options Generation](#passkey-options-generation)
+   - [Passkey Verification](#passkey-verification)
     - [User and Passkey Persistence](#user-and-passkey-persistence)
 
 ---
@@ -274,6 +275,69 @@ data.
           for the ceremony is calculated based on the challenge's remaining lifetime (
           `Duration.between(now, challenge.expirationTime())`). This ensures the options sent to the client are always
           synchronized with the server's state.
+
+#### Passkey Verification
+
+This section covers the verification process for both passkey registration and authentication responses. The
+verification system acts as a bridge between the WebAuthn protocol and our domain models, ensuring cryptographic
+validity while handling the conversion between different data representations.
+
+- **Purpose**: The verification layer implements the `PasskeyVerificationPort` and serves as the main orchestrator for
+  validating WebAuthn responses during both registration and authentication ceremonies.
+
+- **Main Service (`PasskeyVerificationService.java`)**:
+    - **Role**: Acts as a **facade** that coordinates the verification process by delegating to specialized handlers for
+      registration and authentication.
+    - **Mechanism**: This service maintains a clean separation of concerns by routing requests to either
+      `PasskeyRegistrationHandler` or `PasskeyAuthenticationHandler` based on the operation type. It also handles the
+      translation of WebAuthn4J-specific exceptions into domain-specific exceptions that the application layer can
+      understand.
+    - **Exception Handling**: Catches low-level `WebAuthnException` and `MaliciousCounterValueException` from the
+      WebAuthn4J library and translates them into meaningful domain exceptions like
+      `RegistrationConfirmAttemptException` and `MaliciousCounterException`.
+
+- **Registration Verification (`PasskeyRegistrationHandler.java`)**:
+    - **Purpose**: Handles the verification of passkey registration responses and converts the verified data into domain
+      models.
+    - **Mechanism**:
+        - Uses `WebAuthnRegistrationManager.createNonStrictWebAuthnRegistrationManager()` for flexible validation
+          suitable for development and testing environments.
+        - Leverages `RegistrationParametersProvider` to construct the verification parameters from session data and
+          configuration.
+        - Delegates the final conversion from WebAuthn4J's `RegistrationData` to our domain `Passkey` object to
+          `RegistrationDataMapper`.
+        - Ensures the session contains valid user context before proceeding with registration.
+
+- **Authentication Verification (`PasskeyAuthenticationHandler.java`)**:
+    - **Purpose**: Validates authentication responses and updates the passkey's security state (specifically the sign
+      count).
+    - **Mechanism**:
+        - Uses `WebAuthnAuthenticationManager` for standard WebAuthn authentication verification.
+        - Relies on `AuthenticationParametersProvider` to build verification parameters from session data, passkey
+          information, and configuration.
+        - **Sign Count Update**: Automatically extracts and updates the passkey's sign count from the authentication
+          response. This is critical for detecting cloned credentials, as each authentic authenticator increments this
+          counter with every use.
+
+- **Parameter Providers**:
+    - **`RegistrationParametersProvider.java`**: Constructs `RegistrationParameters` for registration verification by
+      combining session challenge data with passkey configuration. It uses the challenge from session data and applies
+      configuration settings for user verification and presence requirements.
+    - **`AuthenticationParametersProvider.java`**: Builds `AuthenticationParameters` for authentication verification by
+      combining session data, passkey information, and configuration. It includes credential allowlists from session
+      data to ensure only valid credentials are accepted for the authentication attempt.
+
+- **Data Mapping and Conversion**:
+    - **`RegistrationDataMapper.java`**: Converts WebAuthn4J's `RegistrationData` into our domain `Passkey` model. This
+      mapper extracts essential fields like credential ID, public key, sign count, and security flags while preserving
+      attestation data for audit purposes. It also handles the conversion of transport information and extensions from
+      WebAuthn format to our domain enums.
+    - **`WebAuthnMapper.java`**: Provides utility methods for converting between domain models and WebAuthn4J
+      representations. It handles complex conversions like transforming extension maps and transport enums, and provides
+      converters for attestation objects and client data.
+    - **`PasskeyToCredentialRecordMapper.java`**: Converts domain `Passkey` objects back into WebAuthn4J's
+      `CredentialRecord` format for authentication verification. This reverse mapping is essential for the verification
+      process, as it reconstructs the credential information needed by the WebAuthn4J library.
 
 #### User and Passkey Persistence
 
