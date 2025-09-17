@@ -60,9 +60,22 @@ Configuration is managed centrally in `application.yaml` and loaded into the app
 
 - **`application.yaml`**: The single source of truth for all environment-specific settings. It is organized using
   prefixes like `spring.*` for framework settings and `app.*` for custom application settings.
-- **`@ConfigurationProperties`**: We use this annotation with Java `record` types (e.g., `OtpProperties`) to create
+- **`@ConfigurationProperties`**: We use this annotation with Java `record` types (e.g., `OtpProperties`,
+  `RSAProperties`) to create
   immutable, type-safe configuration objects. This prevents configuration-related errors at runtime and makes the
   configuration easy to reason about.
+
+#### RSA Key Configuration
+
+- **`RSAProperties.java`**
+    - **Purpose**: Configuration record for JWT signing and verification using RSA key pairs
+    - **Location**: `infrastructure.crosscutting.config` package
+    - **Mechanism**: Loads Base64-encoded RSA public and private keys from environment variables (`RSA_PUBLIC_KEY` and
+      `RSA_PRIVATE_KEY`) via the `app.config.rsa-key` prefix in `application.yaml`
+    - **Security**: Keys are validated at startup and decoded from Base64 format. The record provides convenient
+      `publicKeyBytes()` and `privateKeyBytes()` methods for key material access
+    - **Exception Handling**: Throws `IllegalConfigurationPropertiesException` if keys are null or blank, ensuring
+      fail-fast behavior during application startup
 
 ---
 

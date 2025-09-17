@@ -59,18 +59,21 @@ Built with **Hexagonal Architecture** (Ports & Adapters):
 - **Cache**: Redis with TTL-based session management
 - **Messaging**: RabbitMQ (AMQP)
 - **Authentication**: WebAuthn4J (FIDO2)
+- **Authorization**: Spring OAuth2 Authorization Server (JWT validation)
 
 ## 🛠️ Configuration
 
 ### Required Environment Variables
 
-| Variable                     | Description               | Example                                         |
-|------------------------------|---------------------------|-------------------------------------------------|
-| `SPRING_DATASOURCE_URL`      | PostgreSQL connection URL | `jdbc:postgresql://localhost:5432/bankapp_auth` |
-| `SPRING_DATASOURCE_USERNAME` | Database username         | `bankapp`                                       |
-| `SPRING_DATASOURCE_PASSWORD` | Database password         | `secure_password`                               |
-| `SPRING_REDIS_HOST`          | Redis hostname            | `localhost`                                     |
-| `SPRING_REDIS_PORT`          | Redis port                | `6379`                                          |
+| Variable                     | Description                            | Example                                         |
+|------------------------------|----------------------------------------|-------------------------------------------------|
+| `SPRING_DATASOURCE_URL`      | PostgreSQL connection URL              | `jdbc:postgresql://localhost:5432/bankapp_auth` |
+| `SPRING_DATASOURCE_USERNAME` | Database username                      | `bankapp`                                       |
+| `SPRING_DATASOURCE_PASSWORD` | Database password                      | `secure_password`                               |
+| `SPRING_REDIS_HOST`          | Redis hostname                         | `localhost`                                     |
+| `SPRING_REDIS_PORT`          | Redis port                             | `6379`                                          |
+| `RSA_PUBLIC_KEY`             | Base64-encoded RSA public key for JWT  | `MIIBIjANBgkqhkiG9w0BAQEF...`                   |
+| `RSA_PRIVATE_KEY`            | Base64-encoded RSA private key for JWT | `MIIEvQIBADANBgkqhkiG9w0B...`                   |
 
 ### Optional Configuration
 
@@ -152,7 +155,8 @@ EmailAddress email = EmailAddress.of("user@example.com");
 - **WebAuthn FIDO2 Compliance**: Industry-standard passwordless authentication
 - **Secure OTP Generation**: Cryptographically secure random numbers
 - **BCrypt Password Hashing**: Industry-standard hashing algorithm
-- **JWT Security**: Signed tokens with proper expiration
+- **JWT Security**: RSA-signed tokens with proper expiration
+- **OAuth2 Authorization Server**: Spring Security integration for token validation
 - **Input Validation**: Comprehensive request sanitization
 
 ## 🔧 Troubleshooting

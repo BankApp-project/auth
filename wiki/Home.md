@@ -31,15 +31,16 @@ This service implements **Hexagonal Architecture (Ports and Adapters)** pattern,
 
 ## 🔧 Core Technologies
 
-| Component          | Technology             | Purpose                                     |
-|--------------------|------------------------|---------------------------------------------|
-| **Framework**      | Spring Boot 4          | Application foundation with virtual threads |
-| **Architecture**   | Hexagonal (Clean)      | Business logic isolation                    |
-| **Database**       | PostgreSQL + JPA       | Persistent data storage                     |
-| **Cache/Sessions** | Redis                  | High-performance temporary storage with TTL |
-| **Messaging**      | RabbitMQ (AMQP)        | Asynchronous event processing               |
-| **Authentication** | WebAuthn4J             | FIDO2/WebAuthn implementation               |
-| **Security**       | BCrypt + Secure Random | Password hashing and OTP generation         |
+| Component          | Technology                   | Purpose                                           |
+|--------------------|------------------------------|---------------------------------------------------|
+| **Framework**      | Spring Boot 4                | Application foundation with virtual threads       |
+| **Architecture**   | Hexagonal (Clean)            | Business logic isolation                          |
+| **Database**       | PostgreSQL + JPA             | Persistent data storage                           |
+| **Cache/Sessions** | Redis                        | High-performance temporary storage with TTL       |
+| **Messaging**      | RabbitMQ (AMQP)              | Asynchronous event processing                     |
+| **Authentication** | WebAuthn4J                   | FIDO2/WebAuthn implementation                     |
+| **Authorization**  | OAuth2 Authorization Server  | JWT token validation and authorization            |
+| **Security**       | BCrypt + RSA + Secure Random | Password hashing, JWT signing, and OTP generation |
 
 ## 📋 Use Cases
 
@@ -133,7 +134,7 @@ Initiate Verification → Complete Verification → Complete Authentication
 
 ### Technical Deep Dive
 - **[Implementation Details](Implementation-Details)** - Detailed architecture, patterns, and code organization
-- **Configuration** - Environment setup, properties, and deployment guide
+- **[Configuration](Configuration)** - Environment setup, properties, and deployment guide
 
 ### Use Case Documentation
 Each use case has dedicated documentation with:

@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:.env
   threads:
     virtual:
       enabled: true
@@ -35,6 +37,9 @@ spring:
 
 app:
   config:
+    rsa-key:
+      public-key: ${RSA_PUBLIC_KEY}
+      private-key: ${RSA_PRIVATE_KEY}
     otp:
       size: 6
       ttl: 120s

@@ -1,5 +1,6 @@
 package bankapp.auth.infrastructure;
 
+import bankapp.auth.infrastructure.crosscutting.config.RSAProperties;
 import bankapp.auth.infrastructure.driven.challenge.config.ChallengeProperties;
 import bankapp.auth.infrastructure.driven.otp.config.OtpProperties;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
@@ -15,7 +16,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
         OtpProperties.class,
         ChallengeProperties.class,
         PasskeyRpProperties.class,
-        PasskeySecurityProperties.class
+        PasskeySecurityProperties.class,
+        RSAProperties.class
 })
 public class BankappAuthService {
 
