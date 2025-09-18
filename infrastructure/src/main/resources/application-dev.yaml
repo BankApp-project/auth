@@ -1,0 +1,53 @@
+# Spring Config
+spring:
+  rabbitmq:
+    host: auth-dev-rabbitmq
+    port: 5672
+  data:
+    redis:
+      host: auth-dev-redis
+      port: 6379
+  # DB Config
+  datasource:
+    url: jdbc:postgresql://auth-dev-postgres-db:5432/auth-service
+    username: dev
+    password: dev
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        '[show_sql]': true
+        '[format_sql]': true
+
+# App Config
+app:
+  config:
+    rsa-key:
+      public-key: classpath:certs/public.pem
+      private-key: classpath:certs/private.pem
+    passkey:
+      rp:
+        rp-id: "localhost"
+        auth-mode: smartphone
+      security:
+        user-presence-required: true
+        user-verification-required: true
+  feature:
+    verification:
+      initiate:
+        enabled: true
+      complete:
+        enabled: true
+    authentication:
+      initiate:
+        enabled: true
+      complete:
+        enabled: false
+    registration:
+      enabled: false

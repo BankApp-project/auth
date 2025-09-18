@@ -1,6 +1,6 @@
 # Stage 1: Build the application using Maven
-FROM maven:3.9-eclipse-temurin-21-alpine AS builder
-
+#FROM maven:4.0-eclipse-temurin-25-alpine AS builder
+FROM amazoncorretto:25-alpine AS builder
 # Set the working directory in the container
 WORKDIR /app
 
@@ -24,8 +24,8 @@ COPY infrastructure/src ./infrastructure/src
 RUN mvn clean package -DskipTests
 
 # Stage 2: Create the final, lightweight runtime image
-FROM eclipse-temurin:21-jre-alpine
-
+#FROM eclipse-temurin:21-jre-alpine
+FROM amazoncorretto:25-alpine
 WORKDIR /app
 
 # --- IMPORTANT: Copy the JAR from the correct module's target directory ---

@@ -1,26 +1,47 @@
-services:
-  bankapp-auth:
-    build: .
-    image: bankapp-auth:latest
-    container_name: bankapp-auth
-    restart: unless-stopped
-    environment:
-      ## THIS VALUES ARE PLACEHOLDERS ##
-      # The hostname 'postgres-db' will resolve correctly because
-      # both containers are on the same external network.
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/${POSTGRES_DB}
-      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
-      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
-      # Example environment variables for other services
-      - SPRING_REDIS_HOST=redis
-      - SPRING_RABBITMQ_HOST=rabbitmq
-    ports:
-      - "8080:8080"
-    networks:
-      - bankapp-infra
+# compose for testing purposes
+# compose.yml
 
-# It tells Docker Compose to use an existing network
-# and not to create a new one.
 networks:
-  bankapp-infra:
-    external: true
+  bankapp-test:
+    driver: bridge
+services:
+  postgres-db:
+    image: postgres:16
+    container_name: auth-dev-postgres-db
+    environment:
+      - POSTGRES_DB=auth-service
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=dev
+    ports:
+      - "5432:5432"
+    networks:
+      - bankapp-test
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: auth-dev-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - bankapp-test
+    volumes:
+      - redis-data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: auth-dev-rabbitmq
+    hostname: dev
+    ports:
+      - "5672:5672"
+      - "127.0.0.1:15672:15672"
+    networks:
+      - bankapp-test
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  postgres-data:
+  redis-data:
+  rabbitmq_data:

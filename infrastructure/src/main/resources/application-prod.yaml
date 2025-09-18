@@ -1,0 +1,48 @@
+# Spring Config
+spring:
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  # DB Config
+  datasource:
+    url: jdbc:postgresql://${DB_URL}:${DB_PORT:5432}/${DB_SCHEMA:auth-service}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+    # Connection pool settings
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+  # JPA / Hibernate settings
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        '[show_sql]': true
+        '[format_sql]': true
+
+# App Config
+app:
+  config:
+    rsa-key:
+      public-key: #placeholder
+      private-key: #placeholder
+  feature:
+    verification:
+      initiate:
+        enabled: true
+      complete:
+        enabled: true
+    authentication:
+      initiate:
+        enabled: true
+      complete:
+        enabled: false
+    registration:
+      enabled: false
