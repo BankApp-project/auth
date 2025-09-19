@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class PasskeyAuthenticationHandlerTest {
 
     public static final String RP_ID = "bankapp.online";
+
     @Autowired
     private PasskeyAuthenticationHandler passkeyAuthenticationHandler;
 
