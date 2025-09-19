@@ -76,4 +76,5 @@ app:
 
 logging:
   level:
-    org.springframework.boot.autoconfigure: INFO
+    org.springframework.boot.autoconfigure: DEBUG
+    bankapp: DEBUG
