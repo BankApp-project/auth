@@ -67,49 +67,32 @@ Configuration is managed centrally in `application.yaml` and loaded into the app
 
 #### RSA Key Configuration
 
-The RSA key configuration system provides secure JWT signing and verification capabilities through a combination of
-configuration properties, key generation, and OAuth2 integration.
+The RSA key configuration system provides secure JWT signing and verification capabilities through Spring Boot 4's
+enhanced configuration properties and automatic PEM file conversion.
 
 - **`RSAProperties.java`**
     - **Purpose**: Configuration record for JWT signing and verification using RSA key pairs
     - **Location**: `infrastructure.crosscutting.config` package
-    - **Mechanism**: Loads Base64-encoded RSA public and private keys from environment variables (`RSA_PUBLIC_KEY` and
-      `RSA_PRIVATE_KEY`) via the `app.config.rsa-key` prefix in `application.yaml`
-    - **Security**: Keys are validated at startup and decoded from Base64 format. The record provides convenient
-      `publicKeyBytes()` and `privateKeyBytes()` methods for key material access
-  - **Exception Handling**: Throws `InvalidConfigurationPropertiesException` if keys are null or blank, ensuring
-      fail-fast behavior during application startup
+  - **Key Features**: Directly holds `RSAPublicKey` and `RSAPrivateKey` objects loaded from PEM files via Spring Boot's
+    automatic converters
+  - **Configuration**: Maps to `app.config.rsa-key` prefix in `application.yaml` with file paths:
+      - `public-key: classpath:certs/public.pem`
+      - `private-key: classpath:certs/private.pem`
+  - **Spring Boot 4 Enhancement**: Leverages built-in PEM file parsing - no manual Base64 encoding/decoding required
+  - **Validation**: Uses `@NotNull` annotations to ensure keys are present at startup
 
 - **`RSAConfiguration.java`**
-    - **Purpose**: Spring configuration class that creates RSA key beans for dependency injection
+    - **Purpose**: Spring configuration class that exposes RSA keys as Spring beans for dependency injection
     - **Location**: `infrastructure.crosscutting.config` package
-    - **Key Generation Process**:
-        - Uses Java's `KeyFactory` with the RSA algorithm to generate key instances
-        - Converts Base64-encoded keys from `RSAProperties` into proper RSA key objects
-        - Public keys use X.509 encoding (`X509EncodedKeySpec`)
-        - Private keys use PKCS#8 encoding (`PKCS8EncodedKeySpec`)
-    - **Exception Handling**:
-        - Wraps low-level crypto exceptions (`NoSuchAlgorithmException`, `InvalidKeySpecException`)
-        - Throws domain-specific exceptions: `PublicKeyCreationFailedException` and `PrivateKeyCreationFailedException`
+    - **Simplified Design**: Directly returns RSA keys from `RSAProperties` - no manual parsing logic needed
     - **Spring Beans Provided**:
         - `RSAPublicKey` - for JWT verification
         - `RSAPrivateKey` - for JWT signing
+    - **Benefits**: Clean separation of configuration loading (handled by Spring Boot 4) from bean exposition
 
 #### OAuth2 Authorization Server Integration
 
-- **`SecurityConfiguration.java` Enhancement**
-    - **JWK Source Configuration**: Creates a `JWKSource<SecurityContext>` bean that:
-        - Builds an RSA key pair using Nimbus JOSE library
-        - Generates a unique key ID (UUID) for key rotation support
-        - Wraps keys in an immutable JWK Set for thread-safe access
-    - **JWT Decoder**: Configures a `JwtDecoder` bean using Spring OAuth2 Authorization Server's built-in decoder
-        - Automatically validates JWT signatures using the configured RSA public key
-        - Integrates seamlessly with Spring Security's resource server functionality
-    - **Benefits**:
-        - Centralized JWT validation across the application
-        - Support for key rotation through key IDs
-        - Standard OAuth2/OIDC compliance
-
+//placeholder, will get it after finishing impl of OAuth auth server
 ---
 
 ### 3. Feature: OTP Management

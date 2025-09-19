@@ -3,7 +3,7 @@
 > Modern, secure WebAuthn-based authentication microservice built with Spring Boot 4 and Hexagonal Architecture.
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/)
 [![WebAuthn](https://img.shields.io/badge/WebAuthn-FIDO2-blue.svg)](https://webauthn.guide/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue.svg)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-Cache-red.svg)](https://redis.io/)
@@ -12,7 +12,11 @@
 
 ### Prerequisites
 
-//placeholder
+- Java 25
+- Maven 3.9/4.0+
+- PostgreSQL 15+
+- Redis 7+
+- Docker & Docker Compose (optional)
 
 ### 🐳 Docker Quick Start
 
@@ -59,27 +63,17 @@ Built with **Hexagonal Architecture** (Ports & Adapters):
 - **Cache**: Redis with TTL-based session management
 - **Messaging**: RabbitMQ (AMQP)
 - **Authentication**: WebAuthn4J (FIDO2)
-- **Authorization**: Spring OAuth2 Authorization Server (JWT validation)
+- **Authorization**: Spring OAuth2 Authorization Server
 
 ## 🛠️ Configuration
 
 ### Required Environment Variables
 
-| Variable                     | Description                            | Example                                         |
-|------------------------------|----------------------------------------|-------------------------------------------------|
-| `SPRING_DATASOURCE_URL`      | PostgreSQL connection URL              | `jdbc:postgresql://localhost:5432/bankapp_auth` |
-| `SPRING_DATASOURCE_USERNAME` | Database username                      | `bankapp`                                       |
-| `SPRING_DATASOURCE_PASSWORD` | Database password                      | `secure_password`                               |
-| `SPRING_REDIS_HOST`          | Redis hostname                         | `localhost`                                     |
-| `SPRING_REDIS_PORT`          | Redis port                             | `6379`                                          |
-| `RSA_PUBLIC_KEY`             | Base64-encoded RSA public key for JWT  | `MIIBIjANBgkqhkiG9w0BAQEF...`                   |
-| `RSA_PRIVATE_KEY`            | Base64-encoded RSA private key for JWT | `MIIEvQIBADANBgkqhkiG9w0B...`                   |
+//placeholder
 
-### Optional Configuration
+### RSA Key Configuration
 
-| Variable            | Default      | Description                                         |
-|---------------------|--------------|-----------------------------------------------------|
-| `DEFAULT_AUTH_MODE` | `smartphone` | WebAuthn flow preference (`smartphone` or `device`) |
+//placeholder
 
 ## 📝 API Endpoints
 
@@ -93,16 +87,7 @@ Built with **Hexagonal Architecture** (Ports & Adapters):
 
 ## 🧪 Testing
 
-```bash
-# Run unit tests
-./mvnw test
-
-# Run integration tests
-./mvnw verify -Dspring.profiles.active=test
-
-# Run specific test class
-./mvnw test -Dtest=InitiateVerificationUseCaseTest
-```
+//placeholder
 
 ## 📚 Documentation
 

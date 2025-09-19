@@ -31,8 +31,15 @@ spring:
 app:
   config:
     rsa-key:
-      public-key: #placeholder
-      private-key: #placeholder
+      public-key: classpath:${RSA_PUBLIC_KEY_CLASSPATH}
+      private-key: classpath:${RSA_PRIVATE_KEY_CLASSPATH}
+    passkey:
+      rp:
+        rp-id: "localhost"
+        auth-mode: smartphone
+      security:
+        user-presence-required: true
+        user-verification-required: true
   feature:
     verification:
       initiate:
