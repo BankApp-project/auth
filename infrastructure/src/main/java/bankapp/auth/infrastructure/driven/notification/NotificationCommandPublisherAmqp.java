@@ -1,5 +1,6 @@
 package bankapp.auth.infrastructure.driven.notification;
 
+import bankapp.payload.notification.email.otp.EmailNotificationPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
