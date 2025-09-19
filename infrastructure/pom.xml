@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.7</version> <!-- Version not managed by BOM -->
+            <version>42.7.8</version> <!-- Version not managed by BOM -->
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
