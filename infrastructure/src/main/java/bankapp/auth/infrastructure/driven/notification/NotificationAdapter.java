@@ -29,8 +29,8 @@ public class NotificationAdapter implements NotificationPort {
         return templateProvider.getOtpEmailTemplate(otpValue);
     }
 
-    private SendEmailNotificationCommand getSendEmailNotificationCommand(EmailAddress emailAddress, String template) {
+    private EmailNotificationPayload getSendEmailNotificationCommand(EmailAddress emailAddress, String template) {
         String email = emailAddress.getValue();
-        return new SendEmailNotificationCommand(email, SUBJECT, template);
+        return new EmailNotificationPayload(email, SUBJECT, template);
     }
 }

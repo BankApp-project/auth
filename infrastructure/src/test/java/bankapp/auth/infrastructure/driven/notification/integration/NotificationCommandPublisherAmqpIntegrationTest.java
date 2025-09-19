@@ -1,8 +1,8 @@
 package bankapp.auth.infrastructure.driven.notification.integration;
 
 import bankapp.auth.infrastructure.AmqpOtpTestConfig;
+import bankapp.auth.infrastructure.driven.notification.EmailNotificationPayload;
 import bankapp.auth.infrastructure.driven.notification.NotificationCommandPublisher;
-import bankapp.auth.infrastructure.driven.notification.SendEmailNotificationCommand;
 import bankapp.auth.infrastructure.utils.WithRabbitMQContainer;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.Queue;
@@ -34,7 +34,7 @@ public class NotificationCommandPublisherAmqpIntegrationTest implements WithRabb
         var subject = "We are testing sending OTPs!";
         var body = "Hello from there :-)";
 
-        var command = new SendEmailNotificationCommand(
+        var command = new EmailNotificationPayload(
                 email,
                 subject,
                 body

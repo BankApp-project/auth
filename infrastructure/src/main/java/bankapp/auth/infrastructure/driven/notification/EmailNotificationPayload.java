@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.notification;
 
-public record SendEmailNotificationCommand(
+public record EmailNotificationPayload(
         String recipientEmail,
         String subject,
         String htmlBody

@@ -20,7 +20,7 @@ class NotificationCommandPublisherAmqpTest {
     private RabbitTemplate rabbitTemplate;
 
     @Mock
-    private SendEmailNotificationCommand sendEmailNotificationCommand;
+    private EmailNotificationPayload emailNotificationPayload;
 
     private NotificationCommandPublisherAmqp publisher;
 
@@ -39,11 +39,11 @@ class NotificationCommandPublisherAmqpTest {
     @Test
     void publishSendEmailCommand_ShouldCallRabbitTemplateWithCorrectParameters() {
         // When
-        publisher.publishSendEmailCommand(sendEmailNotificationCommand);
+        publisher.publishSendEmailCommand(emailNotificationPayload);
 
         // Then
         verify(rabbitTemplate, times(1))
-                .convertAndSend(TEST_EXCHANGE, TEST_ROUTING_KEY, sendEmailNotificationCommand);
+                .convertAndSend(TEST_EXCHANGE, TEST_ROUTING_KEY, emailNotificationPayload);
     }
 
     @Test

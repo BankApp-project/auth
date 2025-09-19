@@ -18,7 +18,7 @@ public class NotificationCommandPublisherAmqp implements NotificationCommandPubl
     private String exchangeName;
 
     @Override
-    public void publishSendEmailCommand(SendEmailNotificationCommand command) {
+    public void publishSendEmailCommand(EmailNotificationPayload command) {
         if (command == null) {
             throw new NotificationCommandPublisherException("Command cannot be null");
         }
