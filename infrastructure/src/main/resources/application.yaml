@@ -31,3 +31,7 @@ app:
         otp:
           exchange: notifications.commands.v1.exchange
           routing-key: send.otp.email
+
+logging:
+  level:
+    org.springframework.boot.autoconfigure: DEBUG

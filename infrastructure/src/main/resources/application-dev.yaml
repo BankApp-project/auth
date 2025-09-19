@@ -1,15 +1,15 @@
 # Spring Config
 spring:
   rabbitmq:
-    host: auth-dev-rabbitmq
+    host: localhost
     port: 5672
   data:
     redis:
-      host: auth-dev-redis
+      host: localhost
       port: 6379
   # DB Config
   datasource:
-    url: jdbc:postgresql://auth-dev-postgres-db:5432/auth-service
+    url: jdbc:postgresql://localhost:5432/auth-service
     username: dev
     password: dev
     driver-class-name: org.postgresql.Driver
