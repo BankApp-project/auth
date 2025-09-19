@@ -20,3 +20,5 @@ spring:
         '[show_sql]': false
         '[format_sql]': true
         '[globally_quoted_identifiers]': true
+  flyway:
+    enabled: true
