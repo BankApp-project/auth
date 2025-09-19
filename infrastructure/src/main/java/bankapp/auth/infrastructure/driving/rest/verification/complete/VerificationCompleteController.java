@@ -30,7 +30,7 @@ public class VerificationCompleteController {
     @PostMapping("/complete/email/")
     public ResponseEntity<? extends CompleteVerificationResponseDto> completeEmailVerification(@RequestBody CompleteVerificationRequest request) {
         var email = new EmailAddress(request.email());
-        var command = new CompleteVerificationCommand(email, request.value());
+        var command = new CompleteVerificationCommand(email, request.otpValue());
 
         var response = completeVerificationUseCase.handle(command);
 
