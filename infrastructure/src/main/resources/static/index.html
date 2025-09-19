@@ -31,6 +31,14 @@
             text-align: center;
         }
 
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
         .title {
             color: #333;
             margin-bottom: 10px;
@@ -42,6 +50,7 @@
             color: #666;
             margin-bottom: 30px;
             font-size: 16px;
+            line-height: 1.4;
         }
 
         .form-group {
@@ -57,7 +66,7 @@
             font-size: 14px;
         }
 
-        input[type="email"] {
+        input[type="email"], input[type="text"] {
             width: 100%;
             padding: 15px;
             border: 2px solid #e1e5e9;
@@ -67,11 +76,24 @@
             background: #f8f9fa;
         }
 
-        input[type="email"]:focus {
+        input[type="email"]:focus, input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
             background: white;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input:disabled {
+            background: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .otp-input {
+            text-align: center;
+            font-size: 24px;
+            letter-spacing: 8px;
+            font-weight: 600;
         }
 
         .submit-btn {
@@ -96,6 +118,20 @@
         .submit-btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            margin-bottom: 15px;
+        }
+
+        .back-btn:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .message {
@@ -143,65 +179,159 @@
             font-size: 12px;
             color: #666;
         }
+
+        .email-display {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .resend-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 15px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .resend-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1 class="title">Email Verification</h1>
-    <p class="subtitle">Enter your email address to initiate verification</p>
+    <!-- Email Input Screen -->
+    <div id="emailScreen" class="screen active">
+        <h1 class="title">Email Verification</h1>
+        <p class="subtitle">Enter your email address to initiate verification</p>
 
-    <form id="verificationForm">
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    placeholder="Enter your email address"
-            >
+        <form id="emailForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        placeholder="Enter your email address"
+                >
+            </div>
+
+            <button type="submit" class="submit-btn" id="emailSubmitBtn">
+                Send Verification
+            </button>
+        </form>
+
+        <div id="emailMessage" class="message"></div>
+
+        <div class="endpoint-info">
+            <strong>Endpoint:</strong> POST http://localhost:8080/verification/initiate/email
         </div>
+    </div>
 
-        <button type="submit" class="submit-btn" id="submitBtn">
-            Send Verification
-        </button>
-    </form>
+    <!-- OTP Verification Screen -->
+    <div id="otpScreen" class="screen">
+        <h1 class="title">Verify Code</h1>
+        <p class="subtitle">We've sent a verification code to your email address</p>
 
-    <div id="message" class="message"></div>
+        <div id="emailDisplay" class="email-display"></div>
 
-    <div class="endpoint-info">
-        <strong>Endpoint:</strong> POST http://localhost:8080/verification/initiate/email
+        <form id="otpForm">
+            <div class="form-group">
+                <label for="emailConfirm">Email Address</label>
+                <input
+                        type="email"
+                        id="emailConfirm"
+                        name="emailConfirm"
+                        required
+                        disabled
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="otpValue">Verification Code</label>
+                <input
+                        type="text"
+                        id="otpValue"
+                        name="otpValue"
+                        required
+                        placeholder="Enter 6-digit code"
+                        maxlength="6"
+                        class="otp-input"
+                        autocomplete="one-time-code"
+                >
+            </div>
+
+            <button type="button" class="submit-btn back-btn" id="backBtn">
+                Back to Email
+            </button>
+
+            <button type="submit" class="submit-btn" id="otpSubmitBtn">
+                Verify Code
+            </button>
+        </form>
+
+        <a href="#" class="resend-link" id="resendLink">Didn't receive the code? Resend</a>
+
+        <div id="otpMessage" class="message"></div>
+
+        <div class="endpoint-info">
+            <strong>Endpoint:</strong> POST http://localhost:8080/verification/complete/email/
+        </div>
     </div>
 </div>
 
 <script>
-    const form = document.getElementById('verificationForm');
-    const emailInput = document.getElementById('email');
-    const submitBtn = document.getElementById('submitBtn');
-    const messageDiv = document.getElementById('message');
+    // Screen elements
+    const emailScreen = document.getElementById('emailScreen');
+    const otpScreen = document.getElementById('otpScreen');
 
-    form.addEventListener('submit', async (e) => {
+    // Email form elements
+    const emailForm = document.getElementById('emailForm');
+    const emailInput = document.getElementById('email');
+    const emailSubmitBtn = document.getElementById('emailSubmitBtn');
+    const emailMessageDiv = document.getElementById('emailMessage');
+
+    // OTP form elements
+    const otpForm = document.getElementById('otpForm');
+    const emailConfirmInput = document.getElementById('emailConfirm');
+    const otpValueInput = document.getElementById('otpValue');
+    const otpSubmitBtn = document.getElementById('otpSubmitBtn');
+    const otpMessageDiv = document.getElementById('otpMessage');
+    const emailDisplay = document.getElementById('emailDisplay');
+    const backBtn = document.getElementById('backBtn');
+    const resendLink = document.getElementById('resendLink');
+
+    let currentEmail = '';
+
+    // Email form submission
+    emailForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const email = emailInput.value.trim();
 
         if (!email) {
-            showMessage('Please enter an email address', 'error');
+            showEmailMessage('Please enter an email address', 'error');
             return;
         }
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            showMessage('Please enter a valid email address', 'error');
+            showEmailMessage('Please enter a valid email address', 'error');
             return;
         }
 
         try {
             // Show loading state
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading"></span>Sending...';
-            hideMessage();
+            emailSubmitBtn.disabled = true;
+            emailSubmitBtn.innerHTML = '<span class="loading"></span>Sending...';
+            hideEmailMessage();
 
             // Make API call
             const response = await fetch('http://localhost:8080/verification/initiate/email', {
@@ -213,37 +343,172 @@
             });
 
             if (response.ok) {
-                showMessage('Verification email sent successfully!', 'success');
-                form.reset();
+                currentEmail = email;
+                showOtpScreen();
+                showEmailMessage('Verification email sent successfully!', 'success');
             } else {
                 const errorText = await response.text();
-                showMessage(`Error: ${response.status} - ${errorText || 'Failed to send verification email'}`, 'error');
+                showEmailMessage(`Error: ${response.status} - ${errorText || 'Failed to send verification email'}`, 'error');
             }
         } catch (error) {
             if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                showMessage('Error: Unable to connect to the server. Make sure the API is running on localhost:8080', 'error');
+                showEmailMessage('Error: Unable to connect to the server. Make sure the API is running on localhost:8080', 'error');
             } else {
-                showMessage(`Error: ${error.message}`, 'error');
+                showEmailMessage(`Error: ${error.message}`, 'error');
             }
         } finally {
             // Reset button state
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Send Verification';
+            emailSubmitBtn.disabled = false;
+            emailSubmitBtn.innerHTML = 'Send Verification';
         }
     });
 
-    function showMessage(text, type) {
-        messageDiv.textContent = text;
-        messageDiv.className = `message ${type}`;
-        messageDiv.style.display = 'block';
+    // OTP form submission
+    otpForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const otpValue = otpValueInput.value.trim();
+
+        if (!otpValue) {
+            showOtpMessage('Please enter the verification code', 'error');
+            return;
+        }
+
+        if (otpValue.length !== 6) {
+            showOtpMessage('Verification code must be 6 digits', 'error');
+            return;
+        }
+
+        try {
+            // Show loading state
+            otpSubmitBtn.disabled = true;
+            otpSubmitBtn.innerHTML = '<span class="loading"></span>Verifying...';
+            hideOtpMessage();
+
+            // Make API call
+            const response = await fetch('http://localhost:8080/verification/complete/email/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: currentEmail,
+                    otpValue: otpValue
+                })
+            });
+
+            if (response.ok) {
+                showOtpMessage('Email verification completed successfully!', 'success');
+                // You might want to redirect or show a success screen here
+                setTimeout(() => {
+                    resetToEmailScreen();
+                }, 2000);
+            } else {
+                const errorText = await response.text();
+                showOtpMessage(`Error: ${response.status} - ${errorText || 'Invalid verification code'}`, 'error');
+            }
+        } catch (error) {
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                showOtpMessage('Error: Unable to connect to the server. Make sure the API is running on localhost:8080', 'error');
+            } else {
+                showOtpMessage(`Error: ${error.message}`, 'error');
+            }
+        } finally {
+            // Reset button state
+            otpSubmitBtn.disabled = false;
+            otpSubmitBtn.innerHTML = 'Verify Code';
+        }
+    });
+
+    // Back button functionality
+    backBtn.addEventListener('click', () => {
+        resetToEmailScreen();
+    });
+
+    // Resend link functionality
+    resendLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        try {
+            resendLink.style.pointerEvents = 'none';
+            resendLink.textContent = 'Resending...';
+
+            const response = await fetch('http://localhost:8080/verification/initiate/email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({email: currentEmail})
+            });
+
+            if (response.ok) {
+                showOtpMessage('Verification code resent successfully!', 'success');
+            } else {
+                showOtpMessage('Failed to resend verification code', 'error');
+            }
+        } catch (error) {
+            showOtpMessage('Error resending verification code', 'error');
+        } finally {
+            resendLink.style.pointerEvents = 'auto';
+            resendLink.textContent = "Didn't receive the code? Resend";
+        }
+    });
+
+    // Auto-format OTP input
+    otpValueInput.addEventListener('input', (e) => {
+        // Only allow digits
+        e.target.value = e.target.value.replace(/\D/g, '');
+        hideOtpMessage();
+    });
+
+    // Screen management functions
+    function showOtpScreen() {
+        emailScreen.classList.remove('active');
+        otpScreen.classList.add('active');
+
+        emailConfirmInput.value = currentEmail;
+        emailDisplay.textContent = `Code sent to: ${currentEmail}`;
+        otpValueInput.focus();
+
+        hideEmailMessage();
+        hideOtpMessage();
     }
 
-    function hideMessage() {
-        messageDiv.style.display = 'none';
+    function resetToEmailScreen() {
+        otpScreen.classList.remove('active');
+        emailScreen.classList.add('active');
+
+        // Reset OTP form
+        otpForm.reset();
+        currentEmail = '';
+
+        hideOtpMessage();
+        hideEmailMessage();
     }
 
-    // Clear message when user starts typing
-    emailInput.addEventListener('input', hideMessage);
+    // Message functions
+    function showEmailMessage(text, type) {
+        emailMessageDiv.textContent = text;
+        emailMessageDiv.className = `message ${type}`;
+        emailMessageDiv.style.display = 'block';
+    }
+
+    function hideEmailMessage() {
+        emailMessageDiv.style.display = 'none';
+    }
+
+    function showOtpMessage(text, type) {
+        otpMessageDiv.textContent = text;
+        otpMessageDiv.className = `message ${type}`;
+        otpMessageDiv.style.display = 'block';
+    }
+
+    function hideOtpMessage() {
+        otpMessageDiv.style.display = 'none';
+    }
+
+    // Clear email message when user starts typing
+    emailInput.addEventListener('input', hideEmailMessage);
 </script>
 </body>
 </html>
