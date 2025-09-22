@@ -1,4 +1,9 @@
 package bankapp.auth.infrastructure.driving.rest.verification.complete.dto;
 
-public record CompleteVerificationRequest(String email, String otpValue) {
+import jakarta.validation.constraints.Email;
+
+public record CompleteVerificationRequest(
+        @Email
+        String email,
+        String otpValue) {
 }
