@@ -21,7 +21,7 @@
         <!-- The Spring Boot version is the single source of truth for most dependencies -->
         <spring.boot.version>3.5.6</spring.boot.version> <!-- Using a recent stable version -->
         <webauthn.version>0.29.6.RELEASE</webauthn.version>
-        <jackson.version>3.0.0-rc9</jackson.version>
+        <jackson.version>3.0.0-rc10</jackson.version>
     </properties>
 
     <dependencyManagement>
