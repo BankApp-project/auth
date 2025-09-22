@@ -40,10 +40,17 @@ spring:
 
 # App Config
 app:
+  cors:
+    allowed-origins:
+      - http://auth.localhost
+    allowed-methods:
+    allowed-headers:
+    allow-credentials: true
+    max-age: 3600
   config:
     passkey:
       rp:
-        rp-id: "bankapp.online" #set it in test & test-postgres properties, to avoid config conflicts with test setup
+        rp-id: bankapp.online #set it in test & test-postgres properties, to avoid config conflicts with test setup
         auth-mode: smartphone
       security:
         user-presence-required: true
@@ -76,5 +83,5 @@ app:
 
 logging:
   level:
-    org.springframework.boot.autoconfigure: DEBUG
+    org.springframework.boot.autoconfigure: INFO
     bankapp: DEBUG

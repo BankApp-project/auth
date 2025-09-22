@@ -17,3 +17,10 @@ spring:
       mode: never
   flyway:
     enabled: false
+app:
+  cors:
+    allowed-origins: "*"
+    allowed-methods: "GET,POST,PUT,DELETE"
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600

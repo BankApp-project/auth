@@ -4,6 +4,7 @@ import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOp
 import bankapp.auth.application.verification.complete.CompleteVerificationUseCase;
 import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.application.verification.complete.port.out.dto.LoginResponse;
+import bankapp.auth.infrastructure.crosscutting.config.SpringSecurityConfiguration;
 import bankapp.auth.infrastructure.driving.rest.verification.complete.dto.CompleteVerificationRequest;
 import bankapp.auth.infrastructure.driving.rest.verification.complete.dto.CompleteVerificationResponseDto;
 import bankapp.auth.infrastructure.driving.rest.verification.complete.dto.VerificationResponseMapper;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(VerificationCompleteController.class)
+@Import(SpringSecurityConfiguration.class)
 class VerificationCompleteControllerTest {
 
     public static final String VERIFICATION_COMPLETE_ENDPOINT = "/verification/complete/email/";
