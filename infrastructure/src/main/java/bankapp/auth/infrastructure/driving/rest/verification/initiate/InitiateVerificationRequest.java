@@ -1,4 +1,9 @@
 package bankapp.auth.infrastructure.driving.rest.verification.initiate;
 
-public record InitiateVerificationRequest(String email) {
+import jakarta.validation.constraints.Email;
+
+public record InitiateVerificationRequest(
+        @Email
+        String email
+) {
 }
