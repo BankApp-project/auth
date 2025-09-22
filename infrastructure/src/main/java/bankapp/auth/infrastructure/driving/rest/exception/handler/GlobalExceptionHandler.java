@@ -33,9 +33,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OtpVerificationException.class)
     public  ResponseEntity<ApiError> handleOtpVerificationException(OtpVerificationException e) {
         var status = HttpStatus.BAD_REQUEST;
-        var err = new ApiError(status, "Invalid OTP");
+        var err = new ApiError(status, "Invalid or expired OTP");
 
-        log.warn("Invalid OTP: " + e.getMessage());
+        log.warn("Invalid or expired OTP: " + e.getMessage());
         return ResponseEntity.status(status).body(err);
     }
 }
