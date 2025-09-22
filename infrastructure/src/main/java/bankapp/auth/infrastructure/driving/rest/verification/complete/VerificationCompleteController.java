@@ -6,6 +6,7 @@ import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.infrastructure.driving.rest.verification.complete.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -49,8 +50,39 @@ public class VerificationCompleteController {
             @ApiResponse(
                     responseCode = "200",
                     description = "OTP is valid. The response contains the next steps for either login or registration.",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(oneOf = {LoginResponseDto.class, RegistrationResponseDto.class})
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {LoginResponseDto.class, RegistrationResponseDto.class}),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Login Flow (Existing User)",
+                                            summary = "Response for a recognized email",
+                                            description = "When the email belongs to an existing user, the `type` is `login` and `loginOptions` are provided to initiate a passkey login.",
+                                            value = """
+                                                    {
+                                                      "type": "login",
+                                                      "sessionId": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+                                                      "loginOptions": {
+                                                        "PublicKeyCredentialsRequestOptions": "will be here, it will be handled by the browser"
+                                                      }
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "Registration Flow (New User)",
+                                            summary = "Response for an unrecognized email",
+                                            description = "When the email is new, the `type` is `registration` and `registrationOptions` are provided to create a new passkey.",
+                                            value = """
+                                                    {
+                                                      "type": "registration",
+                                                      "sessionId": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+                                                      "registrationOptions": {
+                                                        "PublicKeyCredentialsCreationOptions": "will be here, it will be handled by the browser"
+                                                      }
+                                                    }
+                                                    """
+                                    )
+                            }
                     )
             ),
             @ApiResponse(
