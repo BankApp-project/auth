@@ -71,7 +71,7 @@ app:
       initiate:
         enabled: true
       complete:
-        enabled: false
+        enabled: true
     registration:
       enabled: false
   amqp:

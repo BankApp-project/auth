@@ -1,5 +1,6 @@
 package bankapp.auth.application.authentication.complete;
 
+import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.shared.exception.MaliciousCounterException;
 import bankapp.auth.application.shared.port.out.PasskeyVerificationPort;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
@@ -13,6 +14,7 @@ import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 
 import java.util.UUID;
 
+@UseCase
 public class CompleteAuthenticationUseCase {
 
     private final SessionRepository sessionRepository;
