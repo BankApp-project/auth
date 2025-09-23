@@ -5,6 +5,19 @@ networks:
   bankapp-test:
     driver: bridge
 services:
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bankapp-auth-service
+    ports:
+      - "8080:8080"
+    networks:
+      - bankapp-test
+    depends_on:
+      - postgres-db
+      - rabbitmq
+      - redis
   postgres-db:
     image: postgres:16
     container_name: auth-dev-postgres-db
