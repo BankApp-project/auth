@@ -16,7 +16,9 @@ core features.
 4. [Feature: Asynchronous Notifications (RabbitMQ)](#4-feature-asynchronous-notifications-rabbitmq)
     - [The Flow of a Notification](#the-flow-of-a-notification)
     - [AMQP Configuration and Serialization](#amqp-configuration-and-serialization)
-5. [Feature: Passkey Management and Authentication (WebAuthn)](#5-feature-passkey-management-and-authentication-webauthn)
+5. [Feature: Token Issuing and Management](#5-feature-token-issuing-and-management)
+    - [Token Issuing Stub Implementation](#token-issuing-stub-implementation)
+6. [Feature: Passkey Management and Authentication (WebAuthn)](#6-feature-passkey-management-and-authentication-webauthn)
     - [Challenge Generation and Caching](#challenge-generation-and-caching)
     - [Passkey Options Generation](#passkey-options-generation)
    - [Passkey Verification](#passkey-verification)
@@ -240,7 +242,43 @@ which is implemented by an adapter that handles the specifics of RabbitMQ.
 
 ---
 
-### 5. Feature: Passkey Management and Authentication (WebAuthn)
+### 5. Feature: Token Issuing and Management
+
+This section describes the token management system responsible for issuing authentication tokens (JWTs) after successful
+user verification or authentication ceremonies.
+
+#### Token Issuing Stub Implementation
+
+- **`TokenIssuingStub.java`**
+    - **Purpose**: A temporary stub implementation of the `TokenIssuingPort` interface, located in the
+      `infrastructure.driven.tokens` package.
+    - **Current Status**: This is a **placeholder implementation** marked with `@Deprecated` annotation, indicating it
+      should not be used in production environments.
+    - **Mechanism**: The stub returns hardcoded token values (`"accessToken"` and `"refreshToken"`) wrapped in an
+      `AuthTokens` record, regardless of the input `userId`.
+    - **Important Notes**:
+        - **Development Only**: This implementation is intended purely for development and testing purposes to allow the
+          authentication flows to complete without a full token issuing system.
+        - **Future Implementation**: The stub includes documentation indicating that a proper implementation will be
+          developed when needed, likely integrating with Spring OAuth2 Authorization Server.
+        - **Security Warning**: The hardcoded tokens provide no actual security and should never be deployed to
+          production environments.
+
+- **Integration Points**:
+    - **Port Interface (`TokenIssuingPort`)**: Defines the contract for token issuance with a single method
+      `issueTokensForUser(UUID userId)` that returns an `AuthTokens` record containing access and refresh tokens.
+    - **Use Case Integration**: Both `CompleteRegistrationUseCase` and `CompleteAuthenticationUseCase` depend on this
+      port to provide users with authentication tokens after successful verification.
+    - **Return Type (`AuthTokens`)**: An immutable record containing `accessToken` and `refreshToken` strings that
+      represent the user's authentication session.
+
+- **Testing**:
+    - **`TokenIssuingStubTest.java`**: Provides basic validation that the stub implementation returns non-null tokens,
+      ensuring the interface contract is properly fulfilled even with the placeholder implementation.
+
+---
+
+### 6. Feature: Passkey Management and Authentication (WebAuthn)
 
 This section details the full lifecycle of a FIDO2/WebAuthn (Passkey) ceremony, from the initial challenge generation
 and caching to the long-term persistence of user credentials.

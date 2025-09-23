@@ -36,6 +36,8 @@ This use case relies on a set of interfaces (Ports) and repositories to perform 
         * [**View Technical Implementation Details
           **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#5-feature-passkey-management-and-authentication-webauthn)
     * `TokenIssuingPort`: Responsible for creating and signing authentication tokens.
+        * [**View Technical Implementation Details
+          **](https://github.com/BankApp-project/auth/wiki/Implementation-Details#token-issuing-stub-implementation)
 * **Repositories**:
     * `SessionRepository`: Manages the storage and retrieval of authentication process related data.
         * [**View Technical Implementation Details
