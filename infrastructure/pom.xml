@@ -37,6 +37,11 @@
             <version>0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>bankapp</groupId>
+            <artifactId>bankapp-payloads</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <!-- Spring Boot Starters (versions managed by BOM) -->
         <dependency>
@@ -196,4 +201,29 @@
             <!-- Version managed by BOM -->
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>bankapp.auth.infrastructure.BankappAuthService</mainClass>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
