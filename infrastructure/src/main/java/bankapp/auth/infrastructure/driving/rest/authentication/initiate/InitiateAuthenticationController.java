@@ -2,6 +2,12 @@ package bankapp.auth.infrastructure.driving.rest.authentication.initiate;
 
 
 import bankapp.auth.application.authentication.initiate.InitiateAuthenticationUseCase;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
@@ -17,11 +23,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/authentication/initiate")
+@Tag(name = "User Authentication", description = "Endpoints for managing user authentication flows.")
 public class InitiateAuthenticationController {
 
     private final InitiateAuthenticationUseCase initiateAuthenticationUseCase;
 
     @GetMapping
+    @Operation(
+            summary = "Initiate Passkey (FIDO2/WebAuthn) Login",
+            description = """
+                    Initiates the authentication flow for a returning user on a trusted device, often referred to as the "happy path" for passkey login.
+                    
+                    This endpoint is triggered when the system recognizes the user (e.g., via a session cookie) and its purpose is to generate the FIDO2/WebAuthn challenge options required by the client (browser/authenticator) to request a passkey signature from the user.
+                    
+                    The client should use the `loginOptions` from the response to call the WebAuthn API (`navigator.credentials.get()`) and then send the result to the `/authentication/complete` endpoint.
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully generated authentication options.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = InitiateAuthenticationResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized. The user is not recognized or has no active session.",
+                    content = @Content
+            )
+    })
     public ResponseEntity<InitiateAuthenticationResponse> initiateAuthentication() {
         var useCaseResponse = initiateAuthenticationUseCase.handle();
 
