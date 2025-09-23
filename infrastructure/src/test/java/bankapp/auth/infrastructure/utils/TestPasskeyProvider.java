@@ -1,6 +1,7 @@
 package bankapp.auth.infrastructure.utils;
 
 import bankapp.auth.domain.model.Passkey;
+import bankapp.auth.domain.model.annotations.Nullable;
 import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 import com.webauthn4j.converter.AttestationObjectConverter;
 import com.webauthn4j.converter.AuthenticatorDataConverter;
@@ -37,6 +38,10 @@ public class TestPasskeyProvider {
     private static final CollectedClientDataConverter clientDataConv = new CollectedClientDataConverter(objConv);
     private static final AuthenticatorDataConverter authenticatorDataConverter = new AuthenticatorDataConverter(objConv);
 
+    public static Passkey createSamplePasskey() {
+        return createSamplePasskey(null);
+    }
+
     /// Creates a sample Passkey object populated with cryptographically valid and
     /// internally consistent data using the webauthn4j-test utility library.
     ///
@@ -49,7 +54,10 @@ public class TestPasskeyProvider {
     ///   first 16 bytes of credentialId from attestationObjectBytes in test suite
     ///
     /// @return A Passkey instance with valid data.
-    public static Passkey createSamplePasskey() {
+    public static Passkey createSamplePasskey(@Nullable UUID userId) {
+        // For the stub, we can generate a new random user ID or use provided one.
+        userId = userId == null ? UUID.randomUUID() : userId;
+
         // STEP 1: Create the CollectedClientData for a registration ceremony.
         // We must specify the type as `WEBAUTHN_CREATE`.
         CollectedClientData clientData = TestDataUtil.createClientData(ClientDataType.WEBAUTHN_CREATE);
@@ -84,9 +92,6 @@ public class TestPasskeyProvider {
         boolean backupEligible = authenticatorData.isFlagBE();
         boolean backupState = authenticatorData.isFlagBS();
 
-        // For the stub, we can generate a new random user ID.
-        var userId = UUID.randomUUID();
-
         // STEP 5: Construct the final Passkey object.
         return new Passkey(
                 credentialId,
@@ -104,6 +109,10 @@ public class TestPasskeyProvider {
         );
     }
 
+    public static PasskeyInfo createSamplePasskeyInfo() {
+        return createSamplePasskeyInfo(null);
+    }
+
     /**
      * Creates a complete and cryptographically consistent Passkey test data set.
      * <p>
@@ -113,7 +122,10 @@ public class TestPasskeyProvider {
      *
      * @return A PasskeyInfo record containing the generated Passkey, its KeyPair, and the raw credential ID.
      */
-    public static PasskeyInfo createSamplePasskeyInfo() {
+    public static PasskeyInfo createSamplePasskeyInfo(@Nullable UUID userId) {
+        //generate userId if not provided
+        userId = userId == null ? UUID.randomUUID() : userId;
+
         // STEP 1: Generate the user's cryptographic key pair. This is the key that must be
         // retained to sign future authentication challenges.
         KeyPair userKeyPair = ECUtil.createKeyPair();
@@ -154,7 +166,7 @@ public class TestPasskeyProvider {
         // STEP 8: Construct the final Passkey domain object.
         var passkey = new Passkey(
                 UUIDUtil.fromBytes(credentialIdBytes),
-                UUID.randomUUID(), // userHandle
+                userId,
                 PublicKeyCredentialType.PUBLIC_KEY.getValue(),
                 publicKeyCoseBytes,
                 authenticatorData.getSignCount(),
