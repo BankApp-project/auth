@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.tokens;
+package bankapp.auth.infrastructure.driven.token;
 
 import org.junit.jupiter.api.Test;
 
