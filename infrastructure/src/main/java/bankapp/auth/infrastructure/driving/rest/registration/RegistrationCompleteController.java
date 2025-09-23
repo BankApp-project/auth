@@ -15,18 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @ConditionalOnProperty(
-        name = "app.feature.registration.enabled",
+        name = "app.feature.registration.complete.enabled",
         havingValue = "true"
 )
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/registration")
-public class RegistrationController {
+@RequestMapping("/registration/complete")
+public class RegistrationCompleteController {
 
     private final CompleteRegistrationUseCase completeRegistrationUseCase;
 
-    @PostMapping("/complete")
+    @PostMapping
     public ResponseEntity<AuthenticationGrantResponse> completeRegistation(@RequestBody CompleteRegistrationRequest request) {
         var challenge = UUID.fromString(request.sessionId());
         var regResponse = request.RegistrationResponseJSON();

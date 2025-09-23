@@ -1,6 +1,7 @@
 package bankapp.auth.application.registration.complete;
 
 import bankapp.auth.application.registration.complete.port.in.CompleteRegistrationCommand;
+import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.PasskeyVerificationPort;
 import bankapp.auth.application.shared.port.out.TokenIssuingPort;
@@ -17,6 +18,7 @@ import lombok.NonNull;
 
 import java.util.UUID;
 
+@UseCase
 public class CompleteRegistrationUseCase {
 
     private final SessionRepository sessionRepository;

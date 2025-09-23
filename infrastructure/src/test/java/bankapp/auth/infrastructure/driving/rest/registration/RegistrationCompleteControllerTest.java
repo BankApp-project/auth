@@ -4,12 +4,13 @@ import bankapp.auth.application.registration.complete.CompleteRegistrationUseCas
 import bankapp.auth.application.registration.complete.port.in.CompleteRegistrationCommand;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
+import bankapp.auth.infrastructure.crosscutting.config.SpringSecurityConfiguration;
 import bankapp.auth.infrastructure.driving.rest.shared.dto.AuthenticationGrantResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,9 +23,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
-@WebMvcTest(RegistrationController.class)
-class RegistrationControllerTest {
+@WebMvcTest(RegistrationCompleteController.class)
+@Import(SpringSecurityConfiguration.class)
+class RegistrationCompleteControllerTest {
 
     public static final String DEFAULT_REGISTRATION_RESPONSE = "regResp";
     public static final AuthTokens DEFAULT_AUTH_TOKENS = new AuthTokens("accessToken", "refreshToken");

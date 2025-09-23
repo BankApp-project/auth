@@ -73,7 +73,8 @@ app:
       complete:
         enabled: true
     registration:
-      enabled: false
+      complete:
+        enabled: true
   amqp:
     publisher:
       notifications:
