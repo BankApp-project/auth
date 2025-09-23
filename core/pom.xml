@@ -15,7 +15,7 @@
         <!-- Centralized versions for all test dependencies -->
         <junit.bom.version>5.13.4</junit.bom.version>
         <mockito.version>5.19.0</mockito.version>
-        <assertj.version>3.27.4</assertj.version>
+        <assertj.version>3.27.6</assertj.version>
     </properties>
 
     <dependencyManagement>
