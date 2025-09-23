@@ -4,6 +4,7 @@
 networks:
   bankapp-test:
     driver: bridge
+
 services:
   auth-service:
     build:
@@ -29,7 +30,6 @@ services:
       POSTGRES_USERNAME: dev
       POSTGRES_PASSWORD: dev
       SPRING_PROFILES_ACTIVE: dev
-
 
   postgres-db:
     image: postgres:16
