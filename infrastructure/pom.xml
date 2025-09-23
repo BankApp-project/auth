@@ -3,6 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>bankapp-auth-infrastructure</artifactId>
+    <version>0.9.0</version>
 
     <parent>
         <groupId>bankapp</groupId>
@@ -12,9 +13,8 @@
 
     <repositories>
         <repository>
-            <id>github</id>
-            <name>GitHub OWNER Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/OWNER/REPOSITORY</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -47,9 +47,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>bankapp</groupId>
+            <groupId>com.github.bankapp-project</groupId>
             <artifactId>bankapp-payloads</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <!-- Spring Boot Starters (versions managed by BOM) -->

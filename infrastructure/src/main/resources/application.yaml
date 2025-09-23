@@ -9,17 +9,17 @@ spring:
     virtual:
       enabled: true
   rabbitmq:
-    host: localhost
-    port: 5672
+    host: ${RABBIT_MQ_HOST:localhost}
+    port: ${RABBIT_MQ_PORT:5672}
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
   # DB Config
   datasource:
-    url: jdbc:postgresql://localhost:5432/auth-service
-    username: dev
-    password: dev
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/auth-service
+    username: ${POSTGRES_USERNAME:dev}
+    password: ${POSTGRES_PASSWORD:dev}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5

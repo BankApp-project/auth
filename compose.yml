@@ -18,6 +18,19 @@ services:
       - postgres-db
       - rabbitmq
       - redis
+    environment:
+      PORT: 8080
+      RABBIT_MQ_HOST: rabbitmq
+      RABBIT_MQ_PORT: 5672
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      POSTGRES_HOST: postgres-db
+      POSTGRES_PORT: 5432
+      POSTGRES_USERNAME: dev
+      POSTGRES_PASSWORD: dev
+      SPRING_PROFILES_ACTIVE: dev
+
+
   postgres-db:
     image: postgres:16
     container_name: auth-dev-postgres-db
