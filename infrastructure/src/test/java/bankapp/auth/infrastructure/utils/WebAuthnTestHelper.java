@@ -195,7 +195,7 @@ public class WebAuthnTestHelper {
      */
     public static String generateValidAuthenticationResponseJSON(byte[] challenge, String rpId, byte[] credentialId, KeyPair keyPair, long counter) throws Exception {
         // --- 1. Define Constants ---
-        String origin = "https://bankapp.online";
+        String origin = "https://" + rpId;
 
         // --- 2. Construct clientDataJSON ---
         Map<String, Object> clientData = new LinkedHashMap<>();
@@ -211,7 +211,7 @@ public class WebAuthnTestHelper {
         byte[] rpIdHash = MessageDigest.getInstance("SHA-256").digest(rpId.getBytes());
         byte flags = 0b00000101; // UP and UV flags set
 
-        byte[] signCount = ByteArrayUtil.intToBytes((int) counter);
+        byte[] signCount = ByteArrayUtil.intToBytes((int) counter + 1);
 
         ByteArrayOutputStream authDataStream = new ByteArrayOutputStream();
         authDataStream.write(rpIdHash);
