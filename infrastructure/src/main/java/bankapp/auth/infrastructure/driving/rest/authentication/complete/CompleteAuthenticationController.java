@@ -4,6 +4,12 @@ import bankapp.auth.application.authentication.complete.CompleteAuthenticationCo
 import bankapp.auth.application.authentication.complete.CompleteAuthenticationUseCase;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.infrastructure.driving.rest.shared.dto.AuthenticationGrantResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +27,42 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/authentication/complete")
+@Tag(name = "User Authentication", description = "Endpoints for managing user authentication flows.")
 public class CompleteAuthenticationController {
 
     private final CompleteAuthenticationUseCase completeAuthenticationUseCase;
 
     @PostMapping
+    @Operation(
+            summary = "Complete Passkey (FIDO2/WebAuthn) Login",
+            description = """
+                    Finalizes the passkey authentication process by validating the user's signed challenge. This is the last step in any successful login flow.
+                    
+                    This endpoint is called after a login has been initiated in one of two ways:
+                    1.  **Directly**, via the `GET /authentication/initiate` endpoint for a recognized returning user (the "happy path").
+                    2.  **After email verification**, via the `POST /verification/complete/*` endpoint, when the system identifies an existing user and returns a `login` type response.
+                    
+                    The server validates the signed credential from the client. If valid, the user is authenticated, and the server returns a set of authentication tokens (`accessToken` and `refreshToken`).
+                    """
+    )
+
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Authentication successful. Access and refresh tokens are returned.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthenticationGrantResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized. The authentication failed due to an invalid signature, expired session, or mismatched challenge.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Bad Request. The request body is missing required fields or is improperly formatted.",
+                    content = @Content
+            )
+    })
     public ResponseEntity<AuthenticationGrantResponse> completeAuthentication(@RequestBody CompleteAuthenticationRequest request) {
         var command = getCompleteAuthenticationCommand(request);
 

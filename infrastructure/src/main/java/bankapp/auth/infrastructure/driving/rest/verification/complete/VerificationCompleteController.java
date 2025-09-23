@@ -57,28 +57,24 @@ public class VerificationCompleteController {
                                     @ExampleObject(
                                             name = "Login Flow (Existing User)",
                                             summary = "Response for a recognized email",
-                                            description = "When the email belongs to an existing user, the `type` is `login` and `loginOptions` are provided to initiate a passkey login.",
+                                            description = "When the email belongs to an existing user, the `type` is `login` and `loginOptions` are provided. The client should use these options to call `navigator.credentials.get()` and send the result to the `/authentication/complete` endpoint.",
                                             value = """
                                                     {
                                                       "type": "login",
                                                       "sessionId": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-                                                      "loginOptions": {
-                                                        "PublicKeyCredentialsRequestOptions": "will be here, it will be handled by the browser"
-                                                      }
+                                                      "loginOptions": "values omitted for brevity"
                                                     }
                                                     """
                                     ),
                                     @ExampleObject(
                                             name = "Registration Flow (New User)",
                                             summary = "Response for an unrecognized email",
-                                            description = "When the email is new, the `type` is `registration` and `registrationOptions` are provided to create a new passkey.",
+                                            description = "When the email is new, the `type` is `registration` and `registrationOptions` are provided. The client should use these options to call `navigator.credentials.create()` and **send the result to the `/registration/complete` endpoint.**",
                                             value = """
                                                     {
                                                       "type": "registration",
                                                       "sessionId": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
-                                                      "registrationOptions": {
-                                                        "PublicKeyCredentialsCreationOptions": "will be here, it will be handled by the browser"
-                                                      }
+                                                      "registrationOptions": "values ommited for brevity"
                                                     }
                                                     """
                                     )
