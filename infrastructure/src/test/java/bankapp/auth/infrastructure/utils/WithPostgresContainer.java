@@ -1,7 +1,5 @@
 package bankapp.auth.infrastructure.utils;
 
-import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -17,13 +15,4 @@ public interface WithPostgresContainer {
             .withUsername("test")
             .withPassword("test");
 
-    @BeforeEach
-    default void setUp() {
-        Flyway flyway = Flyway.configure().dataSource(
-                postgresContainer.getJdbcUrl(),
-                postgresContainer.getUsername(),
-                postgresContainer.getPassword()
-        ).load();
-        flyway.migrate();
-    }
 }
