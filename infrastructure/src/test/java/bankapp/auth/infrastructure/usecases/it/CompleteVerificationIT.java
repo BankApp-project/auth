@@ -98,7 +98,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.sessionId").exists())
-                .andExpect(jsonPath("$.registrationOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.challenge())));
+                .andExpect(jsonPath("$.registrationOptions.challenge").value(Base64.getUrlEncoder().withoutPadding().encodeToString(challenge.challenge())));
 
         // Additional Assertions
         // Note: Cannot assert specific challenge is saved because it's generated internally
@@ -163,7 +163,7 @@ public class CompleteVerificationIT implements WithPostgresContainer, WithRedisC
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.sessionId").exists())
-                .andExpect(jsonPath("$.loginOptions.challenge").value(Base64.getEncoder().encodeToString(challenge.challenge())));
+                .andExpect(jsonPath("$.loginOptions.challenge").value(Base64.getUrlEncoder().withoutPadding().encodeToString(challenge.challenge())));
 
         // Additional Assertions
         assertUserIsCreatedAndEnabled();

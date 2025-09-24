@@ -6,4 +6,7 @@ public class RegistrationConfirmAttemptException extends RuntimeException {
         super(msg);
     }
 
+    public RegistrationConfirmAttemptException(String msg, Throwable e) {
+        super(msg, e);
+    }
 }

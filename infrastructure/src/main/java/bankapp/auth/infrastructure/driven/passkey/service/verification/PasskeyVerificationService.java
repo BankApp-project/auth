@@ -25,7 +25,7 @@ public class PasskeyVerificationService implements PasskeyVerificationPort {
         try {
             return passkeyRegistrationHandler.handle(registrationResponseJSON, sessionData);
         } catch (WebAuthnException e) {
-            throw new RegistrationConfirmAttemptException("Confirmation of registration attempt failed.");
+            throw new RegistrationConfirmAttemptException("Confirmation of registration attempt failed.", e);
         }
     }
 

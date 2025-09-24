@@ -30,6 +30,8 @@ services:
       POSTGRES_USERNAME: dev
       POSTGRES_PASSWORD: dev
       SPRING_PROFILES_ACTIVE: dev
+      PASSKEY_RPID: auth.localhost
+      PASSKEY_ORIGIN: http://auth.localhost
 
   postgres-db:
     image: postgres:16
