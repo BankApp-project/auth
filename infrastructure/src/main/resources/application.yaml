@@ -50,8 +50,9 @@ app:
   config:
     passkey:
       rp:
-        rp-id: bankapp.online #set it in test & test-postgres properties, to avoid config conflicts with test setup
+        rp-id: ${PASSKEY_RPID:localhost} #set it in test & test-postgres properties, to avoid config conflicts with test setup
         auth-mode: smartphone
+        origin: ${PASSKEY_ORIGIN:http://localhost}
       security:
         user-presence-required: true
         user-verification-required: true

@@ -8,7 +8,7 @@
     <parent>
         <groupId>bankapp</groupId>
         <artifactId>bankapp-auth</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <properties>

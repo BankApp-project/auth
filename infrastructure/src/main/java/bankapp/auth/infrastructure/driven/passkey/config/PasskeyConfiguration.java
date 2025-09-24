@@ -12,8 +12,7 @@ public class PasskeyConfiguration {
     private final PasskeySecurityProperties passkeySecurityProperties;
 
     public Origin origin() {
-        String originHttps = "https://" + passkeyRpProperties.rpId();
-        return new Origin(originHttps);
+        return new Origin(passkeyRpProperties.origin());
     }
 
     public String rpId() {

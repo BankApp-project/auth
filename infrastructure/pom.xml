@@ -3,12 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>bankapp-auth-infrastructure</artifactId>
-    <version>0.9.0</version>
 
     <parent>
         <groupId>bankapp</groupId>
         <artifactId>bankapp-auth</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <repositories>
@@ -43,7 +42,7 @@
         <dependency>
             <groupId>bankapp</groupId>
             <artifactId>bankapp-auth-core</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

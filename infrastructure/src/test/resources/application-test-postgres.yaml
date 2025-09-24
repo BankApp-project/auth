@@ -22,3 +22,16 @@ spring:
         '[globally_quoted_identifiers]': true
   flyway:
     enabled: true
+
+app:
+  cors:
+    allowed-origins: "*"
+    allowed-methods: "GET,POST,PUT,DELETE"
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600
+  config:
+    passkey:
+      rp:
+        rp-id: bankapp.online
+        origin: https://bankapp.online
