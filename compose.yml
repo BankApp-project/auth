@@ -19,33 +19,20 @@ services:
       - postgres-db
       - rabbitmq
       - redis
-    environment:
-      PORT: 8080
-      RABBIT_MQ_HOST: rabbitmq
-      RABBIT_MQ_PORT: 5672
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      POSTGRES_HOST: postgres-db
-      POSTGRES_PORT: 5432
-      POSTGRES_USERNAME: dev
-      POSTGRES_PASSWORD: dev
-      SPRING_PROFILES_ACTIVE: dev
-      PASSKEY_RPID: auth.localhost
-      PASSKEY_ORIGIN: http://auth.localhost
+    env_file:
+      - ".env"
 
   postgres-db:
     image: postgres:16
     container_name: auth-dev-postgres-db
-    environment:
-      - POSTGRES_DB=auth-service
-      - POSTGRES_USER=dev
-      - POSTGRES_PASSWORD=dev
     ports:
       - "5432:5432"
     networks:
       - bankapp-test
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    env_file:
+      - ".env"
 
   redis:
     image: redis:7-alpine
@@ -56,6 +43,8 @@ services:
       - bankapp-test
     volumes:
       - redis-data:/data
+    env_file:
+      - ".env"
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -68,6 +57,8 @@ services:
       - bankapp-test
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    env_file:
+      - ".env"
 
 volumes:
   postgres-data:
