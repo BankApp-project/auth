@@ -11,13 +11,17 @@ spring:
   rabbitmq:
     host: ${RABBIT_MQ_HOST:localhost}
     port: ${RABBIT_MQ_PORT:5672}
+    username: ${RABBIT_MQ_USERNAME:guest}
+    password: ${RABBIT_MQ_PASSWORD:guest}
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:}
+      password: ${REDIS_PASSWORD:}
   # DB Config
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/auth-service
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:auth-service}
     username: ${POSTGRES_USERNAME:dev}
     password: ${POSTGRES_PASSWORD:dev}
     driver-class-name: org.postgresql.Driver
@@ -43,6 +47,8 @@ app:
   cors:
     allowed-origins:
       - http://auth.localhost
+      - ${CORS_ALLOWED_ORIGIN1}
+      - ${CORS_ALLOWED_ORIGIN2}
     allowed-methods:
     allowed-headers:
     allow-credentials: true
@@ -51,11 +57,11 @@ app:
     passkey:
       rp:
         rp-id: ${PASSKEY_RPID:localhost} #set it in test & test-postgres properties, to avoid config conflicts with test setup
-        auth-mode: smartphone
+        auth-mode: ${AUTH_MODE:smartphone}
         origin: ${PASSKEY_ORIGIN:http://localhost}
       security:
-        user-presence-required: true
-        user-verification-required: true
+        user-presence-required: ${UP_FLAG:true}
+        user-verification-required: ${UV_FLAG:true}
     otp:
       size: 6
       ttl: 120s
