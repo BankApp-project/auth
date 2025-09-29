@@ -15,6 +15,7 @@ public class AmqpConfiguration {
 
     @Bean
     public TopicExchange notificationTopicExchange(@Value("${app.amqp.publisher.notifications.otp.exchange}") String exchangeName) {
+        //todo define specific durable exchange?
         return new TopicExchange(exchangeName);
     }
 

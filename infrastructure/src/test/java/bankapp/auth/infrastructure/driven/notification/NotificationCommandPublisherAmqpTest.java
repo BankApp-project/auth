@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,13 +27,11 @@ class NotificationCommandPublisherAmqpTest {
     private static final String TEST_ROUTING_KEY = "test.routing.key";
     private static final String TEST_EXCHANGE = "test.exchange";
 
+    private static final NotificationProperties properties = new NotificationProperties(TEST_ROUTING_KEY, TEST_EXCHANGE);
+
     @BeforeEach
     void setUp() {
-        publisher = new NotificationCommandPublisherAmqp(rabbitTemplate);
-
-        // Set the @Value annotated fields using ReflectionTestUtils
-        ReflectionTestUtils.setField(publisher, "routingKey", TEST_ROUTING_KEY);
-        ReflectionTestUtils.setField(publisher, "exchangeName", TEST_EXCHANGE);
+        publisher = new NotificationCommandPublisherAmqp(rabbitTemplate, properties);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package bankapp.auth.infrastructure;
 
 import bankapp.auth.infrastructure.driven.challenge.config.ChallengeProperties;
+import bankapp.auth.infrastructure.driven.notification.NotificationProperties;
 import bankapp.auth.infrastructure.driven.otp.config.OtpProperties;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeySecurityProperties;
@@ -15,7 +16,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
         OtpProperties.class,
         ChallengeProperties.class,
         PasskeyRpProperties.class,
-        PasskeySecurityProperties.class
+        PasskeySecurityProperties.class,
+        NotificationProperties.class
 })
 public class BankappAuthService {
 

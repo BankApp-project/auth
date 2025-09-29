@@ -3,7 +3,6 @@ package bankapp.auth.infrastructure.driven.notification;
 import bankapp.payload.notification.email.otp.EmailNotificationPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,11 +11,7 @@ public class NotificationCommandPublisherAmqp implements NotificationCommandPubl
 
     private final RabbitTemplate rabbitTemplate;
 
-    @Value("${app.amqp.publisher.notifications.otp.routing-key}")
-    private String routingKey;
-
-    @Value("${app.amqp.publisher.notifications.otp.exchange}")
-    private String exchangeName;
+    private final NotificationProperties properties;
 
     @Override
     public void publishSendEmailCommand(EmailNotificationPayload command) {
@@ -24,6 +19,6 @@ public class NotificationCommandPublisherAmqp implements NotificationCommandPubl
             throw new NotificationCommandPublisherException("Command cannot be null");
         }
 
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, command);
+        rabbitTemplate.convertAndSend(properties.exchange(), properties.routingKey(), command);
     }
 }
