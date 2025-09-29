@@ -35,3 +35,4 @@ build/
 ### LLMs ###
 /CLAUDE.md
 /docker-deploy.sh
+/.env.docker.notification-service
