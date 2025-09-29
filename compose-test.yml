@@ -8,6 +8,18 @@ networks:
     driver: bridge
 
 services:
+  notification-service:
+    image: bankappproject/bankapp-notification-service
+    container_name: auth-bankapp-notification-service
+    networks:
+      - bankapp-test
+    env_file:
+      - ".env.docker.notification-service"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    pull_policy: always
+
   postgres-db:
     image: postgres:16
     container_name: auth-dev-postgres-db
@@ -38,3 +50,9 @@ services:
       - bankapp-test
     env_file:
       - ".env.docker"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "node_health_check" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
