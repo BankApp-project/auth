@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -45,6 +46,16 @@ class NotificationTemplateProviderTest {
 
     @Test
     void getOtpEmailTemplate_should_throw_when_duration_null() {
-        assertThrows(InvalidEmailTemplateArgumentException.class, () -> notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, "", null));
+        assertThrows(InvalidEmailTemplateArgumentException.class, () -> notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP, null));
+    }
+
+    @Test
+    void getOtpEmailTemplate_should_return_valid_template_when_provided_valid_data() {
+        var res = notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP, DEFAULT_DURATION);
+
+        assertNotNull(res, "Template should not be null");
+        assertNotNull(res.body(), "Template body should not be null");
+        assertNotNull(res.subject(), "Template subject should not be null");
+        assertNotNull(res.sendTo(), "Template sendTo should not be null");
     }
 }
