@@ -64,4 +64,11 @@ class NotificationTemplateProviderTest {
 
         assertTrue(res.body().contains(DEFAULT_OTP));
     }
+
+    @Test
+    void getOtpEmailTemplate_should_return_template_with_duration_in_minutes_in_body_when_provided_valid_data() {
+        var res = notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP, DEFAULT_DURATION);
+
+        assertTrue(res.body().contains(String.valueOf(DEFAULT_DURATION.toMinutes())));
+    }
 }
