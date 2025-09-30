@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class NotificationTemplateProviderTest {
@@ -50,12 +49,19 @@ class NotificationTemplateProviderTest {
     }
 
     @Test
-    void getOtpEmailTemplate_should_return_valid_template_when_provided_valid_data() {
+    void getOtpEmailTemplate_should_return_not_null_template_when_provided_valid_data() {
         var res = notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP, DEFAULT_DURATION);
 
         assertNotNull(res, "Template should not be null");
         assertNotNull(res.body(), "Template body should not be null");
         assertNotNull(res.subject(), "Template subject should not be null");
         assertNotNull(res.sendTo(), "Template sendTo should not be null");
+    }
+
+    @Test
+    void getOtpEmailTemplate_should_return_template_with_otp_in_body_when_provided_valid_data() {
+        var res = notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP, DEFAULT_DURATION);
+
+        assertTrue(res.body().contains(DEFAULT_OTP));
     }
 }

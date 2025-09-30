@@ -14,7 +14,7 @@ public class NotificationTemplateProvider {
 
     public EmailTemplate getOtpEmailTemplate(EmailAddress email, String otp, Duration timeout) {
         validateArguments(otp, timeout);
-        String body = getOtpEmailBody();
+        String body = getOtpEmailBody(otp);
         String subject = getOtpEmailSubject();
 
         return new EmailTemplate(subject, body, email);
@@ -25,24 +25,26 @@ public class NotificationTemplateProvider {
         return "Your BankApp Verification Code";
     }
 
-    private String getOtpEmailBody() {
-        return "Hello,\n" +
-                "\n" +
-                "Your One-Time Password (OTP) for BankApp is:\n" +
-                "\n" +
-                "**413858**\n" +
-                "\n" +
-                "This code will expire in 10 minutes.\n" +
-                "\n" +
-                "For your security:\n" +
-                "- Never share this code with anyone\n" +
-                "- BankApp staff will never ask for your OTP\n" +
-                "- If you didn't request this code, please ignore this email\n" +
-                "\n" +
-                "Need help? Contact us at support@bankapp.com\n" +
-                "\n" +
-                "---\n" +
-                "BankApp Team";
+    private String getOtpEmailBody(String otp) {
+        return """
+                Hello,
+                
+                Your One-Time Password (OTP) for BankApp is:
+                """ +
+                '\n' + otp + '\n' +
+                """
+                        This code will expire in 10 minutes.
+                        
+                        For your security:
+                        - Never share this code with anyone
+                        - BankApp staff will never ask for your OTP
+                        - If you didn't request this code, please ignore this email
+                        
+                        Need help? Contact us at support@bankapp.com
+                        
+                        ---
+                        BankApp Team
+                        """;
     }
 
     private void validateArguments(String otp, Duration timeout) {
