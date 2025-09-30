@@ -14,6 +14,8 @@ class NotificationAdapterTest {
 
     public static final EmailAddress EMAIL = new EmailAddress("test@bankapp.online");
     public static final String OTP = "123456";
+    private static final String SUBJECT = "Test Subject";
+    public static final String BODY = "testBody";
 
     @Mock
     private NotificationTemplateProvider templateProvider;
@@ -27,25 +29,27 @@ class NotificationAdapterTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
         notificationAdapter = new NotificationAdapter(templateProvider, notificationCommandPublisher);
+
+        var newTemplate = new EmailTemplate(SUBJECT, BODY, EMAIL);
+        when(templateProvider.getOtpEmailTemplate(eq(EMAIL), eq(OTP))).thenReturn(newTemplate);
     }
 
     @Test
     void should_load_template_for_given_method() {
         notificationAdapter.sendOtpToUserEmail(EMAIL, OTP);
-        verify(templateProvider).getOtpEmailTemplate(eq(OTP));
+        verify(templateProvider).getOtpEmailTemplate(eq(EMAIL), eq(OTP));
     }
 
     @Test
     void should_publish_msg_with_valid_data() {
-        var template = "Welcome! Your OTP: " + OTP;
-        when(templateProvider.getOtpEmailTemplate(eq(OTP))).thenReturn(template);
         notificationAdapter.sendOtpToUserEmail(EMAIL, OTP);
 
         verify(notificationCommandPublisher).publishSendEmailCommand(argThat(cmd -> {
             boolean param1 = cmd.recipientEmail().equals(EMAIL.getValue());
-            boolean param2 = cmd.htmlBody().equals(template);
+            boolean param2 = cmd.htmlBody().equals(BODY);
+            boolean param3 = cmd.subject().equals(SUBJECT);
 
-            return param1 && param2;
+            return param1 && param2 && param3;
         }));
     }
 
