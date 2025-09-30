@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class NotificationTemplateProviderTest {
 
-    private EmailAddress DEFAULT_EMAIL = new EmailAddress("test@bankapp.online");
-    private String DEFAULT_OTP = "123456";
-    private NotificationTemplateProvider notificationTemplateProvider = new NotificationTemplateProvider();
+    private final EmailAddress DEFAULT_EMAIL = new EmailAddress("test@bankapp.online");
+    private final String DEFAULT_OTP = "123456";
+    private final NotificationTemplateProvider notificationTemplateProvider = new NotificationTemplateProvider();
 
     @Test
     void should_generate_template_for_given_request() {
