@@ -3,8 +3,6 @@ package bankapp.auth.infrastructure.driven.notification;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-
 @Component
 public class NotificationTemplateProvider {
 
@@ -12,9 +10,9 @@ public class NotificationTemplateProvider {
         return String.format("Hello! \n Your One-Time Password is: %s", otp);
     }
 
-    public EmailTemplate getOtpEmailTemplate(EmailAddress email, String otp, Duration timeout) {
-        validateArguments(otp, timeout);
-        String body = getOtpEmailBody(otp, timeout.toMinutes());
+    public EmailTemplate getOtpEmailTemplate(EmailAddress email, String otp) {
+        validateArguments(otp);
+        String body = getOtpEmailBody(otp);
         String subject = getOtpEmailSubject();
 
         return new EmailTemplate(subject, body, email);
@@ -25,15 +23,13 @@ public class NotificationTemplateProvider {
         return "Your BankApp Verification Code";
     }
 
-    private String getOtpEmailBody(String otp, long durationInMinutes) {
+    private String getOtpEmailBody(String otp) {
         return """
                 Hello,
                 
                 Your One-Time Password (OTP) for BankApp is:
                 
                 %s
-                
-                This code will expire in %d minutes.
                 
                 For your security:
                 - Never share this code with anyone
@@ -44,15 +40,12 @@ public class NotificationTemplateProvider {
                 
                 ---
                 BankApp Team
-                """.formatted(otp, durationInMinutes);
+                """.formatted(otp);
     }
 
-    private void validateArguments(String otp, Duration timeout) {
+    private void validateArguments(String otp) {
         if (otp == null || otp.isBlank()) {
             throw new InvalidEmailTemplateArgumentException("Otp cannot be empty");
-        }
-        if (timeout == null) {
-            throw new InvalidEmailTemplateArgumentException("Timeout cannot be null");
         }
     }
 

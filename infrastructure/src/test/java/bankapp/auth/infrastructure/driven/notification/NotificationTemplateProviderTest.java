@@ -3,15 +3,12 @@ package bankapp.auth.infrastructure.driven.notification;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 class NotificationTemplateProviderTest {
 
-    private Duration DEFAULT_DURATION = Duration.ofMinutes(5);
     private EmailAddress DEFAULT_EMAIL = new EmailAddress("test@bankapp.online");
     private String DEFAULT_OTP = "123456";
     private NotificationTemplateProvider notificationTemplateProvider = new NotificationTemplateProvider();
@@ -30,27 +27,22 @@ class NotificationTemplateProviderTest {
 
     @Test
     void getOtpEmailTemplate_should_throw_when_otp_empty() {
-        assertThrows(InvalidEmailTemplateArgumentException.class, () -> notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, "", DEFAULT_DURATION));
+        assertThrows(InvalidEmailTemplateArgumentException.class, () -> notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, ""));
     }
 
     @Test
     void getOtpEmailTemplate_should_throw_when_otp_null() {
-        assertThrows(InvalidEmailTemplateArgumentException.class, () -> notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, null, DEFAULT_DURATION));
+        assertThrows(InvalidEmailTemplateArgumentException.class, () -> notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, null));
     }
 
     @Test
     void getOtpEmailTemplate_should_throw_when_email_null() {
-        assertThrows(InvalidEmailTemplateArgumentException.class, () -> notificationTemplateProvider.getOtpEmailTemplate(null, "", DEFAULT_DURATION));
-    }
-
-    @Test
-    void getOtpEmailTemplate_should_throw_when_duration_null() {
-        assertThrows(InvalidEmailTemplateArgumentException.class, () -> notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP, null));
+        assertThrows(InvalidEmailTemplateArgumentException.class, () -> notificationTemplateProvider.getOtpEmailTemplate(null, ""));
     }
 
     @Test
     void getOtpEmailTemplate_should_return_not_null_template_when_provided_valid_data() {
-        var res = notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP, DEFAULT_DURATION);
+        var res = notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP);
 
         assertNotNull(res, "Template should not be null");
         assertNotNull(res.body(), "Template body should not be null");
@@ -60,15 +52,8 @@ class NotificationTemplateProviderTest {
 
     @Test
     void getOtpEmailTemplate_should_return_template_with_otp_in_body_when_provided_valid_data() {
-        var res = notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP, DEFAULT_DURATION);
+        var res = notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP);
 
         assertTrue(res.body().contains(DEFAULT_OTP));
-    }
-
-    @Test
-    void getOtpEmailTemplate_should_return_template_with_duration_in_minutes_in_body_when_provided_valid_data() {
-        var res = notificationTemplateProvider.getOtpEmailTemplate(DEFAULT_EMAIL, DEFAULT_OTP, DEFAULT_DURATION);
-
-        assertTrue(res.body().contains(String.valueOf(DEFAULT_DURATION.toMinutes())));
     }
 }
