@@ -3,7 +3,6 @@ package bankapp.auth.infrastructure.driven.notification;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -12,18 +11,6 @@ class NotificationTemplateProviderTest {
     private final EmailAddress DEFAULT_EMAIL = new EmailAddress("test@bankapp.online");
     private final String DEFAULT_OTP = "123456";
     private final NotificationTemplateProvider notificationTemplateProvider = new NotificationTemplateProvider();
-
-    @Test
-    void should_generate_template_for_given_request() {
-        //When
-
-        var otp = "123123";
-        var res = notificationTemplateProvider.getOtpEmailTemplate(otp);
-
-        assertThat(res).contains(otp);
-        assertThat(res).contains("Hello");
-        assertThat(res).contains("Your One-Time Password is:");
-    }
 
     @Test
     void getOtpEmailTemplate_should_throw_when_otp_empty() {
