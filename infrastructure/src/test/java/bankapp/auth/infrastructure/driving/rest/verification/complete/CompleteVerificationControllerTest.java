@@ -25,9 +25,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(VerificationCompleteController.class)
+@WebMvcTest(CompleteVerificationController.class)
 @Import(SpringSecurityConfiguration.class)
-class VerificationCompleteControllerTest {
+class CompleteVerificationControllerTest {
 
     public static final String VERIFICATION_COMPLETE_ENDPOINT = "/verification/complete/email/";
 

@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/verification")
 @Tag(name = "User Verification", description = "Endpoints for managing user verification flows.")
-public class VerificationCompleteController {
+public class CompleteVerificationController {
 
     private final CompleteVerificationUseCase completeVerificationUseCase;
 
