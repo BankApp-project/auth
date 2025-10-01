@@ -18,9 +18,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(VerificationInitiateController.class)
+@WebMvcTest(InitiateVerificationController.class)
 @Import(SpringSecurityConfiguration.class)
-public class VerificationInitiateControllerTest {
+public class InitiateVerificationControllerTest {
 
     public static final String VERIFICATION_INITIATE_ENDPOINT = "/verification/initiate/email";
 

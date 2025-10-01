@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/verification/initiate")
 @Tag(name = "User Verification", description = "Endpoints for managing user verification flows.")
-public class VerificationInitiateController {
+public class InitiateVerificationController {
 
     private final AsyncInitiateVerificationService asyncInitiateVerificationService;
 
