@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
         name = "app.feature.authentication.initiate.enabled",
         havingValue = "true"
 )
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/authentication/initiate")
@@ -52,9 +55,19 @@ public class InitiateAuthenticationController {
             )
     })
     public ResponseEntity<InitiateAuthenticationResponse> initiateAuthentication() {
-        var useCaseResponse = initiateAuthenticationUseCase.handle();
+        try {
+            MDC.put("operation", "initiate_authentication");
 
-        var response = new InitiateAuthenticationResponse(useCaseResponse.options(), useCaseResponse.sessionId().toString());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+            log.info("Received authentication initiation request");
+
+            var useCaseResponse = initiateAuthenticationUseCase.handle();
+
+            log.info("Authentication initiation completed successfully");
+
+            var response = new InitiateAuthenticationResponse(useCaseResponse.options(), useCaseResponse.sessionId().toString());
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } finally {
+            MDC.remove("operation");
+        }
     }
 }

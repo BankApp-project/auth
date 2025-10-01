@@ -3,6 +3,7 @@ package bankapp.auth.infrastructure.driving.rest.verification.complete;
 import bankapp.auth.application.verification.complete.CompleteVerificationUseCase;
 import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.domain.model.vo.EmailAddress;
+import bankapp.auth.infrastructure.crosscutting.logging.LoggingUtils;
 import bankapp.auth.infrastructure.driving.rest.verification.complete.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -93,14 +95,26 @@ public class CompleteVerificationController {
             )
     })
     public ResponseEntity<? extends CompleteVerificationResponseDto> completeEmailVerification(@RequestBody CompleteVerificationRequest request) {
-        var email = new EmailAddress(request.email());
-        var command = new CompleteVerificationCommand(email, request.otpValue());
+        try {
+            MDC.put("operation", "complete_email_verification");
+            MDC.put("email", LoggingUtils.maskEmail(request.email()));
 
-        var response = completeVerificationUseCase.handle(command);
+            log.info("Received email verification completion request");
 
-        var responseDto = VerificationResponseMapper.toDto(response);
+            var email = new EmailAddress(request.email());
+            var command = new CompleteVerificationCommand(email, request.otpValue());
 
-        return ResponseEntity.ok(responseDto);
+            var response = completeVerificationUseCase.handle(command);
+
+            log.info("Email verification completion successful");
+
+            var responseDto = VerificationResponseMapper.toDto(response);
+
+            return ResponseEntity.ok(responseDto);
+        } finally {
+            MDC.remove("operation");
+            MDC.remove("email");
+        }
     }
 
 }

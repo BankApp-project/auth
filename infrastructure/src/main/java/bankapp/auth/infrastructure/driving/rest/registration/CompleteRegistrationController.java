@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,16 +57,26 @@ public class CompleteRegistrationController {
     })
 
     public ResponseEntity<AuthenticationGrantResponse> completeRegistation(@RequestBody CompleteRegistrationRequest request) {
-        var challenge = UUID.fromString(request.sessionId());
-        var regResponse = request.RegistrationResponseJSON();
+        try {
+            MDC.put("operation", "complete_registration");
 
-        var command = new CompleteRegistrationCommand(challenge, regResponse);
+            log.info("Received registration completion request");
 
-        var useCaseResult = completeRegistrationUseCase.handle(command);
-        var authTokens = useCaseResult.authTokens();
+            var challenge = UUID.fromString(request.sessionId());
+            var regResponse = request.RegistrationResponseJSON();
 
-        var res = new AuthenticationGrantResponse(authTokens.accessToken(), authTokens.refreshToken());
-        return ResponseEntity.ok(res);
+            var command = new CompleteRegistrationCommand(challenge, regResponse);
+
+            var useCaseResult = completeRegistrationUseCase.handle(command);
+            var authTokens = useCaseResult.authTokens();
+
+            log.info("Registration completion successful");
+
+            var res = new AuthenticationGrantResponse(authTokens.accessToken(), authTokens.refreshToken());
+            return ResponseEntity.ok(res);
+        } finally {
+            MDC.remove("operation");
+        }
     }
 }
 

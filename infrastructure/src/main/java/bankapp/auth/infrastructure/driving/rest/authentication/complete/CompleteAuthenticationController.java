@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,7 @@ import java.util.UUID;
         name = "app.feature.authentication.complete.enabled",
         havingValue = "true"
 )
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/authentication/complete")
@@ -64,12 +67,22 @@ public class CompleteAuthenticationController {
             )
     })
     public ResponseEntity<AuthenticationGrantResponse> completeAuthentication(@RequestBody CompleteAuthenticationRequest request) {
-        var command = getCompleteAuthenticationCommand(request);
+        try {
+            MDC.put("operation", "complete_authentication");
 
-        var useCaseResponse = completeAuthenticationUseCase.handle(command);
+            log.info("Received authentication completion request");
 
-        var res = getAuthenticationGrantResponse(useCaseResponse);
-        return ResponseEntity.ok(res);
+            var command = getCompleteAuthenticationCommand(request);
+
+            var useCaseResponse = completeAuthenticationUseCase.handle(command);
+
+            log.info("Authentication completion successful");
+
+            var res = getAuthenticationGrantResponse(useCaseResponse);
+            return ResponseEntity.ok(res);
+        } finally {
+            MDC.remove("operation");
+        }
     }
 
     private CompleteAuthenticationCommand getCompleteAuthenticationCommand(CompleteAuthenticationRequest request) {
