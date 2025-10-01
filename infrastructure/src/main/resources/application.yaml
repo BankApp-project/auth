@@ -96,6 +96,8 @@ logging:
   level:
     org.springframework.boot.autoconfigure: ${LOGGING_LEVEL_SPRING_BOOT:INFO}
     bankapp: ${LOGGING_LEVEL_BANKAPP:DEBUG}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [%X] - %msg%n"
 
 springdoc:
   swagger-ui:

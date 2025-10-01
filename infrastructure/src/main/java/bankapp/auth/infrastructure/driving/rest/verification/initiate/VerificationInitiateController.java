@@ -3,6 +3,7 @@ package bankapp.auth.infrastructure.driving.rest.verification.initiate;
 
 import bankapp.auth.application.verification.initiate.port.in.InitiateVerificationCommand;
 import bankapp.auth.domain.model.vo.EmailAddress;
+import bankapp.auth.infrastructure.crosscutting.logging.LoggingUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,12 +56,25 @@ public class VerificationInitiateController {
             )
     })
     public ResponseEntity<Void> initiateEmailVerification(@RequestBody InitiateVerificationRequest request) {
-        var command = new InitiateVerificationCommand(new EmailAddress(request.email()));
+        try {
+            MDC.put("operation", "initiate_email_verification");
+            MDC.put("email", LoggingUtils.maskEmail(request.email()));
 
-        // Call the async method. This call returns immediately.
-        asyncInitiateVerificationService.handle(command);
+            log.info("Received email verification initiation request");
 
-        // Immediately return 202 Accepted to the client.
-        return ResponseEntity.accepted().build();
+            var command = new InitiateVerificationCommand(new EmailAddress(request.email()));
+
+            // Call the async method. This call returns immediately.
+            asyncInitiateVerificationService.handle(command);
+
+            log.info("Email verification initiation accepted for async processing");
+
+            // Immediately return 202 Accepted to the client.
+            return ResponseEntity.accepted().build();
+        } finally {
+            MDC.remove("operation");
+            MDC.remove("email");
+        }
     }
+
 }
