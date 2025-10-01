@@ -28,6 +28,7 @@ public class SpringSecurityConfiguration {
         configuration.setAllowedOriginPatterns(corsProperties.allowedOrigins());
         configuration.setAllowedMethods(corsProperties.allowedMethods());
         configuration.setAllowedHeaders(corsProperties.allowedHeaders());
+        configuration.setExposedHeaders(corsProperties.exposedHeaders());
         configuration.setAllowCredentials(corsProperties.allowCredentials());
         configuration.setMaxAge(corsProperties.maxAge());
 

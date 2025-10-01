@@ -54,6 +54,7 @@ app:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost}
     allowed-methods:
     allowed-headers:
+    exposed-headers:
     allow-credentials: ${APP_CORS_ALLOW_CREDENTIALS:true}
     max-age: 3600
   config:
