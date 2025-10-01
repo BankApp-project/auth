@@ -23,9 +23,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(RegistrationCompleteController.class)
+@WebMvcTest(CompleteRegistrationController.class)
 @Import(SpringSecurityConfiguration.class)
-class RegistrationCompleteControllerTest {
+class CompleteRegistrationControllerTest {
 
     public static final String DEFAULT_REGISTRATION_RESPONSE = "regResp";
     public static final AuthTokens DEFAULT_AUTH_TOKENS = new AuthTokens("accessToken", "refreshToken");

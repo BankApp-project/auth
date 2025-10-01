@@ -29,7 +29,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/registration/complete")
 @Tag(name = "User Registration", description = "Endpoints for the new user registration flow.")
-public class RegistrationCompleteController {
+public class CompleteRegistrationController {
 
     private final CompleteRegistrationUseCase completeRegistrationUseCase;
 
