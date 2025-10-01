@@ -18,11 +18,19 @@ services:
     networks:
       - bankapp-test
     depends_on:
-      - postgres-db
-      - rabbitmq
-      - redis
+      postgres-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - ".env.docker"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q -O - http://localhost:8080/api/actuator/health | grep -q '\"status\":\"UP\"'" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   notification-service:
     image: bankappproject/bankapp-notification-service
@@ -33,6 +41,8 @@ services:
       - ".env.docker.notification-service"
     depends_on:
       rabbitmq:
+        condition: service_healthy
+      auth-service:
         condition: service_healthy
     pull_policy: always
 
@@ -45,6 +55,12 @@ services:
       - bankapp-test
     env_file:
       - ".env.docker"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
 
   redis:
     image: redis:7-alpine
@@ -55,6 +71,11 @@ services:
       - bankapp-test
     env_file:
       - ".env.docker"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -66,3 +87,9 @@ services:
       - bankapp-test
     env_file:
       - ".env.docker"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "node_health_check" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
