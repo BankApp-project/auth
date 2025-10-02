@@ -7,10 +7,12 @@ import com.webauthn4j.WebAuthnRegistrationManager;
 import com.webauthn4j.data.RegistrationData;
 import com.webauthn4j.data.RegistrationParameters;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PasskeyRegistrationHandler {
@@ -21,11 +23,15 @@ public class PasskeyRegistrationHandler {
     private final RegistrationDataMapper registrationDataMapper;
 
     public Passkey handle(String registrationResponseJSON, Session sessionData) {
+        log.info("Processing passkey registration response.");
+
         var registrationParameters = getRegistrationParameters(sessionData);
 
         var registrationData = verifyRegistrationResponse(registrationResponseJSON, registrationParameters);
 
-        return mapToPasskey(sessionData, registrationData);
+        Passkey passkey = mapToPasskey(sessionData, registrationData);
+        log.info("Successfully processed passkey registration response.");
+        return passkey;
     }
 
     private RegistrationParameters getRegistrationParameters(Session sessionData) {

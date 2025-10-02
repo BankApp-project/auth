@@ -9,6 +9,7 @@ import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.Nullable;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -18,6 +19,7 @@ import java.util.List;
  * A service that acts as a facade to generate credential options for WebAuthn ceremonies.
  * It delegates the complex construction logic to specialized assembler classes.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PasskeyOptionsService implements PasskeyOptionsPort {
@@ -30,8 +32,13 @@ public class PasskeyOptionsService implements PasskeyOptionsPort {
      */
     @Override
     public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Session session) {
+        log.info("Generating passkey creation options.");
+
         PasskeyCreationOptionsAssembler assembler = new PasskeyCreationOptionsAssembler(properties, clock);
-        return assembler.assemble(user, session);
+        PublicKeyCredentialCreationOptions options = assembler.assemble(user, session);
+
+        log.info("Successfully generated passkey creation options.");
+        return options;
     }
 
     /**
@@ -39,6 +46,7 @@ public class PasskeyOptionsService implements PasskeyOptionsPort {
      */
     @Override
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(Session session) {
+        log.info("Generating passkey request options without user credentials.");
         return getPasskeyRequestOptions(null, session);
     }
 
@@ -47,7 +55,12 @@ public class PasskeyOptionsService implements PasskeyOptionsPort {
      */
     @Override
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, Session session) {
+        log.info("Generating passkey request options.");
+
         PasskeyRequestOptionsAssembler assembler = new PasskeyRequestOptionsAssembler(properties, clock);
-        return assembler.assemble(userCredentials, session);
+        PublicKeyCredentialRequestOptions options = assembler.assemble(userCredentials, session);
+
+        log.info("Successfully generated passkey request options.");
+        return options;
     }
 }

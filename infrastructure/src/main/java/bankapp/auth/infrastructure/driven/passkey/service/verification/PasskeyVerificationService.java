@@ -11,8 +11,10 @@ import bankapp.auth.infrastructure.driven.passkey.service.verification.registrat
 import com.webauthn4j.util.exception.WebAuthnException;
 import com.webauthn4j.verifier.exception.MaliciousCounterValueException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PasskeyVerificationService implements PasskeyVerificationPort {
@@ -22,24 +24,35 @@ public class PasskeyVerificationService implements PasskeyVerificationPort {
 
     @Override
     public Passkey handleRegistration(String registrationResponseJSON, Session sessionData) {
+        log.info("Handling passkey registration verification.");
+
         try {
-            return passkeyRegistrationHandler.handle(registrationResponseJSON, sessionData);
+            Passkey passkey = passkeyRegistrationHandler.handle(registrationResponseJSON, sessionData);
+            log.info("Successfully verified passkey registration.");
+            return passkey;
         } catch (WebAuthnException e) {
+            log.error("Failed to verify passkey registration", e);
             throw new RegistrationConfirmAttemptException("Confirmation of registration attempt failed.", e);
         }
     }
 
     @Override
     public Passkey handleAuthentication(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException {
+        log.info("Handling passkey authentication verification.");
+
         try {
-            return passkeyAuthenticationHandler.handle(
+            Passkey updatedPasskey = passkeyAuthenticationHandler.handle(
                     authenticationResponseJSON,
                     sessionData,
                     passkey
             );
+            log.info("Successfully verified passkey authentication.");
+            return updatedPasskey;
         } catch (MaliciousCounterValueException e) {
+            log.error("Malicious counter value detected for credential ID: {}", passkey.getId(), e);
             throw new MaliciousCounterException("Malicious counter value detected in authentication response.");
         } catch (WebAuthnException e) {
+            log.error("Failed to verify passkey authentication for credential ID: {}", passkey.getId(), e);
             throw new AuthenticationConfirmAttemptException("Authentication attempt failed", e);
         }
     }
