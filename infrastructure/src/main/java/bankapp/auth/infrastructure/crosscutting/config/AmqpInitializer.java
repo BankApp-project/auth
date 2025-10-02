@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Profile("!test & !test-postgres")
 @Component
 @RequiredArgsConstructor
-public class AmqpRunner implements CommandLineRunner {
+public class AmqpInitializer implements CommandLineRunner {
 
     private final AmqpAdmin amqpAdmin;
     private final TopicExchange notificationTopicExchange;
