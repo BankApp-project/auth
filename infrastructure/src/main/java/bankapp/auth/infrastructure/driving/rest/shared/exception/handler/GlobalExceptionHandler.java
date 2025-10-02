@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driving.rest.exception.handler;
+package bankapp.auth.infrastructure.driving.rest.shared.exception.handler;
 
 import bankapp.auth.application.verification.complete.OtpVerificationException;
 import bankapp.auth.domain.model.exception.InvalidEmailFormatException;
