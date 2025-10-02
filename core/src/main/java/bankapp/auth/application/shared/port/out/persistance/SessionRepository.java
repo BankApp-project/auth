@@ -1,4 +1,4 @@
-package bankapp.auth.application.shared.port.out.repository;
+package bankapp.auth.application.shared.port.out.persistance;
 
 
 import bankapp.auth.application.shared.port.out.dto.Session;

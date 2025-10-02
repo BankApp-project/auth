@@ -1,7 +1,7 @@
 package bankapp.auth.application.authentication.initiate;
 
 import bankapp.auth.application.shared.port.out.dto.Challenge;
-import bankapp.auth.application.shared.port.out.repository.SessionRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.service.ChallengeGenerationPort;
 import bankapp.auth.application.shared.port.out.service.PasskeyOptionsPort;
 import bankapp.auth.application.shared.port.out.service.SessionIdGenerationPort;

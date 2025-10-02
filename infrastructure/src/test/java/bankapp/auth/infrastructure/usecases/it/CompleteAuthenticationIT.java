@@ -4,9 +4,9 @@ import bankapp.auth.application.authentication.complete.CompleteAuthenticationCo
 import bankapp.auth.application.authentication.complete.CompleteAuthenticationUseCase;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.port.out.repository.PasskeyRepository;
-import bankapp.auth.application.shared.port.out.repository.SessionRepository;
-import bankapp.auth.application.shared.port.out.repository.UserRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.shared.port.out.service.ChallengeGenerationPort;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;

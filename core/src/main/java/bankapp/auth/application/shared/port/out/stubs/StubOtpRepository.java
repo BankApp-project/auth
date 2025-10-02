@@ -1,6 +1,6 @@
 package bankapp.auth.application.shared.port.out.stubs;
 
-import bankapp.auth.application.shared.port.out.repository.OtpRepository;
+import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.domain.model.Otp;
 
 import java.util.Map;

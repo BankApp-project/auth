@@ -1,10 +1,11 @@
 package bankapp.auth.infrastructure.driven.otp.persistance;
 
-import bankapp.auth.application.shared.port.out.repository.OtpRepository;
+import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.port.out.OtpConfigPort;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -32,6 +33,7 @@ import java.util.Optional;
 /// Dependencies:
 /// - {@link RedisTemplate}: Manages Redis operations.
 /// - {@link OtpConfigPort}: Provides OTP configuration details such as TTL duration.
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class RedisOtpRepository implements OtpRepository {
@@ -49,9 +51,17 @@ public class RedisOtpRepository implements OtpRepository {
     /// @throws IllegalArgumentException if the OTP or its key is null
     @Override
     public void save(@NonNull Otp otp) {
+        log.info("Saving OTP to Redis");
         String key = otp.getKey();
         Duration timeout = otpConfig.getTtl();
-        redisTemplate.opsForValue().set(key, otp, timeout);
+        log.debug("Saving OTP with key: {}, TTL: {}", key, timeout);
+        try {
+            redisTemplate.opsForValue().set(key, otp, timeout);
+            log.info("Successfully saved OTP with key: {}", key);
+        } catch (Exception ex) {
+            log.error("Failed to save OTP with key: {}", key, ex);
+            throw ex;
+        }
     }
 
     /// Retrieves an OTP entity from Redis by its key.

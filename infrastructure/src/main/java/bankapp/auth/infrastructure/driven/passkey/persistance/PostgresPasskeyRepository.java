@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.persistance;
 
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
-import bankapp.auth.application.shared.port.out.repository.PasskeyRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.driven.passkey.persistance.converters.JpaToEntityPasskeyMapper;
 import bankapp.auth.infrastructure.driven.passkey.persistance.jpa.JpaPasskey;

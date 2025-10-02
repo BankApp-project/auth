@@ -1,6 +1,6 @@
 package bankapp.auth.application.verification.initiate;
 
-import bankapp.auth.application.shared.port.out.repository.OtpRepository;
+import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.service.HashingPort;
 import bankapp.auth.application.shared.port.out.service.NotificationPort;
 import bankapp.auth.application.verification.initiate.port.out.OtpGenerationPort;

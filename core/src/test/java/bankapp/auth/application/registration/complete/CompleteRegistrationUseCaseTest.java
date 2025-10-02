@@ -4,9 +4,9 @@ import bankapp.auth.application.shared.exception.CredentialAlreadyExistsExceptio
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.port.out.repository.PasskeyRepository;
-import bankapp.auth.application.shared.port.out.repository.SessionRepository;
-import bankapp.auth.application.shared.port.out.repository.UserRepository;
+import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
+import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.shared.port.out.service.PasskeyVerificationPort;
 import bankapp.auth.application.shared.port.out.service.TokenIssuingPort;
 import bankapp.auth.domain.model.Passkey;
