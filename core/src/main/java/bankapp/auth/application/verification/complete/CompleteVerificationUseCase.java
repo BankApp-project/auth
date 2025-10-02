@@ -11,7 +11,6 @@ import bankapp.auth.application.shared.port.out.repository.UserRepository;
 import bankapp.auth.application.shared.port.out.service.ChallengeGenerationPort;
 import bankapp.auth.application.shared.port.out.service.PasskeyOptionsPort;
 import bankapp.auth.application.shared.port.out.service.SessionIdGenerationPort;
-import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.NotNull;

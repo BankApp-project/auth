@@ -9,7 +9,6 @@ import bankapp.auth.application.shared.port.out.service.HashingPort;
 import bankapp.auth.application.shared.port.out.service.PasskeyOptionsPort;
 import bankapp.auth.application.shared.port.out.service.SessionIdGenerationPort;
 import bankapp.auth.application.shared.port.out.stubs.*;
-import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;

@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driving.rest.verification.complete;
 
+import bankapp.auth.application.verification.complete.CompleteVerificationCommand;
 import bankapp.auth.application.verification.complete.CompleteVerificationUseCase;
-import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.infrastructure.crosscutting.logging.LoggingUtils;
 import bankapp.auth.infrastructure.driving.rest.verification.complete.dto.*;

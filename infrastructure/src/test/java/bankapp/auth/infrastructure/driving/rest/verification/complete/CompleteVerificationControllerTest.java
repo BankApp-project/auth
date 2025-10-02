@@ -2,8 +2,8 @@ package bankapp.auth.infrastructure.driving.rest.verification.complete;
 
 import bankapp.auth.application.shared.port.out.dto.LoginResponse;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
+import bankapp.auth.application.verification.complete.CompleteVerificationCommand;
 import bankapp.auth.application.verification.complete.CompleteVerificationUseCase;
-import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
 import bankapp.auth.infrastructure.crosscutting.config.SpringSecurityConfiguration;
 import bankapp.auth.infrastructure.driving.rest.verification.complete.dto.CompleteVerificationRequest;
 import bankapp.auth.infrastructure.driving.rest.verification.complete.dto.CompleteVerificationResponseDto;

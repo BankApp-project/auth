@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driving.rest.verification.initiate;
 
-import bankapp.auth.application.verification.initiate.port.in.InitiateVerificationCommand;
+import bankapp.auth.application.verification.initiate.InitiateVerificationCommand;
 import bankapp.auth.infrastructure.crosscutting.config.SpringSecurityConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

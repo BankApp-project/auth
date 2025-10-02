@@ -2,7 +2,6 @@ package bankapp.auth.application.verification.initiate;
 
 import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.shared.port.out.service.NotificationPort;
-import bankapp.auth.application.verification.initiate.port.in.InitiateVerificationCommand;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.annotations.NotNull;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
