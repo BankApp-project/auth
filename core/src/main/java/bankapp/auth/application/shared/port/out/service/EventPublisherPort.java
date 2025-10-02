@@ -1,4 +1,4 @@
-package bankapp.auth.application.shared.port.out;
+package bankapp.auth.application.shared.port.out.service;
 
 import bankapp.auth.application.shared.EventTemplate;
 

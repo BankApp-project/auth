@@ -2,13 +2,13 @@ package bankapp.auth.application.authentication.complete;
 
 import bankapp.auth.application.shared.UseCase;
 import bankapp.auth.application.shared.exception.MaliciousCounterException;
-import bankapp.auth.application.shared.port.out.PasskeyVerificationPort;
-import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.repository.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.repository.SessionRepository;
+import bankapp.auth.application.shared.port.out.service.PasskeyVerificationPort;
+import bankapp.auth.application.shared.port.out.service.TokenIssuingPort;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 

@@ -1,7 +1,7 @@
 package bankapp.auth.application.shared.port.out.stubs;
 
-import bankapp.auth.application.shared.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.service.ChallengeGenerationPort;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 
 import java.time.Clock;

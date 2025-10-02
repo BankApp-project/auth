@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.challenge.service;
 
-import bankapp.auth.application.shared.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.service.ChallengeGenerationPort;
 import bankapp.auth.infrastructure.driven.challenge.config.ChallengeProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

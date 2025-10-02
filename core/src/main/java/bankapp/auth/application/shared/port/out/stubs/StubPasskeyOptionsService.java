@@ -1,9 +1,9 @@
 package bankapp.auth.application.shared.port.out.stubs;
 
-import bankapp.auth.application.shared.port.out.PasskeyOptionsPort;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
 import bankapp.auth.application.shared.port.out.dto.Session;
+import bankapp.auth.application.shared.port.out.service.PasskeyOptionsPort;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;

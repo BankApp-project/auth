@@ -1,8 +1,8 @@
 package bankapp.auth.infrastructure.driven.passkey.service.verification;
 
 import bankapp.auth.application.shared.exception.MaliciousCounterException;
-import bankapp.auth.application.shared.port.out.PasskeyVerificationPort;
 import bankapp.auth.application.shared.port.out.dto.Session;
+import bankapp.auth.application.shared.port.out.service.PasskeyVerificationPort;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.driven.passkey.exception.AuthenticationConfirmAttemptException;
 import bankapp.auth.infrastructure.driven.passkey.exception.RegistrationConfirmAttemptException;

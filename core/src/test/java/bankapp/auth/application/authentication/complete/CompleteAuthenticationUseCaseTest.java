@@ -1,12 +1,12 @@
 package bankapp.auth.application.authentication.complete;
 
-import bankapp.auth.application.shared.port.out.PasskeyVerificationPort;
-import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.repository.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.repository.SessionRepository;
+import bankapp.auth.application.shared.port.out.service.PasskeyVerificationPort;
+import bankapp.auth.application.shared.port.out.service.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.stubs.StubSessionRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;

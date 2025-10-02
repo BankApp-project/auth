@@ -1,6 +1,6 @@
 package bankapp.auth.application.shared.port.out.stubs;
 
-import bankapp.auth.application.shared.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.service.HashingPort;
 
 public class StubHasher implements HashingPort {
     @Override

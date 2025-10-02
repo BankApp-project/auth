@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.notification;
 
-import bankapp.auth.application.shared.port.out.NotificationPort;
+import bankapp.auth.application.shared.port.out.service.NotificationPort;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

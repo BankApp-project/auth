@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.token;
 
-import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
+import bankapp.auth.application.shared.port.out.service.TokenIssuingPort;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;

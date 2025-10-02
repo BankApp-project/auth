@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.otp.service;
 
-import bankapp.auth.application.shared.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.service.HashingPort;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

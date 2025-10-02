@@ -1,8 +1,8 @@
 package bankapp.auth.infrastructure.crosscutting.config;
 
 import bankapp.auth.application.shared.UseCase;
-import bankapp.auth.application.shared.port.out.HashingPort;
 import bankapp.auth.application.shared.port.out.repository.OtpRepository;
+import bankapp.auth.application.shared.port.out.service.HashingPort;
 import bankapp.auth.application.verification.initiate.port.out.OtpGenerationPort;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.port.out.OtpConfigPort;

@@ -2,12 +2,12 @@ package bankapp.auth.infrastructure.usecases.it;
 
 import bankapp.auth.application.registration.complete.CompleteRegistrationCommand;
 import bankapp.auth.application.registration.complete.CompleteRegistrationUseCase;
-import bankapp.auth.application.shared.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.repository.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.repository.SessionRepository;
 import bankapp.auth.application.shared.port.out.repository.UserRepository;
+import bankapp.auth.application.shared.port.out.service.ChallengeGenerationPort;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;

@@ -1,4 +1,4 @@
-package bankapp.auth.application.shared.port.out;
+package bankapp.auth.application.shared.port.out.service;
 
 public interface HashingPort {
     String hashSecurely(String value);
