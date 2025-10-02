@@ -14,7 +14,7 @@ services:
     networks:
       - bankapp-test
     env_file:
-      - ".env.docker.notification-service"
+      - "docker/.env.docker.notification-service"
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -28,7 +28,7 @@ services:
     networks:
       - bankapp-test
     env_file:
-      - ".env.docker"
+      - "docker/.env.docker"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DB}" ]
       interval: 10s
@@ -43,7 +43,7 @@ services:
     networks:
       - bankapp-test
     env_file:
-      - ".env.docker"
+      - "docker/.env.docker"
     healthcheck:
       test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
       interval: 10s
@@ -60,7 +60,7 @@ services:
     networks:
       - bankapp-test
     env_file:
-      - ".env.docker"
+      - "docker/.env.docker"
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "node_health_check" ]
       interval: 10s
