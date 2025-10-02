@@ -1,11 +1,14 @@
 package bankapp.auth.infrastructure.driven.otp.service;
 
 import bankapp.auth.application.verification.initiate.port.out.OtpGenerationPort;
+import bankapp.auth.infrastructure.driven.otp.exception.OtpGenerationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SecureOtpNumberGenerator implements OtpGenerationPort {
@@ -23,10 +26,19 @@ public class SecureOtpNumberGenerator implements OtpGenerationPort {
      */
     @Override
     public String generate(int len) {
-        verify(len);
+        log.info("Generating OTP code.");
+        log.debug("Generating OTP with length: {}", len);
 
-        var randomOtpNumber = getRandomNumber(len);
-        return String.valueOf(randomOtpNumber);
+        try {
+            verify(len);
+
+            var randomOtpNumber = getRandomNumber(len);
+            log.info("Successfully generated OTP code.");
+            return String.valueOf(randomOtpNumber);
+        } catch (OtpGenerationException ex) {
+            log.error("Failed to generate OTP with length: {}", len, ex);
+            throw ex;
+        }
     }
 
     private void verify(int len) {

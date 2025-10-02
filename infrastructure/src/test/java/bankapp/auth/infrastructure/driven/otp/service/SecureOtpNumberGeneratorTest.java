@@ -1,6 +1,7 @@
 package bankapp.auth.infrastructure.driven.otp.service;
 
 import bankapp.auth.infrastructure.crosscutting.config.SecurityConfiguration;
+import bankapp.auth.infrastructure.driven.otp.exception.OtpGenerationException;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
