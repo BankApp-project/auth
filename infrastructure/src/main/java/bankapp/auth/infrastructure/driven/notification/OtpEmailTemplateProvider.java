@@ -1,6 +1,7 @@
 package bankapp.auth.infrastructure.driven.notification;
 
 import bankapp.auth.domain.model.vo.EmailAddress;
+import bankapp.auth.infrastructure.driven.notification.dto.EmailTemplate;
 import bankapp.auth.infrastructure.driven.notification.exception.InvalidEmailTemplateArgumentException;
 
 public class OtpEmailTemplateProvider {

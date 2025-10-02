@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.notification;
+package bankapp.auth.infrastructure.driven.notification.dto;
 
 import bankapp.auth.domain.model.vo.EmailAddress;
 
