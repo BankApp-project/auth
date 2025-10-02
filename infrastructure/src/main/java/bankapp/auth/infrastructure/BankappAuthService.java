@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure;
 
 import bankapp.auth.infrastructure.driven.challenge.config.ChallengeProperties;
-import bankapp.auth.infrastructure.driven.notification.NotificationProperties;
+import bankapp.auth.infrastructure.driven.notification.properties.NotificationProperties;
 import bankapp.auth.infrastructure.driven.otp.config.OtpProperties;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeySecurityProperties;

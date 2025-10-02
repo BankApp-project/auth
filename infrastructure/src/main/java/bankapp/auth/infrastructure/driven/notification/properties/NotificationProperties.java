@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.notification;
+package bankapp.auth.infrastructure.driven.notification.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

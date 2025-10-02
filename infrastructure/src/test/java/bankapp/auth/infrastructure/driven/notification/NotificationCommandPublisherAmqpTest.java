@@ -1,5 +1,6 @@
 package bankapp.auth.infrastructure.driven.notification;
 
+import bankapp.auth.infrastructure.driven.notification.properties.NotificationProperties;
 import bankapp.payload.notification.email.otp.EmailNotificationPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
