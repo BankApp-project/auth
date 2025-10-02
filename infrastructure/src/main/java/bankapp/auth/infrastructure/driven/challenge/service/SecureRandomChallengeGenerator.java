@@ -4,11 +4,13 @@ import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.service.ChallengeGenerationPort;
 import bankapp.auth.infrastructure.driven.challenge.config.ChallengeProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.time.Clock;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SecureRandomChallengeGenerator implements ChallengeGenerationPort {
@@ -19,9 +21,12 @@ public class SecureRandomChallengeGenerator implements ChallengeGenerationPort {
 
     @Override
     public Challenge generate() {
+        log.info("Generating challenge.");
+        log.debug("Generating challenge with length: {} bytes and TTL: {}", properties.length(), properties.ttl());
 
         byte[] value = getRandomChallengeValue();
 
+        log.info("Successfully generated challenge.");
         return new Challenge(
                 value,
                 properties.ttl(),
