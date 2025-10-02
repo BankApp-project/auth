@@ -2,6 +2,7 @@ package bankapp.auth.infrastructure.driven.notification;
 
 import bankapp.auth.application.shared.port.out.service.NotificationPort;
 import bankapp.auth.domain.model.vo.EmailAddress;
+import bankapp.auth.infrastructure.driven.notification.out.NotificationCommandPublisher;
 import bankapp.payload.notification.email.otp.EmailNotificationPayload;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

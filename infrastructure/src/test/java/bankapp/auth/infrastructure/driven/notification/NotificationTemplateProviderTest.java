@@ -1,6 +1,7 @@
 package bankapp.auth.infrastructure.driven.notification;
 
 import bankapp.auth.domain.model.vo.EmailAddress;
+import bankapp.auth.infrastructure.driven.notification.exception.InvalidEmailTemplateArgumentException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

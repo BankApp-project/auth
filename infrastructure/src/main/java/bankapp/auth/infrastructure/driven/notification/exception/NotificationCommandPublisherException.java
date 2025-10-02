@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.notification;
+package bankapp.auth.infrastructure.driven.notification.exception;
 
 public class NotificationCommandPublisherException extends RuntimeException {
 

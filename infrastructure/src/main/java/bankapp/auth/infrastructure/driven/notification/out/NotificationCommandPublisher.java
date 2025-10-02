@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.notification;
+package bankapp.auth.infrastructure.driven.notification.out;
 
 import bankapp.payload.notification.email.otp.EmailNotificationPayload;
 

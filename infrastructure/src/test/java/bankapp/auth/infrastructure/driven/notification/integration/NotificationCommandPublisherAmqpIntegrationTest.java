@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.notification.integration;
 
 import bankapp.auth.infrastructure.AmqpOtpTestConfig;
-import bankapp.auth.infrastructure.driven.notification.NotificationCommandPublisher;
+import bankapp.auth.infrastructure.driven.notification.out.NotificationCommandPublisher;
 import bankapp.auth.infrastructure.utils.WithRabbitMQContainer;
 import bankapp.payload.notification.email.otp.EmailNotificationPayload;
 import org.junit.jupiter.api.Test;
