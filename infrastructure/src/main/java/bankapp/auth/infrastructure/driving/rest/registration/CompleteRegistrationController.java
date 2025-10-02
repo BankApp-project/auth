@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driving.rest.registration;
 
+import bankapp.auth.application.registration.complete.CompleteRegistrationCommand;
 import bankapp.auth.application.registration.complete.CompleteRegistrationUseCase;
-import bankapp.auth.application.registration.complete.port.in.CompleteRegistrationCommand;
 import bankapp.auth.infrastructure.driving.rest.shared.dto.AuthenticationGrantResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -1,9 +1,9 @@
 package bankapp.auth.infrastructure.driven.passkey.service.options;
 
+import bankapp.auth.application.shared.port.out.PasskeyOptionsPort;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.Nullable;

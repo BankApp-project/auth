@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driving.rest.registration;
 
+import bankapp.auth.application.registration.complete.CompleteRegistrationCommand;
 import bankapp.auth.application.registration.complete.CompleteRegistrationUseCase;
-import bankapp.auth.application.registration.complete.port.in.CompleteRegistrationCommand;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.infrastructure.crosscutting.config.SpringSecurityConfiguration;

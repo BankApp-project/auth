@@ -1,6 +1,6 @@
 package bankapp.auth.infrastructure.driven.session;
 
-import bankapp.auth.application.verification.complete.port.out.SessionIdGenerationPort;
+import bankapp.auth.application.shared.port.out.SessionIdGenerationPort;
 import com.github.f4b6a3.uuid.alt.GUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

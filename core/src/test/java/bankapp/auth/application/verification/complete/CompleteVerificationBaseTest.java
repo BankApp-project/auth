@@ -1,20 +1,15 @@
 package bankapp.auth.application.verification.complete;
 
+import bankapp.auth.application.shared.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.shared.port.out.HashingPort;
+import bankapp.auth.application.shared.port.out.PasskeyOptionsPort;
+import bankapp.auth.application.shared.port.out.SessionIdGenerationPort;
 import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
-import bankapp.auth.application.shared.port.out.stubs.StubHasher;
-import bankapp.auth.application.shared.port.out.stubs.StubOtpRepository;
-import bankapp.auth.application.shared.port.out.stubs.StubSessionRepository;
+import bankapp.auth.application.shared.port.out.stubs.*;
 import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
-import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
-import bankapp.auth.application.verification.complete.port.out.SessionIdGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.stubs.StubChallengeGenerator;
-import bankapp.auth.application.verification.complete.port.out.stubs.StubPasskeyOptionsService;
-import bankapp.auth.application.verification.complete.port.out.stubs.StubUserRepository;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.domain.model.vo.EmailAddress;

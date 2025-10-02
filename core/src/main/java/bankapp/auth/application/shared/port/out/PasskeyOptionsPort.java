@@ -1,4 +1,4 @@
-package bankapp.auth.application.verification.complete.port.out;
+package bankapp.auth.application.shared.port.out;
 
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialCreationOptions;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;

@@ -2,13 +2,13 @@ package bankapp.auth.infrastructure.usecases.it;
 
 import bankapp.auth.application.authentication.complete.CompleteAuthenticationCommand;
 import bankapp.auth.application.authentication.complete.CompleteAuthenticationUseCase;
+import bankapp.auth.application.shared.port.out.ChallengeGenerationPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.shared.service.ByteArrayUtil;
-import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;

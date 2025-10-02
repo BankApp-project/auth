@@ -2,7 +2,7 @@ package bankapp.auth.domain.model;
 
 
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
-import bankapp.auth.application.verification.complete.port.out.stubs.StubUserRepository;
+import bankapp.auth.application.shared.port.out.stubs.StubUserRepository;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import org.junit.jupiter.api.Test;
 

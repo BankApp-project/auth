@@ -1,4 +1,4 @@
-package bankapp.auth.application.verification.complete.port.out;
+package bankapp.auth.application.shared.port.out;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package bankapp.auth.application.verification.complete.port.out.stubs;
+package bankapp.auth.application.shared.port.out.stubs;
 
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.domain.model.User;

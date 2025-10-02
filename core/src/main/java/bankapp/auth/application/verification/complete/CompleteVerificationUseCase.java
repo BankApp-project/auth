@@ -1,17 +1,17 @@
 package bankapp.auth.application.verification.complete;
 
 import bankapp.auth.application.shared.UseCase;
+import bankapp.auth.application.shared.port.out.ChallengeGenerationPort;
+import bankapp.auth.application.shared.port.out.PasskeyOptionsPort;
+import bankapp.auth.application.shared.port.out.SessionIdGenerationPort;
 import bankapp.auth.application.shared.port.out.dto.Challenge;
+import bankapp.auth.application.shared.port.out.dto.LoginResponse;
+import bankapp.auth.application.shared.port.out.dto.RegistrationResponse;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.verification.complete.port.in.CompleteVerificationCommand;
-import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
-import bankapp.auth.application.verification.complete.port.out.SessionIdGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.dto.LoginResponse;
-import bankapp.auth.application.verification.complete.port.out.dto.RegistrationResponse;
 import bankapp.auth.domain.OtpService;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.annotations.NotNull;

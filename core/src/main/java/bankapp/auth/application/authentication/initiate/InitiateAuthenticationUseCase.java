@@ -1,12 +1,12 @@
 package bankapp.auth.application.authentication.initiate;
 
 import bankapp.auth.application.shared.UseCase;
+import bankapp.auth.application.shared.port.out.ChallengeGenerationPort;
+import bankapp.auth.application.shared.port.out.PasskeyOptionsPort;
+import bankapp.auth.application.shared.port.out.SessionIdGenerationPort;
+import bankapp.auth.application.shared.port.out.dto.LoginResponse;
 import bankapp.auth.application.shared.port.out.dto.Session;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
-import bankapp.auth.application.verification.complete.port.out.ChallengeGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.PasskeyOptionsPort;
-import bankapp.auth.application.verification.complete.port.out.SessionIdGenerationPort;
-import bankapp.auth.application.verification.complete.port.out.dto.LoginResponse;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 
 @UseCase
