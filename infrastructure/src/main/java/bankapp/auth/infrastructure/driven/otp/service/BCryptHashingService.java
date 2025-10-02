@@ -3,9 +3,11 @@ package bankapp.auth.infrastructure.driven.otp.service;
 import bankapp.auth.application.shared.port.out.service.HashingPort;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BCryptHashingService implements HashingPort {
@@ -21,11 +23,21 @@ public class BCryptHashingService implements HashingPort {
      */
     @Override
     public String hashSecurely(@NonNull String value) {
-        return passwordEncoder.encode(value);
+        log.info("Hashing value securely.");
+        log.debug("Hashing value using BCrypt password encoder.");
+
+        String hashedValue = passwordEncoder.encode(value);
+        log.info("Successfully hashed value.");
+        return hashedValue;
     }
 
     @Override
     public boolean verify(String hashedValue, String value) {
-        return passwordEncoder.matches(value, hashedValue);
+        log.info("Verifying hashed value.");
+        log.debug("Verifying value against BCrypt hash.");
+
+        boolean isValid = passwordEncoder.matches(value, hashedValue);
+        log.info("Hash verification completed with result: {}", isValid);
+        return isValid;
     }
 }
