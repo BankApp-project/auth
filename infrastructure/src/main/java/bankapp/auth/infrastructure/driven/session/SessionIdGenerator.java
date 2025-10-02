@@ -21,11 +21,10 @@ public class SessionIdGenerator implements SessionIdGenerationPort {
 
     @Override
     public UUID generate() {
-        log.info("Generating session ID.");
-        log.debug("Generating UUIDv7 session ID using current timestamp.");
+        log.debug("Generating session ID.");
 
         UUID sessionId = GUID.v7(Instant.now(clock), secureRandom).toUUID();
-        log.info("Successfully generated session ID.");
+        log.debug("Successfully generated session ID.");
         return sessionId;
     }
 }

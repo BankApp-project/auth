@@ -32,12 +32,12 @@ public class PasskeyOptionsService implements PasskeyOptionsPort {
      */
     @Override
     public PublicKeyCredentialCreationOptions getPasskeyCreationOptions(User user, Session session) {
-        log.info("Generating passkey creation options.");
+        log.debug("Generating passkey creation options.");
 
         PasskeyCreationOptionsAssembler assembler = new PasskeyCreationOptionsAssembler(properties, clock);
         PublicKeyCredentialCreationOptions options = assembler.assemble(user, session);
 
-        log.info("Successfully generated passkey creation options.");
+        log.debug("Successfully generated passkey creation options.");
         return options;
     }
 
@@ -46,7 +46,7 @@ public class PasskeyOptionsService implements PasskeyOptionsPort {
      */
     @Override
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(Session session) {
-        log.info("Generating passkey request options without user credentials.");
+        log.debug("Generating passkey request options without user credentials.");
         return getPasskeyRequestOptions(null, session);
     }
 
@@ -55,12 +55,12 @@ public class PasskeyOptionsService implements PasskeyOptionsPort {
      */
     @Override
     public PublicKeyCredentialRequestOptions getPasskeyRequestOptions(@Nullable List<Passkey> userCredentials, Session session) {
-        log.info("Generating passkey request options.");
+        log.debug("Generating passkey request options.");
 
         PasskeyRequestOptionsAssembler assembler = new PasskeyRequestOptionsAssembler(properties, clock);
         PublicKeyCredentialRequestOptions options = assembler.assemble(userCredentials, session);
 
-        log.info("Successfully generated passkey request options.");
+        log.debug("Successfully generated passkey request options.");
         return options;
     }
 }

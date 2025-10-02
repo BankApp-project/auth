@@ -20,8 +20,7 @@ public class NotificationCommandPublisherAmqp implements NotificationCommandPubl
 
     @Override
     public void publishSendEmailCommand(EmailNotificationPayload command) {
-        log.info("Publishing email notification command to message broker.");
-        log.debug("Publishing to exchange: {} with routing key: {}", properties.exchange(), properties.routingKey());
+        log.debug("Publishing email notification command to message broker.");
 
         if (command == null) {
             log.error("Failed to publish email notification command: command is null");
@@ -30,7 +29,7 @@ public class NotificationCommandPublisherAmqp implements NotificationCommandPubl
 
         try {
             rabbitTemplate.convertAndSend(properties.exchange(), properties.routingKey(), command);
-            log.info("Successfully published email notification command.");
+            log.debug("Successfully published email notification command.");
         } catch (Exception ex) {
             log.error("Failed to publish email notification command to exchange: {}", properties.exchange(), ex);
             throw ex;

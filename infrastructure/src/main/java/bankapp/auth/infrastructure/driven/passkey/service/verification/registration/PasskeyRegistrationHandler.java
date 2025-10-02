@@ -23,14 +23,14 @@ public class PasskeyRegistrationHandler {
     private final RegistrationDataMapper registrationDataMapper;
 
     public Passkey handle(String registrationResponseJSON, Session sessionData) {
-        log.info("Processing passkey registration response.");
+        log.debug("Processing passkey registration response.");
 
         var registrationParameters = getRegistrationParameters(sessionData);
 
         var registrationData = verifyRegistrationResponse(registrationResponseJSON, registrationParameters);
 
         Passkey passkey = mapToPasskey(sessionData, registrationData);
-        log.info("Successfully processed passkey registration response.");
+        log.debug("Successfully processed passkey registration response.");
         return passkey;
     }
 

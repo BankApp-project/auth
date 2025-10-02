@@ -22,7 +22,7 @@ public class PasskeyAuthenticationHandler {
     private final AuthenticationParametersProvider authenticationParametersProvider;
 
     public Passkey handle(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException {
-        log.info("Processing passkey authentication response.");
+        log.debug("Processing passkey authentication response.");
 
         var authParams = getAuthenticationParameters(sessionData, passkey);
 
@@ -30,7 +30,7 @@ public class PasskeyAuthenticationHandler {
 
         setSignCount(passkey, authenticationData);
 
-        log.info("Successfully processed passkey authentication response.");
+        log.debug("Successfully processed passkey authentication response.");
         return passkey;
     }
 

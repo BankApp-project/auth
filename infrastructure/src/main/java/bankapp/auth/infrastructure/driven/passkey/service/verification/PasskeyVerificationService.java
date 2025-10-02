@@ -24,11 +24,11 @@ public class PasskeyVerificationService implements PasskeyVerificationPort {
 
     @Override
     public Passkey handleRegistration(String registrationResponseJSON, Session sessionData) {
-        log.info("Handling passkey registration verification.");
+        log.debug("Handling passkey registration verification.");
 
         try {
             Passkey passkey = passkeyRegistrationHandler.handle(registrationResponseJSON, sessionData);
-            log.info("Successfully verified passkey registration.");
+            log.debug("Successfully verified passkey registration.");
             return passkey;
         } catch (WebAuthnException e) {
             log.error("Failed to verify passkey registration", e);
@@ -38,7 +38,7 @@ public class PasskeyVerificationService implements PasskeyVerificationPort {
 
     @Override
     public Passkey handleAuthentication(String authenticationResponseJSON, Session sessionData, Passkey passkey) throws MaliciousCounterException {
-        log.info("Handling passkey authentication verification.");
+        log.debug("Handling passkey authentication verification.");
 
         try {
             Passkey updatedPasskey = passkeyAuthenticationHandler.handle(
@@ -46,7 +46,7 @@ public class PasskeyVerificationService implements PasskeyVerificationPort {
                     sessionData,
                     passkey
             );
-            log.info("Successfully verified passkey authentication.");
+            log.debug("Successfully verified passkey authentication.");
             return updatedPasskey;
         } catch (MaliciousCounterValueException e) {
             log.error("Malicious counter value detected for credential ID: {}", passkey.getId(), e);

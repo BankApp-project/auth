@@ -16,15 +16,13 @@ public class OtpEmailTemplateProvider {
 
     public EmailTemplate get(EmailAddress email, String otp) {
 
-        log.info("Building OTP email template.");
+        log.debug("Building OTP email template.");
         validateArguments(otp, email);
-
-        log.debug("Building email template for email: {} with OTP length: {}", email.getValue(), otp != null ? otp.length() : 0);
 
         String subject = getOtpEmailSubject();
         String body = getOtpEmailBody(otp);
 
-        log.info("Successfully built OTP email template.");
+        log.debug("Successfully built OTP email template.");
         return new EmailTemplate(subject, body, email);
     }
 

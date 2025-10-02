@@ -20,14 +20,13 @@ public class NotificationAdapter implements NotificationPort {
 
     @Override
     public void sendOtpToUserEmail(@NonNull EmailAddress userEmail, @NonNull String otpValue) {
-        log.info("Sending OTP notification to user email.");
-        log.debug("Preparing OTP email notification for recipient: {}", userEmail.getValue());
+        log.debug("Sending OTP notification to user email.");
 
         var template = getOptEmailTemplate(userEmail, otpValue);
 
         var command = getSendEmailNotificationCommand(template);
         notificationCommandPublisher.publishSendEmailCommand(command);
-        log.info("Successfully sent OTP notification to user email.");
+        log.debug("Successfully sent OTP notification to user email.");
     }
 
     private EmailTemplate getOptEmailTemplate(EmailAddress emailAddress, String otpValue) {

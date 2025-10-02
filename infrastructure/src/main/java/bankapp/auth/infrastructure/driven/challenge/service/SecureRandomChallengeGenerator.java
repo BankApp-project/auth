@@ -21,12 +21,11 @@ public class SecureRandomChallengeGenerator implements ChallengeGenerationPort {
 
     @Override
     public Challenge generate() {
-        log.info("Generating challenge.");
-        log.debug("Generating challenge with length: {} bytes and TTL: {}", properties.length(), properties.ttl());
+        log.debug("Generating challenge.");
 
         byte[] value = getRandomChallengeValue();
 
-        log.info("Successfully generated challenge.");
+        log.debug("Successfully generated challenge.");
         return new Challenge(
                 value,
                 properties.ttl(),

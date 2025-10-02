@@ -26,14 +26,13 @@ public class SecureOtpNumberGenerator implements OtpGenerationPort {
      */
     @Override
     public String generate(int len) {
-        log.info("Generating OTP code.");
-        log.debug("Generating OTP with length: {}", len);
+        log.debug("Generating OTP code.");
 
         try {
             verify(len);
 
             var randomOtpNumber = getRandomNumber(len);
-            log.info("Successfully generated OTP code.");
+            log.debug("Successfully generated OTP code.");
             return String.valueOf(randomOtpNumber);
         } catch (OtpGenerationException ex) {
             log.error("Failed to generate OTP with length: {}", len, ex);

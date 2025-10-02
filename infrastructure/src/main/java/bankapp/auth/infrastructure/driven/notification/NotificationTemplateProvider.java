@@ -13,10 +13,10 @@ public class NotificationTemplateProvider {
     private final OtpEmailTemplateProvider otpEmailTemplateProvider = new OtpEmailTemplateProvider(SUPPORT_EMAIL_ADDRESS);
 
     public EmailTemplate getOtpEmailTemplate(EmailAddress email, String otp) {
-        log.info("Generating OTP email template.");
+        log.debug("Generating OTP email template.");
 
         EmailTemplate template = otpEmailTemplateProvider.get(email, otp);
-        log.info("Successfully generated OTP email template.");
+        log.debug("Successfully generated OTP email template.");
         return template;
     }
 }

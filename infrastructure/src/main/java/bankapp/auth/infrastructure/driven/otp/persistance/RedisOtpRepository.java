@@ -51,13 +51,12 @@ public class RedisOtpRepository implements OtpRepository {
     /// @throws IllegalArgumentException if the OTP or its key is null
     @Override
     public void save(@NonNull Otp otp) {
-        log.info("Saving OTP to Redis");
+        log.debug("Saving OTP to Redis");
         String key = otp.getKey();
         Duration timeout = otpConfig.getTtl();
-        log.debug("Saving OTP with key: {}, TTL: {}", key, timeout);
         try {
             redisTemplate.opsForValue().set(key, otp, timeout);
-            log.info("Successfully saved OTP with key: {}", key);
+            log.debug("Successfully saved OTP with key: {}", key);
         } catch (Exception ex) {
             log.error("Failed to save OTP with key: {}", key, ex);
             throw ex;

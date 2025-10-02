@@ -23,21 +23,19 @@ public class BCryptHashingService implements HashingPort {
      */
     @Override
     public String hashSecurely(@NonNull String value) {
-        log.info("Hashing value securely.");
-        log.debug("Hashing value using BCrypt password encoder.");
+        log.debug("Hashing value securely.");
 
         String hashedValue = passwordEncoder.encode(value);
-        log.info("Successfully hashed value.");
+        log.debug("Successfully hashed value.");
         return hashedValue;
     }
 
     @Override
     public boolean verify(String hashedValue, String value) {
-        log.info("Verifying hashed value.");
-        log.debug("Verifying value against BCrypt hash.");
+        log.debug("Verifying hashed value.");
 
         boolean isValid = passwordEncoder.matches(value, hashedValue);
-        log.info("Hash verification completed with result: {}", isValid);
+        log.debug("Hash verification completed with result: {}", isValid);
         return isValid;
     }
 }
