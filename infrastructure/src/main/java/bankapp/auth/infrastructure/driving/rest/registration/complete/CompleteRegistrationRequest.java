@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driving.rest.registration;
+package bankapp.auth.infrastructure.driving.rest.registration.complete;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
