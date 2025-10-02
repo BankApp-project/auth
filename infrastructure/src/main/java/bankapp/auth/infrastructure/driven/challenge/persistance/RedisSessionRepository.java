@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.challenge.persistance;
 
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;

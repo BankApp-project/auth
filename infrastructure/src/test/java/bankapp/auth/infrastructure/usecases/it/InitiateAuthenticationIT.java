@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.usecases.it;
 
 
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.repository.SessionRepository;
 import bankapp.auth.infrastructure.driving.rest.authentication.initiate.InitiateAuthenticationResponse;
 import bankapp.auth.infrastructure.utils.WithRedisContainer;
 import com.fasterxml.jackson.core.JsonProcessingException;

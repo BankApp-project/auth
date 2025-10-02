@@ -7,8 +7,8 @@ import bankapp.auth.application.shared.port.out.TokenIssuingPort;
 import bankapp.auth.application.shared.port.out.dto.AuthTokens;
 import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.repository.PasskeyRepository;
+import bankapp.auth.application.shared.port.out.repository.SessionRepository;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 

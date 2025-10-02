@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.usecases.it;
 
 
-import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
+import bankapp.auth.application.shared.port.out.repository.OtpRepository;
 import bankapp.auth.domain.model.Otp;
 import bankapp.auth.infrastructure.AmqpOtpTestConfig;
 import bankapp.auth.infrastructure.driven.otp.config.OtpConfiguration;

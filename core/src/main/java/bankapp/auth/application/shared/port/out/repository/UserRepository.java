@@ -1,4 +1,4 @@
-package bankapp.auth.application.shared.port.out.persistance;
+package bankapp.auth.application.shared.port.out.repository;
 
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;

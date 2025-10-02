@@ -1,6 +1,6 @@
 package bankapp.auth.application.verification.complete;
 
-import bankapp.auth.application.shared.port.out.persistance.UserRepository;
+import bankapp.auth.application.shared.port.out.repository.UserRepository;
 import bankapp.auth.domain.model.User;
 import org.junit.jupiter.api.Test;
 

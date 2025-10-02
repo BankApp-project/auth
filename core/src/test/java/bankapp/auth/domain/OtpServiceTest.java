@@ -1,7 +1,7 @@
 package bankapp.auth.domain;
 
 import bankapp.auth.application.shared.port.out.HashingPort;
-import bankapp.auth.application.shared.port.out.persistance.OtpRepository;
+import bankapp.auth.application.shared.port.out.repository.OtpRepository;
 import bankapp.auth.application.shared.port.out.stubs.StubHasher;
 import bankapp.auth.application.shared.port.out.stubs.StubOtpRepository;
 import bankapp.auth.application.verification.complete.OtpVerificationException;

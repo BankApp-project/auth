@@ -6,7 +6,7 @@ import bankapp.auth.application.shared.port.out.PasskeyOptionsPort;
 import bankapp.auth.application.shared.port.out.SessionIdGenerationPort;
 import bankapp.auth.application.shared.port.out.dto.LoginResponse;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
+import bankapp.auth.application.shared.port.out.repository.SessionRepository;
 import bankapp.auth.domain.model.annotations.TransactionalUseCase;
 
 @UseCase
