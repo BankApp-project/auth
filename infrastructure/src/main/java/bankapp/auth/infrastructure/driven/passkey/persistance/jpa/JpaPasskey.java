@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.passkey.persistance.dto;
+package bankapp.auth.infrastructure.driven.passkey.persistance.jpa;
 
 import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 import bankapp.auth.infrastructure.driven.passkey.persistance.converters.AuthenticatorTransportConverter;

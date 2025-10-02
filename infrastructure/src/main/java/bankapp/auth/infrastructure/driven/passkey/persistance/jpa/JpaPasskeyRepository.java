@@ -1,6 +1,5 @@
-package bankapp.auth.infrastructure.driven.passkey.persistance;
+package bankapp.auth.infrastructure.driven.passkey.persistance.jpa;
 
-import bankapp.auth.infrastructure.driven.passkey.persistance.dto.JpaPasskey;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

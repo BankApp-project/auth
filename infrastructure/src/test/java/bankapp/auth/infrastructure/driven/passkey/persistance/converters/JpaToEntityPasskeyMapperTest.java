@@ -2,7 +2,7 @@ package bankapp.auth.infrastructure.driven.passkey.persistance.converters;
 
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.enums.AuthenticatorTransport;
-import bankapp.auth.infrastructure.driven.passkey.persistance.dto.JpaPasskey;
+import bankapp.auth.infrastructure.driven.passkey.persistance.jpa.JpaPasskey;
 import com.github.f4b6a3.uuid.alt.GUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

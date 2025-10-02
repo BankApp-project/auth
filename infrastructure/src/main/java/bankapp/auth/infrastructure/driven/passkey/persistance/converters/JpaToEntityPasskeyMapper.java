@@ -1,7 +1,7 @@
 package bankapp.auth.infrastructure.driven.passkey.persistance.converters;
 
 import bankapp.auth.domain.model.Passkey;
-import bankapp.auth.infrastructure.driven.passkey.persistance.dto.JpaPasskey;
+import bankapp.auth.infrastructure.driven.passkey.persistance.jpa.JpaPasskey;
 import org.springframework.stereotype.Component;
 
 /**

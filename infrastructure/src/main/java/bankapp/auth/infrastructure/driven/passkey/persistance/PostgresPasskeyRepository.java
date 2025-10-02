@@ -4,7 +4,8 @@ import bankapp.auth.application.shared.exception.CredentialAlreadyExistsExceptio
 import bankapp.auth.application.shared.port.out.repository.PasskeyRepository;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.driven.passkey.persistance.converters.JpaToEntityPasskeyMapper;
-import bankapp.auth.infrastructure.driven.passkey.persistance.dto.JpaPasskey;
+import bankapp.auth.infrastructure.driven.passkey.persistance.jpa.JpaPasskey;
+import bankapp.auth.infrastructure.driven.passkey.persistance.jpa.JpaPasskeyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
