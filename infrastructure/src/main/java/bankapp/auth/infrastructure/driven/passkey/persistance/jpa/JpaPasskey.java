@@ -24,7 +24,6 @@ import java.util.UUID;
  *
  * @see <a href="https://www.w3.org/TR/webauthn-3/#credential-record">W3C WebAuthn Level 3: Credential Record</a>
  */
-@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Getter
 @Table(name = "passkey", indexes = {
