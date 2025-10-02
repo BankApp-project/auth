@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driving.rest.serializers;
+package bankapp.auth.infrastructure.driving.rest.shared.config.serializers;
 
 import bankapp.auth.application.shared.enums.UserVerificationRequirement;
 import com.fasterxml.jackson.core.JsonGenerator;

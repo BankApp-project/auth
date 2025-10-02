@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.filters;
+package bankapp.auth.infrastructure.driving.rest.shared.config.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
