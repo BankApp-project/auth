@@ -1,8 +1,8 @@
 package bankapp.auth.infrastructure.driven.notification.out.amqp;
 
+import bankapp.auth.infrastructure.driven.notification.config.NotificationProperties;
 import bankapp.auth.infrastructure.driven.notification.exception.NotificationCommandPublisherException;
 import bankapp.auth.infrastructure.driven.notification.out.NotificationCommandPublisher;
-import bankapp.auth.infrastructure.driven.notification.properties.NotificationProperties;
 import bankapp.payload.notification.email.otp.EmailNotificationPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

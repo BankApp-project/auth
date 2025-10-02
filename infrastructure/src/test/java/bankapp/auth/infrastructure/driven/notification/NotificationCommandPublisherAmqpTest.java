@@ -1,8 +1,8 @@
 package bankapp.auth.infrastructure.driven.notification;
 
+import bankapp.auth.infrastructure.driven.notification.config.NotificationProperties;
 import bankapp.auth.infrastructure.driven.notification.exception.NotificationCommandPublisherException;
 import bankapp.auth.infrastructure.driven.notification.out.amqp.NotificationCommandPublisherAmqp;
-import bankapp.auth.infrastructure.driven.notification.properties.NotificationProperties;
 import bankapp.payload.notification.email.otp.EmailNotificationPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
