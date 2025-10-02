@@ -3,7 +3,9 @@ package bankapp.auth.infrastructure.driven.notification;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.infrastructure.driven.notification.dto.EmailTemplate;
 import bankapp.auth.infrastructure.driven.notification.exception.InvalidEmailTemplateArgumentException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class OtpEmailTemplateProvider {
 
     private final String supportEmailAddress;
@@ -13,16 +15,27 @@ public class OtpEmailTemplateProvider {
     }
 
     public EmailTemplate get(EmailAddress email, String otp) {
-        validateArguments(otp);
+
+        log.info("Building OTP email template.");
+        validateArguments(otp, email);
+
+        log.debug("Building email template for email: {} with OTP length: {}", email.getValue(), otp != null ? otp.length() : 0);
+
         String subject = getOtpEmailSubject();
         String body = getOtpEmailBody(otp);
 
+        log.info("Successfully built OTP email template.");
         return new EmailTemplate(subject, body, email);
     }
 
-    private void validateArguments(String otp) {
+    private void validateArguments(String otp, EmailAddress emailAddress) {
         if (otp == null || otp.isBlank()) {
+            log.error("Failed to build OTP email template: invalid arguments");
             throw new InvalidEmailTemplateArgumentException("Otp cannot be empty");
+        }
+        if (emailAddress == null) {
+            log.error("Failed to build OTP email template: invalid arguments");
+            throw new InvalidEmailTemplateArgumentException("Email cannot be null");
         }
     }
 
