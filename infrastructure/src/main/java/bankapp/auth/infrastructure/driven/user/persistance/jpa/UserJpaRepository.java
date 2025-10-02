@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.user.persistance;
+package bankapp.auth.infrastructure.driven.user.persistance.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,4 +1,4 @@
-package bankapp.auth.infrastructure.driven.user.persistance;
+package bankapp.auth.infrastructure.driven.user.persistance.jpa;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -3,6 +3,8 @@ package bankapp.auth.infrastructure.driven.user.persistance;
 import bankapp.auth.application.shared.port.out.repository.UserRepository;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
+import bankapp.auth.infrastructure.driven.user.persistance.jpa.JpaUser;
+import bankapp.auth.infrastructure.driven.user.persistance.jpa.UserJpaRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
