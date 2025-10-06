@@ -205,18 +205,17 @@ to test endpoints directly in your browser. The Swagger UI provides:
 
 ### Quick Reference
 
-| Endpoint                       | Method | Description                                             | Authentication Required |
-|--------------------------------|--------|---------------------------------------------------------|-------------------------|
-| `/api/verification/initiate`   | POST   | Start email verification with OTP                       | No                      |
-| `/api/verification/complete`   | POST   | Validate OTP and create session                         | No                      |
-| `/api/authentication/initiate` | GET    | Begin WebAuthn authentication                           | Session Cookie          |
-| `/api/authentication/complete` | POST   | Complete WebAuthn and get authorization tokens          | Session Cookie          |
-| `/api/registration/complete`   | POST   | Finalize user registration and get authorization tokens | Session Cookie          |
+| Endpoint                       | Method | Description                                             |
+|--------------------------------|--------|---------------------------------------------------------|
+| `/api/verification/initiate`   | POST   | Start email verification with OTP                       |
+| `/api/verification/complete`   | POST   | Validate OTP and create session                         |
+| `/api/authentication/initiate` | GET    | Begin WebAuthn authentication                           |
+| `/api/authentication/complete` | POST   | Complete WebAuthn and get authorization tokens          |
+| `/api/registration/complete`   | POST   | Finalize user registration and get authorization tokens |
 
 ### Example Requests
 
 **Initiate Verification:**
-
 ```json
 POST /api/verification/initiate
 Content-Type: application/json
@@ -227,7 +226,6 @@ Content-Type: application/json
 ```
 
 **Complete Verification:**
-
 ```json
 POST /api/verification/complete
 Content-Type: application/json
@@ -346,9 +344,7 @@ features, your input is valuable.
 This project follows strict architectural principles. Please ensure your contributions align with these patterns:
 
 **Use Case Pattern:**
-
 ```java
-
 @UseCase  // Always annotate use case classes
 public class InitiateVerificationUseCase {
     // Pure business logic - no framework dependencies
@@ -366,9 +362,7 @@ public class InitiateVerificationUseCase {
 ```
 
 **Dependency Injection:**
-
 ```java
-
 @RequiredArgsConstructor  // Preferred over @Autowired
 public class VerificationController {
     // Constructor injection via Lombok
@@ -380,7 +374,6 @@ public class VerificationController {
 ```
 
 **Value Objects for Type Safety:**
-
 ```java
 // Always use domain value objects instead of primitives
 // This prevents bugs and makes the code self-documenting
@@ -399,12 +392,10 @@ UserId userId = UserId.of(UUID.randomUUID());
 ```
 
 **Port-Adapter Separation:**
-
 ```java
 // Port (in domain layer) - defines what we need
 public interface UserRepositoryPort {
     Optional<User> findByEmail(EmailAddress email);
-
     User save(User user);
 }
 
@@ -429,9 +420,7 @@ public class JpaUserRepositoryAdapter implements UserRepositoryPort {
 - Aim for >80% code coverage on business logic
 
 Example test structure:
-
 ```java
-
 @Test
 void shouldGenerateOtpWhenEmailIsValid() {
     // Given
@@ -511,13 +500,11 @@ The notification service consumes OTP events from RabbitMQ and handles email del
 providers (like Resend) to send verification codes to users.
 
 **Integration Details:**
-
 - Consumes messages from `otp-notification-queue`
 - Processes `OtpNotification` events with email and OTP data
 - See the [Notification Integration Guide](Notification-Integration) for complete setup
 
 **Quick Start:**
-
 ```bash
 # Use the example notification service
 cd docker
@@ -531,7 +518,6 @@ docker compose up notification-service
 **Repository:** [BankApp Auth Frontend](https://github.com/BankApp-project/bankapp-auth-frontend)
 
 The user-facing web interface built with vanilla JavaScript. Provides the UI for:
-
 - Email verification flow
 - WebAuthn registration and authentication
 - Session management
@@ -539,7 +525,6 @@ The user-facing web interface built with vanilla JavaScript. Provides the UI for
 **Live Demo:** [https://auth.bankapp.online/](https://auth.bankapp.online/)
 
 **Key Features:**
-
 - Pure JavaScript (no framework dependencies)
 - WebAuthn/FIDO2 browser API integration
 - Responsive design for desktop and mobile
@@ -577,7 +562,6 @@ codebase follows production-quality standards and best practices, it requires ad
 a production banking environment.
 
 **What's Complete:**
-
 - ✅ Full authentication flows (email verification, WebAuthn registration/login)
 - ✅ Hexagonal architecture with proper separation of concerns
 - ✅ Live deployment at [auth.bankapp.online](https://auth.bankapp.online/) for hands-on testing
@@ -585,7 +569,6 @@ a production banking environment.
 - ✅ Comprehensive documentation and API specifications
 
 **What This Project Demonstrates:**
-
 - Modern passwordless authentication implementation
 - Clean architecture principles in a real-world context
 - Spring Boot 3.5 with virtual threads
@@ -643,14 +626,12 @@ This project is licensed under the **MIT License**.
 ### What This Means
 
 You are free to:
-
 - ✅ Use this software commercially
 - ✅ Modify and distribute
 - ✅ Use privately
 - ✅ Sublicense
 
 Under the conditions:
-
 - 📋 Include the original copyright notice
 - 📋 Include the MIT License text
 
@@ -672,24 +653,20 @@ For a complete list, see the project's `pom.xml` dependencies.
 ## 📚 Complete Documentation Index
 
 ### Quick Start
-
 - [Home](Home) - This comprehensive overview
 - [Getting Started](#getting-started) - Local development setup
 - [Configuration Guide](Configuration) - Environment variables and deployment
 
 ### Architecture & Implementation
-
 - [Implementation Details](Implementation-Details) - Deep dive into Hexagonal Architecture
 - [Architecture Benefits](#key-architectural-benefits) - Why this design matters
 - [Tech Stack](#core-technologies) - Complete technology breakdown
 
 ### API Reference
-
 - [Swagger UI](https://auth.bankapp.online/api) - Interactive API documentation
 - [Quick Reference](#api-documentation) - Endpoint summary table
 
 ### Use Cases
-
 - [Initiate Verification](Use-Case-Initiate-Verification) - Email verification flow
 - [Complete Verification](Use-Case-Complete-Verification) - OTP validation
 - [Initiate Authentication](Use-Case-Initiate-Authentication) - WebAuthn ceremony start
@@ -697,14 +674,12 @@ For a complete list, see the project's `pom.xml` dependencies.
 - [Complete Registration](Use-Case-Complete-Registration) - Passkey registration
 
 ### Integration & Development
-
 - [Notification Integration](Notification-Integration) - RabbitMQ messaging setup
 - [Contributing Guidelines](#contributing) - How to contribute
 - [Related Projects](#related-projects) - Ecosystem overview
 - [Development Guidelines](#development-guidelines) - Code patterns and best practices
 
 ### Reference
-
 - [Security Considerations](#security-considerations) - Security architecture
 - [Production Checklist](#production-hardening-checklist) - Deployment readiness
 - [License Information](#license) - MIT License details
