@@ -30,26 +30,79 @@ This service implements **Hexagonal Architecture (Ports and Adapters)** pattern,
 - **Testability** - pure domain logic with clear boundaries
 - **Maintainability** - organized codebase following DDD principles
 
+### Key Architectural Benefits
+
+Understanding why Hexagonal Architecture matters for this authentication service:
+
+- 🧪 **High testability** - Business logic can be tested in isolation without infrastructure dependencies. Use cases
+  operate on ports (interfaces), allowing mock implementations for comprehensive unit testing without spinning up
+  databases or message brokers.
+
+- 🔄 **Technology independence** - Want to migrate from PostgreSQL to MongoDB? Switch from RabbitMQ to Kafka? Replace
+  Redis with Hazelcast? The core authentication logic remains completely unchanged. Only adapter implementations need
+  updating.
+
+- 📦 **Clear boundaries** - Explicit separation between layers prevents tight coupling. The domain layer never imports
+  Spring Framework classes. Adapters never contain business rules. This enforces discipline and makes the codebase
+  easier to reason about.
+
+- 🎯 **Domain-focused development** - Developers can work on authentication flows without worrying about database
+  schemas, HTTP protocols, or message formats. The business logic stays clean and expressive.
+
 ### Key Architectural Features
 
 - **Domain-Driven Design**: Clear domain models with strict separation from persistence
 - **Spring Boot 3.5 with Virtual Threads**: High-performance, scalable I/O operations
+- **12-Factor App Design**: Cloud-native principles with externalized configuration, stateless processes, and backing
+  service abstraction
 - **Type-Safe Configuration**: Immutable configuration records with `@ConfigurationProperties`
 - **Comprehensive Error Handling**: Custom exceptions with proper error boundaries
 - **Security-First Approach**: WebAuthn attestation, secure OTP generation, and token issuance abstraction
 
 ## 🔧 Core Technologies
 
-| Component          | Technology             | Purpose                                     |
-|--------------------|------------------------|---------------------------------------------|
-| **Framework**      | Spring Boot 3.5        | Application foundation with virtual threads |
-| **Architecture**   | Hexagonal (Clean)      | Business logic isolation                    |
-| **Database**       | PostgreSQL + JPA       | Persistent data storage                     |
-| **Cache/Sessions** | Redis                  | High-performance temporary storage with TTL |
-| **Messaging**      | RabbitMQ (AMQP)        | Asynchronous event processing               |
-| **Authentication** | WebAuthn4J             | FIDO2/WebAuthn implementation               |
-| **Authorization**  | Token Issuance Port    | Ready for OAuth2/JWT implementation         |
-| **Security**       | BCrypt + Secure Random | Password hashing and OTP generation         |
+### Framework & Runtime
+
+| Component        | Technology                | Purpose                                              |
+|------------------|---------------------------|------------------------------------------------------|
+| **Framework**    | Spring Boot 3.5           | Application foundation with autoconfiguration        |
+| **Runtime**      | Java 21 + Virtual Threads | High-concurrency I/O handling with minimal overhead  |
+| **Build Tool**   | Maven 3.9+                | Dependency management and project build              |
+| **Architecture** | Hexagonal (Clean)         | Business logic isolation and technology independence |
+
+### Persistence & Caching
+
+| Component          | Technology      | Purpose                                           |
+|--------------------|-----------------|---------------------------------------------------|
+| **Database**       | PostgreSQL 15+  | ACID-compliant primary data store                 |
+| **ORM**            | Spring Data JPA | Object-relational mapping with repository pattern |
+| **Migrations**     | Flyway          | Versioned database schema management              |
+| **Cache/Sessions** | Redis 7+        | High-performance temporary storage with TTL       |
+
+### Security & Authentication
+
+| Component          | Technology          | Purpose                                 |
+|--------------------|---------------------|-----------------------------------------|
+| **Security**       | Spring Security     | Comprehensive security framework        |
+| **Authentication** | WebAuthn4J          | FIDO2/WebAuthn implementation           |
+| **Authorization**  | Token Issuance Port | Ready for OAuth2/JWT implementation     |
+| **Password Hash**  | BCrypt              | Industry-standard password hashing      |
+| **OTP Generation** | SecureRandom        | Cryptographically secure random numbers |
+
+### Messaging & Integration
+
+| Component       | Technology      | Purpose                                     |
+|-----------------|-----------------|---------------------------------------------|
+| **Messaging**   | RabbitMQ (AMQP) | Asynchronous event processing               |
+| **Integration** | Spring AMQP     | RabbitMQ client with template and listeners |
+
+### DevOps & Deployment
+
+| Component            | Technology           | Purpose                                   |
+|----------------------|----------------------|-------------------------------------------|
+| **Containerization** | Docker               | Application packaging and isolation       |
+| **Orchestration**    | Docker Compose       | Multi-container development environment   |
+| **Monitoring**       | Spring Boot Actuator | Health checks, metrics, and observability |
 
 ## 📋 Use Cases
 
@@ -136,22 +189,57 @@ Initiate Verification → Complete Verification → Complete Authentication
 - **RabbitMQ Integration**: Reliable message queuing with dead letter handling
 - **Extensible**: Easy to add new notification channels (SMS, push notifications)
 
-## 📚 Documentation Structure
+## 📝 API Documentation
 
-### Getting Started
-- **[Main](Home)** - This comprehensive introduction (you are here)
+### Interactive API Explorer
 
-### Technical Deep Dive
-- **[Implementation Details](Implementation-Details)** - Detailed architecture, patterns, and code organization
-- **[Configuration](Configuration)** - Environment setup, properties, and deployment guide
+**[🔗 Live Swagger Documentation](https://auth.bankapp.online/api)**
 
-### Use Case Documentation
-Each use case has dedicated documentation with:
-- Business logic overview
-- Port/adapter relationships
-- Request/response formats
-- Error handling scenarios
-- Technical implementation links
+Explore the complete API specification with interactive request/response examples, schema definitions, and the ability
+to test endpoints directly in your browser. The Swagger UI provides:
+
+- **Interactive testing** - Execute API calls directly from your browser
+- **Schema exploration** - View detailed request/response models with validation rules
+- **Authentication flows** - See the complete authentication journey with example payloads
+- **Error responses** - Understand all possible error scenarios and HTTP status codes
+
+### Quick Reference
+
+| Endpoint                       | Method | Description                                             | Authentication Required |
+|--------------------------------|--------|---------------------------------------------------------|-------------------------|
+| `/api/verification/initiate`   | POST   | Start email verification with OTP                       | No                      |
+| `/api/verification/complete`   | POST   | Validate OTP and create session                         | No                      |
+| `/api/authentication/initiate` | GET    | Begin WebAuthn authentication                           | Session Cookie          |
+| `/api/authentication/complete` | POST   | Complete WebAuthn and get authorization tokens          | Session Cookie          |
+| `/api/registration/complete`   | POST   | Finalize user registration and get authorization tokens | Session Cookie          |
+
+### Example Requests
+
+**Initiate Verification:**
+
+```json
+POST /api/verification/initiate
+Content-Type: application/json
+
+{
+"email": "user@example.com"
+}
+```
+
+**Complete Verification:**
+
+```json
+POST /api/verification/complete
+Content-Type: application/json
+
+{
+"email": "user@example.com",
+"otp": "123456"
+}
+```
+
+For complete request/response schemas, authentication requirements, and detailed examples, visit
+the [Swagger UI](https://auth.bankapp.online/api).
 
 ## 🚀 Quick Navigation
 
@@ -159,7 +247,9 @@ Each use case has dedicated documentation with:
 |--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Use Cases**      | [Initiate Verification](Use-Case-Initiate-Verification) • [Complete Verification](Use-Case-Complete-Verification) • [Initiate Authentication](Use-Case-Initiate-Authentication) • [Complete Authentication](Use-Case-Complete-Authentication) • [Complete Registration](Use-Case-Complete-Registration) |
 | **Architecture**   | [Implementation Details](Implementation-Details)                                                                                                                                                                                                                                                        |
-| **Development**    | [README](../README.md) • [Configuration Guide](../README.md#configuration)                                                                                                                                                                                                                              |
+| **API Reference**  | [Swagger UI](https://auth.bankapp.online/api) • [Quick Reference](#api-documentation)                                                                                                                                                                                                                   |
+| **Integration**    | [Notification Integration](Notification-Integration) • [Configuration Guide](Configuration)                                                                                                                                                                                                             |
+| **Development**    | [Contributing Guidelines](#-contributing) • [Development Setup](Configuration#development-environment)                                                                                                                                                                                                  |
 
 ## 🔐 Security Considerations
 
@@ -189,7 +279,7 @@ This service implements multiple layers of security:
 
 - Docker & Docker Compose
 - Git
-- **External notification service** (see [Notification Integration Guide](Notification-Integration.md))
+- **External notification service** (see [Notification Integration Guide](Notification-Integration))
 
 ### Running Locally
 
@@ -216,8 +306,8 @@ This service implements multiple layers of security:
    ```
 
 > **Note:** This service publishes OTP events to RabbitMQ. You'll need to implement or run a notification service to
-> consume these events and deliver emails. See the [Notification Integration Guide](Notification-Integration.md) for
-> RabbitMQ queue details and message schemas.
+> consume these events and deliver emails. See the [Notification Integration Guide](Notification-Integration) for RabbitMQ
+> queue details and message schemas.
 
 **Optional: Using the example notification service**
 
@@ -228,18 +318,279 @@ cp .env.notification-service.example .env.notification-service
 # Edit with your Resend credentials
 ```
 
-**For detailed configuration:** See the [Configuration Guide](Configuration.md) for environment variables and production
+**For detailed configuration:** See the [Configuration Guide](Configuration) for environment variables and production
 setup.
 
----
+## 👨‍💻 Contributing
+
+We welcome contributions to BankApp Auth! Whether you're fixing bugs, improving documentation, or proposing new
+features, your input is valuable.
+
+### Getting Started
+
+1. **Fork the repository** on GitHub
+2. **Clone your fork** locally:
+   ```bash
+   git clone https://github.com/your-username/bankapp-auth.git
+   cd bankapp-auth
+   ```
+3. **Create a feature branch** from `main`:
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+
+### Development Guidelines
+
+#### Code Style & Architecture
+
+This project follows strict architectural principles. Please ensure your contributions align with these patterns:
+
+**Use Case Pattern:**
+
+```java
+
+@UseCase  // Always annotate use case classes
+public class InitiateVerificationUseCase {
+    // Pure business logic - no framework dependencies
+    // Use cases should only depend on:
+    // - Domain models (value objects, entities)
+    // - Port interfaces (repositories, notifiers)
+
+    private final EmailVerificationPort emailVerificationPort;
+    private final OtpGeneratorPort otpGeneratorPort;
+
+    public VerificationSession execute(EmailAddress email) {
+        // Business logic here
+    }
+}
+```
+
+**Dependency Injection:**
+
+```java
+
+@RequiredArgsConstructor  // Preferred over @Autowired
+public class VerificationController {
+    // Constructor injection via Lombok
+    private final InitiateVerificationUseCase initiateVerificationUseCase;
+    private final CompleteVerificationUseCase completeVerificationUseCase;
+
+    // Controllers should be thin - delegate to use cases
+}
+```
+
+**Value Objects for Type Safety:**
+
+```java
+// Always use domain value objects instead of primitives
+// This prevents bugs and makes the code self-documenting
+
+// ❌ Bad - Primitive obsession
+public void sendEmail(String email) {
+}
+
+// ✅ Good - Type-safe value object
+public void sendEmail(EmailAddress email) {
+}
+
+// Usage
+EmailAddress email = EmailAddress.of("user@example.com");
+UserId userId = UserId.of(UUID.randomUUID());
+```
+
+**Port-Adapter Separation:**
+
+```java
+// Port (in domain layer) - defines what we need
+public interface UserRepositoryPort {
+    Optional<User> findByEmail(EmailAddress email);
+
+    User save(User user);
+}
+
+// Adapter (in infrastructure layer) - implements how
+@Repository
+@RequiredArgsConstructor
+public class JpaUserRepositoryAdapter implements UserRepositoryPort {
+    private final SpringDataUserRepository springDataRepository;
+
+    @Override
+    public Optional<User> findByEmail(EmailAddress email) {
+        // Map between domain and persistence models
+    }
+}
+```
+
+#### Testing Requirements
+
+- **Unit tests** for all use cases (test business logic in isolation)
+- **Integration tests** for adapters (test infrastructure components)
+- **No test dependencies on framework** in domain layer tests
+- Aim for >80% code coverage on business logic
+
+Example test structure:
+
+```java
+
+@Test
+void shouldGenerateOtpWhenEmailIsValid() {
+    // Given
+    EmailAddress email = EmailAddress.of("user@example.com");
+
+    // When
+    VerificationSession session = useCase.execute(email);
+
+    // Then
+    assertThat(session.getEmail()).isEqualTo(email);
+    verify(otpGeneratorPort).generate();
+}
+```
+
+#### Commit Guidelines
+
+- Use clear, descriptive commit messages
+- Follow conventional commits format:
+  ```
+  feat: add credential list to authentication ceremony
+  fix: resolve OTP validation timing attack
+  docs: update WebAuthn configuration guide
+  refactor: extract OTP generation to separate port
+  ```
+
+### Submitting Changes
+
+1. **Push to your fork:**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+
+2. **Create a Pull Request** on GitHub with:
+    - Clear description of changes
+    - Reference to related issues (if applicable)
+    - Screenshots for UI changes
+    - Test coverage report
+
+3. **Respond to review feedback** - Maintainers will review your PR and may request changes
+
+### Code Review Process
+
+All submissions require review. We'll look for:
+
+- Adherence to Hexagonal Architecture principles
+- Proper separation of concerns
+- Test coverage
+- Documentation updates
+- No breaking changes to existing APIs
+
+### Areas for Contribution
+
+Looking for ideas? Here are areas that need work:
+
+- 🔧 **JWT Implementation** - Complete the `TokenIssuingPort` with production OAuth2/JWT
+- 📱 **iOS Compatibility** - Debug and fix WebAuthn on Safari/iOS
+- 🧪 **Test Coverage** - Add integration tests for edge cases
+- 📖 **Documentation** - Expand use case examples and architecture diagrams
+- 🔒 **Security Hardening** - Implement rate limiting, audit logging
+- 🌍 **Internationalization** - Add multi-language support for error messages
+
+### Questions?
+
+- Open an issue for bugs or feature requests
+- Start a discussion for architectural questions
+- Check existing issues before creating new ones
+
+## 🔗 Related Projects
+
+BankApp Auth is part of a larger ecosystem. Here are related repositories that work together:
+
+### Notification Service
+
+**Repository:** [BankApp Notification Service](https://github.com/BankApp-project/notification-service)
+
+The notification service consumes OTP events from RabbitMQ and handles email delivery. It integrates with email
+providers (like Resend) to send verification codes to users.
+
+**Integration Details:**
+
+- Consumes messages from `otp-notification-queue`
+- Processes `OtpNotification` events with email and OTP data
+- See the [Notification Integration Guide](Notification-Integration) for complete setup
+
+**Quick Start:**
+
+```bash
+# Use the example notification service
+cd docker
+cp .env.notification-service.example .env.notification-service
+# Add your Resend API key
+docker compose up notification-service
+```
+
+### Frontend Application
+
+**Repository:** [BankApp Auth Frontend](https://github.com/BankApp-project/bankapp-auth-frontend)
+
+The user-facing web interface built with vanilla JavaScript. Provides the UI for:
+
+- Email verification flow
+- WebAuthn registration and authentication
+- Session management
+
+**Live Demo:** [https://auth.bankapp.online/](https://auth.bankapp.online/)
+
+**Key Features:**
+
+- Pure JavaScript (no framework dependencies)
+- WebAuthn/FIDO2 browser API integration
+- Responsive design for desktop and mobile
+
+### Integration Architecture
+
+```mermaid
+flowchart LR
+    User([User]) --> Frontend[Frontend App]
+    Frontend --> Auth[Auth Service]
+    Auth --> RabbitMQ[(RabbitMQ)]
+    RabbitMQ --> Notification[Notification Service]
+    Notification --> Email[Email Provider]
+    Auth --> PostgreSQL[(PostgreSQL)]
+    Auth --> Redis[(Redis)]
+```
+
+### Building Your Own Integration
+
+Want to integrate BankApp Auth into your own project? The service provides:
+
+- **RESTful API** - Standard HTTP endpoints for all authentication flows
+- **Event-driven notifications** - RabbitMQ integration for extensibility
+- **Token issuance port** - Ready for your custom authorization implementation
+- **Docker Compose** - Easy local development setup
+
+See the [API Documentation](https://auth.bankapp.online/api) and [Configuration Guide](Configuration) to get started.
 
 ## ⚠️ Project Status
 
 ### Current Status
 
-✅ **Production-ready** for demonstration and portfolio purposes
-✅ **Live deployment** available at [auth.bankapp.online](https://auth.bankapp.online/)
-✅ **Core functionality** complete and tested
+This is a **demonstration project** showcasing modern authentication architecture and security practices. While the
+codebase follows production-quality standards and best practices, it requires additional hardening before deployment in
+a production banking environment.
+
+**What's Complete:**
+
+- ✅ Full authentication flows (email verification, WebAuthn registration/login)
+- ✅ Hexagonal architecture with proper separation of concerns
+- ✅ Live deployment at [auth.bankapp.online](https://auth.bankapp.online/) for hands-on testing
+- ✅ Core security implementations (BCrypt, WebAuthn, secure OTP generation)
+- ✅ Comprehensive documentation and API specifications
+
+**What This Project Demonstrates:**
+
+- Modern passwordless authentication implementation
+- Clean architecture principles in a real-world context
+- Spring Boot 3.5 with virtual threads
+- Event-driven design with RabbitMQ
+- Professional development practices and code quality
 
 ### Planned Enhancements
 
@@ -284,3 +635,80 @@ Current setup uses `createNonStrictWebAuthnRegistrationManager()` for developmen
 - [ ] Audit logging for security events
 - [ ] Regular security dependency updates
 - [ ] Penetration testing
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+
+### What This Means
+
+You are free to:
+
+- ✅ Use this software commercially
+- ✅ Modify and distribute
+- ✅ Use privately
+- ✅ Sublicense
+
+Under the conditions:
+
+- 📋 Include the original copyright notice
+- 📋 Include the MIT License text
+
+**Full License Text:** See the [LICENSE](../LICENSE) file in the repository root.
+
+### Third-Party Licenses
+
+This project uses several open-source libraries. Key dependencies and their licenses:
+
+- **Spring Framework** - Apache License 2.0
+- **WebAuthn4J** - Apache License 2.0
+- **PostgreSQL JDBC Driver** - BSD License
+- **Lombok** - MIT License
+
+For a complete list, see the project's `pom.xml` dependencies.
+
+---
+
+## 📚 Complete Documentation Index
+
+### Quick Start
+
+- [Home](Home) - This comprehensive overview
+- [Getting Started](#getting-started) - Local development setup
+- [Configuration Guide](Configuration) - Environment variables and deployment
+
+### Architecture & Implementation
+
+- [Implementation Details](Implementation-Details) - Deep dive into Hexagonal Architecture
+- [Architecture Benefits](#key-architectural-benefits) - Why this design matters
+- [Tech Stack](#core-technologies) - Complete technology breakdown
+
+### API Reference
+
+- [Swagger UI](https://auth.bankapp.online/api) - Interactive API documentation
+- [Quick Reference](#api-documentation) - Endpoint summary table
+
+### Use Cases
+
+- [Initiate Verification](Use-Case-Initiate-Verification) - Email verification flow
+- [Complete Verification](Use-Case-Complete-Verification) - OTP validation
+- [Initiate Authentication](Use-Case-Initiate-Authentication) - WebAuthn ceremony start
+- [Complete Authentication](Use-Case-Complete-Authentication) - WebAuthn verification
+- [Complete Registration](Use-Case-Complete-Registration) - Passkey registration
+
+### Integration & Development
+
+- [Notification Integration](Notification-Integration) - RabbitMQ messaging setup
+- [Contributing Guidelines](#contributing) - How to contribute
+- [Related Projects](#related-projects) - Ecosystem overview
+- [Development Guidelines](#development-guidelines) - Code patterns and best practices
+
+### Reference
+
+- [Security Considerations](#security-considerations) - Security architecture
+- [Production Checklist](#production-hardening-checklist) - Deployment readiness
+- [License Information](#license) - MIT License details
+
+---
+
+**Questions or suggestions?** Open an issue on GitHub or check the [Contributing Guidelines](#contributing)!
