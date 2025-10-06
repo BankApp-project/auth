@@ -100,7 +100,7 @@ F --> G[✅ Authenticated]
 
 - Docker & Docker Compose
 - Git
-- **External notification service** (see [Notification Integration Guide](../../wiki/Notification-Integration.md))
+- **External notification service** (see [Notification Integration Guide](../../wiki/Notification-Integration))
 
 ### Running Locally
 
@@ -128,7 +128,7 @@ F --> G[✅ Authenticated]
 
 > **Note:** This service publishes OTP events to RabbitMQ. You'll need to implement or run a notification service to
 > consume these events and deliver emails. See
-> the [Notification Integration Guide](../../wiki/Notification-Integration.md) for RabbitMQ queue details and message
+> the [Notification Integration Guide](../../wiki/Notification-Integration) for RabbitMQ queue details and message
 > schemas.
 
 **Optional: Using the example notification service**
@@ -142,7 +142,7 @@ cp .env.notification-service.example .env.notification-service
 
 **Configuration:**
 For detailed environment variables and production configuration, see
-the [Wiki Configuration Guide](../../wiki/Configuration.md).
+the [Wiki Configuration Guide](../../wiki/Configuration).
 
 ---
 
@@ -156,7 +156,7 @@ the [Wiki Configuration Guide](../../wiki/Configuration.md).
 | `/api/authentication/complete` | POST   | Complete WebAuthn and get authorization tokens          |
 | `/api/registration/complete`   | POST   | Finalize user registration and get authorization tokens |
 
-**Full API documentation:** See [API Reference](../../wiki/API-Reference.md) for request/response schemas and examples.
+**Full API documentation:** See [API Reference](../../wiki/API-Reference) for request/response schemas and examples.
 
 ---
 
@@ -250,12 +250,12 @@ Current setup uses `createNonStrictWebAuthnRegistrationManager()` for developmen
 
 For comprehensive technical documentation, visit our wiki:
 
-- **[📖 Wiki Home](../../wiki/Home.md)** - Service overview and getting started
-- **[🔧 Implementation Details](../../wiki/Implementation-Details.md)** - Architecture deep dive
+- **[📖 Wiki Home](../../wiki/Home)** - Service overview and getting started
+- **[🔧 Implementation Details](../../wiki/Implementation-Details)** - Architecture deep dive
 - **[📋 Use Cases](../../wiki/)** - Detailed use case documentation
-- **[⚙️ Configuration Guide](../../wiki/Configuration.md)** - Environment and deployment setup
-- **[🔌 API Reference](../../wiki/API-Reference.md)** - Complete endpoint documentation
-- **[📧 Notification Integration](../../wiki/Notification-Integration.md)** - RabbitMQ messaging and external
+- **[⚙️ Configuration Guide](../../wiki/Configuration)** - Environment and deployment setup
+- **[🔌 API Reference](../../wiki/API-Reference)** - Complete endpoint documentation
+- **[📧 Notification Integration](../../wiki/Notification-Integration)** - RabbitMQ messaging and external
   notification service setup
 
 ### Development Guidelines
@@ -339,9 +339,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🔗 Related Projects
 
 - **External Notification Service Required** -
-  See [Notification Integration Guide](../../wiki/Notification-Integration.md) for implementation details
+  See [Notification Integration Guide](../../wiki/Notification-Integration) for implementation details
 - **[BankApp Frontend](https://github.com/YOUR_USERNAME/bankapp-frontend)** - Vanilla JavaScript user interface
 
 ---
 
-**Questions?** Check the [Wiki](../../wiki/Home.md) or open an issue!
+**Questions?** Check the [Wiki](../../wiki/Home) or open an issue!
