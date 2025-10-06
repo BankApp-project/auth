@@ -90,8 +90,8 @@ app:
     publisher:
       notifications:
         otp:
-          exchange: notifications.commands.v1.exchange
-          routing-key: send.otp.email
+          exchange: ${NOTIFICATIONS_OTP_EXCHANGE:notifications.commands.v1.exchange}
+          routing-key: ${NOTIFICATIONS_OTP_ROUTING_KEY:send.otp.email}
 
 logging:
   level:
