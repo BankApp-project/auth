@@ -146,7 +146,16 @@ the [Wiki Configuration Guide](../../wiki/Configuration).
 
 ---
 
-## 📝 API Endpoints
+## 📝 API Documentation
+
+### Interactive API Explorer
+
+**[🔗 Live Swagger Documentation](https://auth.bankapp.online/api)**
+
+Explore the complete API specification with interactive request/response examples, schema definitions, and the ability
+to test endpoints directly in your browser.
+
+### Quick Reference
 
 | Endpoint                       | Method | Description                                             |
 |--------------------------------|--------|---------------------------------------------------------|
@@ -156,7 +165,8 @@ the [Wiki Configuration Guide](../../wiki/Configuration).
 | `/api/authentication/complete` | POST   | Complete WebAuthn and get authorization tokens          |
 | `/api/registration/complete`   | POST   | Finalize user registration and get authorization tokens |
 
-**Full API documentation:** See [API Reference](../../wiki/API-Reference) for request/response schemas and examples.
+For detailed request/response schemas, authentication requirements, and example payloads, visit
+the [Swagger UI](https://auth.bankapp.online/api).
 
 ---
 
@@ -254,7 +264,8 @@ For comprehensive technical documentation, visit our wiki:
 - **[🔧 Implementation Details](../../wiki/Implementation-Details)** - Architecture deep dive
 - **[📋 Use Cases](../../wiki/)** - Detailed use case documentation
 - **[⚙️ Configuration Guide](../../wiki/Configuration)** - Environment and deployment setup
-- **[🔌 API Reference](../../wiki/API-Reference)** - Complete endpoint documentation
+- **[🔌 API Documentation](https://auth.bankapp.online/api)** - Interactive Swagger UI with complete endpoint
+  specifications
 - **[📧 Notification Integration](../../wiki/Notification-Integration)** - RabbitMQ messaging and external
   notification service setup
 
@@ -338,9 +349,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🔗 Related Projects
 
-- **External Notification Service Required** -
+- **[Notification Service](https://github.com/BankApp-project/notification-service)** -
   See [Notification Integration Guide](../../wiki/Notification-Integration) for implementation details
-- **[BankApp Frontend](https://github.com/YOUR_USERNAME/bankapp-frontend)** - Vanilla JavaScript user interface
+- **[BankApp Frontend](https://github.com/BankApp-project/bankapp-auth-frontend)** - Vanilla JavaScript user interface
 
 ---
 
