@@ -28,9 +28,9 @@ services:
     networks:
       - bankapp-test
     env_file:
-      - "docker/.env.docker"
+      - ".env"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME} -d ${POSTGRES_DB}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -43,7 +43,7 @@ services:
     networks:
       - bankapp-test
     env_file:
-      - "docker/.env.docker"
+      - ".env"
     healthcheck:
       test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
       interval: 10s
@@ -60,7 +60,7 @@ services:
     networks:
       - bankapp-test
     env_file:
-      - "docker/.env.docker"
+      - ".env"
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "node_health_check" ]
       interval: 10s
