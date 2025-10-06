@@ -1,36 +1,78 @@
 # 🏦 BankApp Authentication Service
 
-> Modern, secure WebAuthn-based authentication microservice built with Spring Boot 4 and Hexagonal Architecture.
+> Modern, secure passwordless authentication microservice built with Spring Boot and Hexagonal Architecture
 
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/)
 [![WebAuthn](https://img.shields.io/badge/WebAuthn-FIDO2-blue.svg)](https://webauthn.guide/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue.svg)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-Cache-red.svg)](https://redis.io/)
+[![RabbitMQ](https://img.shields.io/badge/RabbitMQ-Messaging-orange.svg)](https://www.rabbitmq.com/)
 
-## 🚀 Quick Start
+## 🌐 Live Demo
 
-### Prerequisites
+**Try it out:** [https://auth.bankapp.online/](https://auth.bankapp.online/)
 
-- Java 25
-- Maven 3.9/4.0+
-- PostgreSQL 15+
-- Redis 7+
-- Docker & Docker Compose (optional)
+Experience passwordless authentication with WebAuthn/FIDO2 using your device's biometrics or hardware security keys.
 
-### 🐳 Docker Quick Start
+> **Note:** Works on desktop (Windows, macOS, Linux) and Android devices. iPhone compatibility issue currently under
+> investigation.
 
-//placeholder
+---
 
-## 🎯 What Does This Service Do?
+## 📖 Overview
 
-BankApp Auth provides **passwordless authentication** using modern WebAuthn/FIDO2 standards:
+BankApp Auth is a production-ready authentication microservice that demonstrates modern security practices and clean
+architecture principles. It provides **passwordless authentication** using WebAuthn/FIDO2 standards, eliminating
+traditional password vulnerabilities while delivering a seamless user experience.
 
-- 📧 **Email Verification**: OTP-based user verification
-- 🔐 **WebAuthn Authentication**: Biometric and hardware key support
-- 📱 **Multi-Device Support**: Smartphone, desktop, and hardware authenticators
-- 🎫 **JWT Token Management**: Secure token issuance and validation
-- 🔔 **Event-Driven Notifications**: Asynchronous messaging via RabbitMQ
+**Core Capabilities:**
+
+- 📧 **Email-based verification** with secure OTP delivery
+- 🔐 **Passwordless authentication** via WebAuthn/FIDO2
+- 📱 **Multi-device support** - biometrics, security keys, and platform authenticators
+- 🔔 **Event-driven architecture** with asynchronous messaging
+- 🎫 **Token issuance interface** ready for JWT implementation
+
+---
+
+## ✨ Key Features & Technical Highlights
+
+### Architecture & Design
+
+- **Hexagonal Architecture (Ports & Adapters)** - Clean separation between business logic and infrastructure, enabling
+  high testability and technology independence
+- **Domain-Driven Design** - Value objects, aggregates, and use cases that model the authentication domain
+- **Event-driven communication** - RabbitMQ-based async messaging for scalability
+
+### Security Implementation
+
+- **WebAuthn/FIDO2 Compliance** - Industry-standard passwordless authentication with public key cryptography
+- **Industry-standard BCrypt password hashing** via Spring Security
+- **Defense in depth** - Input validation, CORS policies, and comprehensive security headers
+- **Authorization token port** - Clean abstraction ready for OAuth2/JWT authorization implementation
+
+### Modern Tech Stack
+
+- **Virtual Threads (Java 21+)** - High-concurrency request handling with minimal resource overhead
+- **Redis-based session management** - Fast, distributed session storage with TTL expiration
+- **PostgreSQL + Flyway** - Versioned database migrations and ACID compliance
+- **12-Factor App Design** - Cloud-native principles with externalized configuration and stateless processes
+- **Docker Compose orchestration** - Multi-container deployment with infrastructure as code
+
+---
+
+## 🏗️ Architecture
+
+Built with **Hexagonal Architecture** (Ports & Adapters) for maintainability and testability.
+
+**Benefits:**
+
+- 🧪 **High testability** - Business logic tested without infrastructure dependencies
+- 🔄 **Technology independence** - Swap databases or frameworks without touching core logic
+- 📦 **Clear boundaries** - Explicit separation between layers prevents coupling
+
+---
 
 ## 📊 Authentication Flows
 
@@ -45,65 +87,184 @@ F --> G[✅ Authenticated]
 ```
 
 **Supported Flows:**
-- `Email Verification → WebAuthn Registration` (New Users)
-- `WebAuthn Authentication` (Existing Users)
-- `Email Verification → WebAuthn Authentication` (Alternative)
 
-## 🏗️ Architecture
+1. **New User Registration**: Email Verification → WebAuthn Registration → Authorization Token Issuance
+2. **Existing User Login**: WebAuthn Authentication → Authorization Token Issuance
+3. **Alternative Flow**: Email Verification → WebAuthn Authentication
 
-Built with **Hexagonal Architecture** (Ports & Adapters):
-- **Clean separation** between business logic and infrastructure
-- **Technology independence** - easily swap databases or frameworks
-- **High testability** with mocked adapters and pure domain logic
+---
 
-### Tech Stack
-- **Framework**: Spring Boot 4 with Virtual Threads
-- **Database**: PostgreSQL + Spring Data JPA
-- **Database versioning**: Flyway
-- **Cache**: Redis with TTL-based session management
-- **Messaging**: RabbitMQ (AMQP)
-- **Authentication**: WebAuthn4J (FIDO2)
-- **Authorization**: Spring OAuth2 Authorization Server
+## 🐳 Quick Start
 
-## 🛠️ Configuration
+### Prerequisites
 
-### Required Environment Variables
+- Docker & Docker Compose
+- Git
+- **External notification service** (see [Notification Integration Guide](../../wiki/Notification-Integration.md))
 
-//placeholder
+### Running Locally
 
-### RSA Key Configuration
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd bankapp-auth
+   ```
 
-//placeholder
+2. **Start all services**
+   ```bash
+   docker compose up -d
+   ```
+
+3. **Access the application**
+    - API: `http://localhost:8080`
+    - PostgreSQL: `localhost:5432`
+    - Redis: `localhost:6379`
+    - RabbitMQ Management: `http://localhost:15672`
+
+4. **Health check**
+   ```bash
+   curl http://localhost:8080/actuator/health
+   ```
+
+> **Note:** This service publishes OTP events to RabbitMQ. You'll need to implement or run a notification service to
+> consume these events and deliver emails. See
+> the [Notification Integration Guide](../../wiki/Notification-Integration.md) for RabbitMQ queue details and message
+> schemas.
+
+**Optional: Using the example notification service**
+
+```bash
+# Uncomment notification service in docker-compose.yml
+cd docker
+cp .env.notification-service.example .env.notification-service
+# Edit with your Resend credentials
+```
+
+**Configuration:**
+For detailed environment variables and production configuration, see
+the [Wiki Configuration Guide](../../wiki/Configuration.md).
+
+---
 
 ## 📝 API Endpoints
 
-| Endpoint                       | Method | Description                               |
-|--------------------------------|--------|-------------------------------------------|
-| `/api/verification/initiate`   | POST   | Start email verification with OTP         |
-| `/api/verification/complete`   | POST   | Validate OTP and create session           |
-| `/api/authentication/initiate` | GET    | Begin WebAuthn authentication             |
-| `/api/authentication/complete` | POST   | Complete WebAuthn and get tokens          |
-| `/api/registration/complete`   | POST   | Finalize user registration and get tokens |
+| Endpoint                       | Method | Description                                             |
+|--------------------------------|--------|---------------------------------------------------------|
+| `/api/verification/initiate`   | POST   | Start email verification with OTP                       |
+| `/api/verification/complete`   | POST   | Validate OTP and create session                         |
+| `/api/authentication/initiate` | GET    | Begin WebAuthn authentication                           |
+| `/api/authentication/complete` | POST   | Complete WebAuthn and get authorization tokens          |
+| `/api/registration/complete`   | POST   | Finalize user registration and get authorization tokens |
 
-## 🧪 Testing
+**Full API documentation:** See [API Reference](../../wiki/API-Reference.md) for request/response schemas and examples.
 
-//placeholder
+---
+
+## ⚠️ Project Status & Limitations
+
+### Current Status
+
+✅ **Production-ready** for demonstration and portfolio purposes  
+✅ **Live deployment** available at [auth.bankapp.online](https://auth.bankapp.online/)  
+✅ **Core functionality** complete and tested
+
+### Planned Enhancements
+
+- 🔧 **JWT authorization tokens** - Production implementation of `TokenIssuingPort` for OAuth2/JWT token generation
+    - Architectural decision: Monolithic (within service) vs Microservice (separate authorization server)
+    - Port-based design allows either approach without breaking changes
+
+### Known Issues
+
+#### iPhone Compatibility
+
+- **Issue:** WebAuthn flow not functioning correctly on iOS devices (Safari)
+- **Status:** Under investigation - may be frontend implementation or data format incompatibility
+- **Workaround:** Use desktop (Windows, macOS, Linux) or Android devices
+
+### Production Hardening Checklist
+
+If deploying this service in a production environment, implement the following enhancements:
+
+#### 1. WebAuthn Credential Management
+
+Current implementation uses a simplified approach. For production:
+
+- **Add `allowCredentials` list** to `PublicKeyCredentialRequestOptions`
+    - Include user's registered credential IDs for better UX and security
+
+- **Update `Session` object** in `CompleteVerificationUseCase`
+    - Store user's credential data in session for authentication ceremony
+
+- **Modify `InitiateAuthenticationUseCase`**
+    - Fetch user data and associated credentials from database
+    - Populate session with credential list
+
+> 💡 The `Session` DTO already includes a `credentialId: List<UUID>` field to support this functionality.
+
+#### 2. Strict WebAuthn Configuration
+
+Current setup uses `createNonStrictWebAuthnRegistrationManager()` for development ease.
+
+**Production requires:**
+
+- Configure strict `WebAuthnRegistrationManager` with:
+    - Attestation statement verifiers
+    - Certificate path validators
+    - Trust anchor configuration
+    - Full certificate chain validation
+
+#### 3. Additional Security Hardening
+
+- [ ] Rate limiting on authentication endpoints
+- [ ] Advanced monitoring and alerting
+- [ ] Audit logging for security events
+- [ ] Regular security dependency updates
+- [ ] Penetration testing
+
+---
+
+## 🔐 Security Considerations
+
+### Authentication Security
+
+- **WebAuthn FIDO2** - Phishing-resistant, public key cryptography
+- **Secure OTP generation** - Cryptographically secure random number generation
+- **BCrypt password hashing** - Spring Security standard implementation
+
+### Authorization Token Security
+
+- **Authorization token abstraction** - Port-based design ready for OAuth2/JWT authorization implementation
+- **Security considerations** - Architecture supports RSA-signed JWTs, short-lived access tokens, and refresh token
+  rotation
+
+### Infrastructure Security
+
+- **Input validation** - Comprehensive sanitization of all inputs
+- **CORS policies** - Configured for production domain restrictions
+- **Secure session management** - Redis-based with TTL expiration
+
+---
 
 ## 📚 Documentation
 
-For detailed technical documentation:
+For comprehensive technical documentation, visit our wiki:
 
-- **[📖 Wiki Home](wiki/Home.md)** - Comprehensive service overview
-- **[🔧 Implementation Details](wiki/Implementation-Details.md)** - Architecture deep dive
-- **[📋 Use Cases](wiki/)** - Detailed use case documentation
+- **[📖 Wiki Home](../../wiki/Home.md)** - Service overview and getting started
+- **[🔧 Implementation Details](../../wiki/Implementation-Details.md)** - Architecture deep dive
+- **[📋 Use Cases](../../wiki/)** - Detailed use case documentation
+- **[⚙️ Configuration Guide](../../wiki/Configuration.md)** - Environment and deployment setup
+- **[🔌 API Reference](../../wiki/API-Reference.md)** - Complete endpoint documentation
+- **[📧 Notification Integration](../../wiki/Notification-Integration.md)** - RabbitMQ messaging and external
+  notification service setup
 
 ### Development Guidelines
 
-#### Use Case Implementation
+#### Use Case Pattern
 ```java
 @UseCase  // Always annotate use case classes
 public class InitiateVerificationUseCase {
-    // Implementation
+    // Pure business logic - no framework dependencies
 }
 ```
 
@@ -115,72 +276,72 @@ public class VerificationController {
 }
 ```
 
-#### Email Handling
+#### Value Objects
 ```java
-// Always use EmailAddress VO for type safety
+// Always use domain VOs for type safety
 EmailAddress email = EmailAddress.of("user@example.com");
 ```
 
-## 🔐 Security Considerations
+---
 
-### Development vs Production
+## 🛠️ Tech Stack
 
-**⚠️ Current Setup (Development)**
-- Uses `WebAuthnRegistrationManager.createNonStrictWebAuthnRegistrationManager()`
-- Bypasses attestation verification for easier development
+### Core Framework
 
-**🛡️ Production Requirements**
-- Configure strict `WebAuthnRegistrationManager` with:
-    - Attestation statement verifiers
-    - Certificate path validators
-    - Trust anchor configuration
-    - Certificate chain validation
+- **Spring Boot 3.5** - Latest stable release with autoconfiguration
+- **Java 21** - Virtual threads for high-concurrency workloads
+- **Maven 3.9+** - Dependency management and build tool
 
-### Security Features
-- **WebAuthn FIDO2 Compliance**: Industry-standard passwordless authentication
-- **Secure OTP Generation**: Cryptographically secure random numbers
-- **BCrypt Password Hashing**: Industry-standard hashing algorithm
-- **JWT Security**: RSA-signed tokens with proper expiration
-- **OAuth2 Authorization Server**: Spring Security integration for token validation
-- **Input Validation**: Comprehensive request sanitization
+### Persistence & Caching
 
-## 🔧 Troubleshooting
+- **PostgreSQL 15+** - Primary data store with ACID guarantees
+- **Spring Data JPA** - ORM with repository pattern
+- **Flyway** - Database migration versioning
+- **Redis 7+** - Distributed session cache with TTL
 
-### Login Issues for Registered Users
+### Security & Authentication
 
-**Problem**: Users may experience UX difficulties when attempting to log in after registration.
+- **Spring Security** - Comprehensive security framework
+- **WebAuthn4J** - FIDO2/WebAuthn implementation library
+- **Token Issuance Port** - Ready for OAuth2/JWT integration
 
-**Solution**: If login issues occur, implement credential-based authentication by:
+### Messaging & Integration
 
-1. **Add `allowCredentials` list** to `PublicKeyCredentialRequestOptions` containing the user's registered credentials
-2. **Update `Session` object** in `CompleteVerificationUseCase` to include the user's credential data
-3. **Modify `InitiateAuthenticationUseCase`** to:
-    - Fetch user data and their associated credential list
-    - Pass this information to the `Session` object
+- **RabbitMQ** - AMQP message broker for async events
+- **Spring AMQP** - RabbitMQ integration
 
-**Implementation Notes**:
+### DevOps & Deployment
 
-- The `Session` DTO already contains a `credentialId` field of type `List<UUID>` to support this functionality
-- This approach ensures WebAuthn ceremonies can reference specific user credentials, improving authentication
-  reliability
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Follow the coding guidelines in this README
-4. Add tests for new functionality
-5. Submit a pull request
-
-## 📄 License
-
-This project is under MIT license.
-
-## 🔗 Related Projects
-
-- **BankApp Gateway** - API gateway and routing
-- **BankApp Notification** - Notification service
+- **Docker** - Containerization
+- **Docker Compose** - Multi-container orchestration
+- **Spring Boot Actuator** - Health checks and metrics
 
 ---
 
-*Need help? Check our [Wiki](wiki/Home.md) or open an issue!*
+## 🤝 Contributing
+
+Contributions are welcome! This project is open for collaboration.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Follow the development guidelines above
+4. Add tests for new functionality
+5. Submit a pull request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 🔗 Related Projects
+
+- **External Notification Service Required** -
+  See [Notification Integration Guide](../../wiki/Notification-Integration.md) for implementation details
+- **[BankApp Frontend](https://github.com/YOUR_USERNAME/bankapp-frontend)** - Vanilla JavaScript user interface
+
+---
+
+**Questions?** Check the [Wiki](../../wiki/Home.md) or open an issue!

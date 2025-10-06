@@ -1,7 +1,16 @@
 # BankApp Authentication Service - Wiki
 
 Welcome to the comprehensive documentation for the **BankApp Authentication Service**, a modern, secure, and scalable
-authentication microservice built with Spring Boot 4 and designed around **Hexagonal Architecture** principles.
+authentication microservice built with Spring Boot 3.5 and designed around **Hexagonal Architecture** principles.
+
+## 🌐 Live Demo
+
+**Try it out:** [https://auth.bankapp.online/](https://auth.bankapp.online/)
+
+Experience passwordless authentication with WebAuthn/FIDO2 using your device's biometrics or hardware security keys.
+
+> **Note:** Works on desktop (Windows, macOS, Linux) and Android devices. iPhone compatibility issue currently under
+> investigation.
 
 ## 🏛️ What is BankApp Auth?
 
@@ -24,23 +33,23 @@ This service implements **Hexagonal Architecture (Ports and Adapters)** pattern,
 ### Key Architectural Features
 
 - **Domain-Driven Design**: Clear domain models with strict separation from persistence
-- **Spring Boot 4 with Virtual Threads**: High-performance, scalable I/O operations
+- **Spring Boot 3.5 with Virtual Threads**: High-performance, scalable I/O operations
 - **Type-Safe Configuration**: Immutable configuration records with `@ConfigurationProperties`
 - **Comprehensive Error Handling**: Custom exceptions with proper error boundaries
-- **Security-First Approach**: WebAuthn attestation, secure OTP generation, and JWT validation
+- **Security-First Approach**: WebAuthn attestation, secure OTP generation, and token issuance abstraction
 
 ## 🔧 Core Technologies
 
-| Component          | Technology                   | Purpose                                           |
-|--------------------|------------------------------|---------------------------------------------------|
-| **Framework**      | Spring Boot 4                | Application foundation with virtual threads       |
-| **Architecture**   | Hexagonal (Clean)            | Business logic isolation                          |
-| **Database**       | PostgreSQL + JPA             | Persistent data storage                           |
-| **Cache/Sessions** | Redis                        | High-performance temporary storage with TTL       |
-| **Messaging**      | RabbitMQ (AMQP)              | Asynchronous event processing                     |
-| **Authentication** | WebAuthn4J                   | FIDO2/WebAuthn implementation                     |
-| **Authorization**  | OAuth2 Authorization Server  | JWT token validation and authorization            |
-| **Security**       | BCrypt + RSA + Secure Random | Password hashing, JWT signing, and OTP generation |
+| Component          | Technology             | Purpose                                     |
+|--------------------|------------------------|---------------------------------------------|
+| **Framework**      | Spring Boot 3.5        | Application foundation with virtual threads |
+| **Architecture**   | Hexagonal (Clean)      | Business logic isolation                    |
+| **Database**       | PostgreSQL + JPA       | Persistent data storage                     |
+| **Cache/Sessions** | Redis                  | High-performance temporary storage with TTL |
+| **Messaging**      | RabbitMQ (AMQP)        | Asynchronous event processing               |
+| **Authentication** | WebAuthn4J             | FIDO2/WebAuthn implementation               |
+| **Authorization**  | Token Issuance Port    | Ready for OAuth2/JWT implementation         |
+| **Security**       | BCrypt + Secure Random | Password hashing and OTP generation         |
 
 ## 📋 Use Cases
 
@@ -156,16 +165,122 @@ Each use case has dedicated documentation with:
 
 This service implements multiple layers of security:
 
-- **WebAuthn Attestation**: Configurable authenticator verification
-- **Secure OTP Generation**: CSPRNG-based one-time passwords
-- **JWT Security**: Signed tokens with proper expiration
-- **Input Validation**: Comprehensive request validation and sanitization
-- **Error Handling**: No information leakage in error responses
+### Authentication Security
+
+- **WebAuthn FIDO2**: Phishing-resistant, public key cryptography
+- **Secure OTP generation**: Cryptographically secure random number generation
+- **BCrypt password hashing**: Spring Security standard implementation
+
+### Authorization Token Security
+
+- **Authorization token abstraction**: Port-based design ready for OAuth2/JWT authorization implementation
+- **Security considerations**: Architecture supports RSA-signed JWTs, short-lived access tokens, and refresh token
+  rotation
+
+### Infrastructure Security
+
+- **Input validation**: Comprehensive sanitization of all inputs
+- **CORS policies**: Configured for production domain restrictions
+- **Secure session management**: Redis-based with TTL expiration
 
 ## 🏃‍♂️ Getting Started
 
-// this section will be updated when service will be prod-ready!
+### Prerequisites
+
+- Docker & Docker Compose
+- Git
+- **External notification service** (see [Notification Integration Guide](Notification-Integration.md))
+
+### Running Locally
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd bankapp-auth
+   ```
+
+2. **Start all services**
+   ```bash
+   docker compose up -d
+   ```
+
+3. **Access the application**
+    - API: `http://localhost:8080`
+    - PostgreSQL: `localhost:5432`
+    - Redis: `localhost:6379`
+    - RabbitMQ Management: `http://localhost:15672`
+
+4. **Health check**
+   ```bash
+   curl http://localhost:8080/actuator/health
+   ```
+
+> **Note:** This service publishes OTP events to RabbitMQ. You'll need to implement or run a notification service to
+> consume these events and deliver emails. See the [Notification Integration Guide](Notification-Integration.md) for
+> RabbitMQ queue details and message schemas.
+
+**Optional: Using the example notification service**
+
+```bash
+# Uncomment notification service in docker-compose.yml
+cd docker
+cp .env.notification-service.example .env.notification-service
+# Edit with your Resend credentials
+```
+
+**For detailed configuration:** See the [Configuration Guide](Configuration.md) for environment variables and production
+setup.
 
 ---
 
-*This wiki is automatically maintained and synchronized with code changes. Last updated: 2025-09-16*
+## ⚠️ Project Status
+
+### Current Status
+
+✅ **Production-ready** for demonstration and portfolio purposes
+✅ **Live deployment** available at [auth.bankapp.online](https://auth.bankapp.online/)
+✅ **Core functionality** complete and tested
+
+### Planned Enhancements
+
+- 🔧 **JWT authorization tokens** - Production implementation of `TokenIssuingPort` for OAuth2/JWT token generation
+    - Architectural decision: Monolithic (within service) vs Microservice (separate authorization server)
+    - Port-based design allows either approach without breaking changes
+
+### Known Issues
+
+#### iPhone Compatibility
+
+- **Issue:** WebAuthn flow not functioning correctly on iOS devices (Safari)
+- **Status:** Under investigation - may be frontend implementation or data format incompatibility
+- **Workaround:** Use desktop (Windows, macOS, Linux) or Android devices
+
+### Production Hardening Checklist
+
+For production deployment, implement these enhancements:
+
+#### 1. WebAuthn Credential Management
+
+- **Add `allowCredentials` list** to `PublicKeyCredentialRequestOptions`
+- **Update `Session` object** in `CompleteVerificationUseCase` to store credential data
+- **Modify `InitiateAuthenticationUseCase`** to fetch and populate credential lists
+
+> 💡 The `Session` DTO already includes a `credentialId: List<UUID>` field to support this functionality.
+
+#### 2. Strict WebAuthn Configuration
+
+Current setup uses `createNonStrictWebAuthnRegistrationManager()` for development ease.
+
+**Production requires:**
+
+- Configure strict `WebAuthnRegistrationManager` with attestation verifiers
+- Implement certificate path validators and trust anchor configuration
+- Enable full certificate chain validation
+
+#### 3. Additional Security Hardening
+
+- [ ] Rate limiting on authentication endpoints
+- [ ] Advanced monitoring and alerting
+- [ ] Audit logging for security events
+- [ ] Regular security dependency updates
+- [ ] Penetration testing
