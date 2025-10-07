@@ -271,49 +271,133 @@ This service implements multiple layers of security:
 - **CORS policies**: Configured for production domain restrictions
 - **Secure session management**: Redis-based with TTL expiration
 
-## 🏃‍♂️ Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Docker & Docker Compose
-- Git
-- **External notification service** (see [Notification Integration Guide](Notification-Integration))
+- **Docker** with Compose support
+- **Git**
+- **Available ports**: 8080, 5432, 6379, 5672, 15672
+
+> **Note:** If these ports are already in use, you can customize them in `compose.yml` and `docker/.env.docker`
 
 ### Running Locally
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd bankapp-auth
-   ```
-
-2. **Start all services**
-   ```bash
-   docker compose up -d
-   ```
-
-3. **Access the application**
-    - API: `http://localhost:8080`
-    - PostgreSQL: `localhost:5432`
-    - Redis: `localhost:6379`
-    - RabbitMQ Management: `http://localhost:15672`
-
-4. **Health check**
-   ```bash
-   curl http://localhost:8080/actuator/health
-   ```
-
-> **Note:** This service publishes OTP events to RabbitMQ. You'll need to implement or run a notification service to
-> consume these events and deliver emails. See the [Notification Integration Guide](Notification-Integration) for RabbitMQ
-> queue details and message schemas.
-
-**Optional: Using the example notification service**
+**1. Clone the repository**
 
 ```bash
-# Uncomment notification service in docker-compose.yml
-cd docker
-cp .env.notification-service.example .env.notification-service
-# Edit with your Resend credentials
+git clone https://github.com/BankApp-project/auth.git
+cd auth
+```
+
+**2. Start all services**
+
+```bash
+docker compose up -d
+```
+
+This will start:
+
+- **BankApp Auth Service** (Spring Boot application)
+- **PostgreSQL** (database with automatic schema migration via Flyway)
+- **Redis** (session and cache storage)
+- **RabbitMQ** (message broker for OTP events)
+
+**3. Verify the service is running**
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "UP"
+}
+```
+
+### Access Points
+
+| Service                 | URL                                       | Credentials       |
+|-------------------------|-------------------------------------------|-------------------|
+| **API Base**            | `http://localhost:8080/api`               | -                 |
+| **API Documentation**   | `http://localhost:8080/api`               | -                 |
+| **RabbitMQ Management** | `http://localhost:15672` (localhost only) | `guest` / `guest` |
+
+> **Configuration Note:** The `/api` context path is configured via the `CONTEXT_PATH` environment variable in
+`docker/.env.docker`
+
+### Testing the API
+
+Once running, you can explore the API using the interactive Swagger UI at `http://localhost:8080/api` or test endpoints
+directly:
+
+```bash
+# Example: Initiate email verification
+curl -X POST http://localhost:8080/api/v1/auth/verification/initiate \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com"}'
+```
+
+### Troubleshooting
+
+**Port already in use**
+
+If you see errors like `bind: address already in use`, you have two options:
+
+1. **Stop the conflicting service** using that port
+2. **Change the port mapping** in `compose.yml`:
+
+```yaml
+# Example: Change API port from 8080 to 8081
+services:
+  auth-service:
+    ports:
+      - "8081:8080"  # host:container
+```
+
+Then update the port in `docker/.env.docker` if needed and restart:
+```bash
+docker compose down
+docker compose up -d
+```
+
+### Email Delivery Setup
+
+> **Important:** This service publishes OTP events to RabbitMQ but does not send emails directly.
+
+**For different scenarios:**
+
+- **Quick testing** - Enable console logging (see below)
+- **Production setup** - Use BankApp's Notification Service or implement your own
+
+See the [Notification Integration Guide](https://github.com/BankApp-project/auth/wiki/Notification-Integration) for
+detailed setup instructions.
+
+**Testing with console logging:**
+
+For local testing without a notification service, enable OTP logging to console by setting the following in
+`docker/.env.docker`:
+
+```properties
+APP_OTP_CONSOLE_ENABLED=true
+```
+
+> **Note:** Console logging is disabled in `prod` profile for security. Ensure your active profile is **not** `prod` (
+> default is `dev` in the provided configuration).
+
+After updating the configuration, restart the services:
+
+```bash
+docker compose down
+docker compose up -d
+```
+
+OTP codes will now appear in the application logs:
+
+```bash
+docker compose logs -f auth-service
 ```
 
 **For detailed configuration:** See the [Configuration Guide](Configuration) for environment variables and production

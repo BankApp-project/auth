@@ -71,33 +71,95 @@ flowchart TD
 
 ---
 
-## 🚀 Quick Start
+# 🚀 Quick Start
 
-### Prerequisites
-- Docker & Docker Compose
-- Git
+## Prerequisites
 
-### Running Locally
+- **Docker** with Compose support
+- **Git**
+- **Available ports**: 8080, 5432, 6379, 5672, 15672
+
+> Port conflicts? Customize them in `compose.yml` and `docker/.env.docker`
+
+## Installation
+
+**1. Clone and navigate to the repository**
 
 ```bash
-# Clone and start
-git clone <repository-url>
-cd bankapp-auth
-docker compose up -d
-
-# Verify
-curl http://localhost:8080/actuator/health
+git clone https://github.com/BankApp-project/auth.git
+cd auth
 ```
 
-**Access points:**
-- API Base: `http://localhost:8080/api`
-- API Documentation: `http://localhost:8080/api` (Swagger UI)
-- RabbitMQ Management: `http://localhost:15672`
+**2. Start all services**
+```bash
+docker compose up -d
+```
 
-> **Note:** The `/api` context path is configured via the `CONTEXT_PATH` environment variable in `.env`
+This starts the Auth Service, PostgreSQL, Redis, and RabbitMQ with automatic schema migration.
 
-> **Important:** This service publishes OTP events to RabbitMQ. For email delivery, you need a notification service consuming these events. See the [Notification Integration Guide](https://github.com/BankApp-project/auth/wiki/Notification-Integration).
+**3. Verify the service**
 
+```bash
+curl http://localhost:8080/actuator/health
+# Expected: {"status":"UP"}
+```
+
+## Access Points
+
+| Service                 | URL                       | Credentials       |
+|-------------------------|---------------------------|-------------------|
+| **API Documentation**   | http://localhost:8080/api | -                 |
+| **API Base**            | http://localhost:8080/api | -                 |
+| **RabbitMQ Management** | http://localhost:15672    | `guest` / `guest` |
+
+## Quick API Test
+
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/verification/initiate \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com"}'
+```
+
+## Email Setup (Important!)
+
+**This service publishes OTP events but doesn't send emails directly.**
+
+**For local testing**, enable console logging in `docker/.env.docker`:
+
+```properties
+APP_OTP_CONSOLE_ENABLED=true
+```
+
+Then view OTP codes in logs:
+
+```bash
+docker compose logs -f auth-service
+```
+
+**For production**, integrate
+the [BankApp Notification Service](https://github.com/BankApp-project/auth/wiki/Notification-Integration) or implement
+your own consumer.
+
+## Troubleshooting
+
+**Port conflicts?** Change port mappings in `compose.yml`:
+
+```yaml
+services:
+  auth-service:
+    ports:
+      - "8081:8080"  # Changed from 8080 to 8081
+```
+
+Then restart:
+
+```bash
+docker compose down && docker compose up -d
+```
+
+---
+
+📖 **Need more details?** Check the [full documentation](https://github.com/BankApp-project/auth/wiki)
 ---
 
 ## 📚 Documentation
