@@ -284,37 +284,30 @@ This service implements multiple layers of security:
 ### Running Locally
 
 **1. Clone the repository**
-
 ```bash
 git clone https://github.com/BankApp-project/auth.git
 cd auth
 ```
 
 **2. Start all services**
-
 ```bash
 docker compose up -d
 ```
 
 This will start:
-
 - **BankApp Auth Service** (Spring Boot application)
 - **PostgreSQL** (database with automatic schema migration via Flyway)
 - **Redis** (session and cache storage)
 - **RabbitMQ** (message broker for OTP events)
 
 **3. Verify the service is running**
-
 ```bash
 curl http://localhost:8080/actuator/health
 ```
 
 Expected response:
-
 ```json
-{
-  "status": "UP"
-}
+{"status":"UP"}
 ```
 
 ### Access Points
@@ -339,6 +332,14 @@ curl -X POST http://localhost:8080/api/v1/auth/verification/initiate \
   -H "Content-Type: application/json" \
   -d '{"email": "test@example.com"}'
 ```
+
+**Testing the complete authentication flow:**
+
+To test the full user experience with WebAuthn/FIDO2, use the BankApp frontend application:
+
+👉 **[BankApp Auth Frontend](https://github.com/BankApp-project/bankapp-auth-frontend)**
+
+The frontend provides a complete UI for testing registration and authentication flows with your local backend.
 
 ### Troubleshooting
 
@@ -368,7 +369,6 @@ docker compose up -d
 > **Important:** This service publishes OTP events to RabbitMQ but does not send emails directly.
 
 **For different scenarios:**
-
 - **Quick testing** - Enable console logging (see below)
 - **Production setup** - Use BankApp's Notification Service or implement your own
 
@@ -388,20 +388,16 @@ APP_OTP_CONSOLE_ENABLED=true
 > default is `dev` in the provided configuration).
 
 After updating the configuration, restart the services:
-
 ```bash
 docker compose down
 docker compose up -d
 ```
 
 OTP codes will now appear in the application logs:
-
 ```bash
 docker compose logs -f auth-service
 ```
 
-**For detailed configuration:** See the [Configuration Guide](Configuration) for environment variables and production
-setup.
 
 ## 👨‍💻 Contributing
 

@@ -71,9 +71,9 @@ flowchart TD
 
 ---
 
-# 🚀 Quick Start
+## 🚀 Quick Start
 
-## Prerequisites
+### Prerequisites
 
 - **Docker** with Compose support
 - **Git**
@@ -81,10 +81,9 @@ flowchart TD
 
 > Port conflicts? Customize them in `compose.yml` and `docker/.env.docker`
 
-## Installation
+### Installation
 
 **1. Clone and navigate to the repository**
-
 ```bash
 git clone https://github.com/BankApp-project/auth.git
 cd auth
@@ -98,13 +97,12 @@ docker compose up -d
 This starts the Auth Service, PostgreSQL, Redis, and RabbitMQ with automatic schema migration.
 
 **3. Verify the service**
-
 ```bash
 curl http://localhost:8080/actuator/health
 # Expected: {"status":"UP"}
 ```
 
-## Access Points
+### Access Points
 
 | Service                 | URL                       | Credentials       |
 |-------------------------|---------------------------|-------------------|
@@ -112,26 +110,33 @@ curl http://localhost:8080/actuator/health
 | **API Base**            | http://localhost:8080/api | -                 |
 | **RabbitMQ Management** | http://localhost:15672    | `guest` / `guest` |
 
-## Quick API Test
+### Testing Options
 
+**Quick API Test (cURL):**
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/verification/initiate \
   -H "Content-Type: application/json" \
   -d '{"email": "test@example.com"}'
 ```
 
-## Email Setup (Important!)
+**Complete Authentication Flow (Recommended):**
+
+To test the full user experience with WebAuthn/FIDO2, use the BankApp frontend application:
+
+👉 **[BankApp Auth Frontend](https://github.com/BankApp-project/bankapp-auth-frontend)**
+
+The frontend provides a complete UI for testing registration and authentication flows with your local backend.
+
+### Email Setup (Important!)
 
 **This service publishes OTP events but doesn't send emails directly.**
 
 **For local testing**, enable console logging in `docker/.env.docker`:
-
 ```properties
 APP_OTP_CONSOLE_ENABLED=true
 ```
 
 Then view OTP codes in logs:
-
 ```bash
 docker compose logs -f auth-service
 ```
@@ -140,10 +145,9 @@ docker compose logs -f auth-service
 the [BankApp Notification Service](https://github.com/BankApp-project/auth/wiki/Notification-Integration) or implement
 your own consumer.
 
-## Troubleshooting
+### Troubleshooting
 
 **Port conflicts?** Change port mappings in `compose.yml`:
-
 ```yaml
 services:
   auth-service:
@@ -152,7 +156,6 @@ services:
 ```
 
 Then restart:
-
 ```bash
 docker compose down && docker compose up -d
 ```
@@ -160,7 +163,6 @@ docker compose down && docker compose up -d
 ---
 
 📖 **Need more details?** Check the [full documentation](https://github.com/BankApp-project/auth/wiki)
----
 
 ## 📚 Documentation
 
