@@ -70,6 +70,7 @@ app:
     otp:
       size: ${APP_OTP_SIZE:6}
       ttl: ${APP_OTP_TTL:120s}
+      console-enabled: ${APP_OTP_CONSOLE_ENABLED:false}
     challenge:
       length: ${APP_CHALLENGE_LEN_BYTES:32}
       ttl: ${APP_CHALLENGE_TTL:60s}
