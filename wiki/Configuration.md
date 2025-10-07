@@ -65,6 +65,7 @@ CONTEXT_PATH=/api
 | `SPRING_PROFILES_ACTIVE`         | Set the active Spring profile                                    | `dev`                | `dev`, `test`, `prod` |
 | `SPRING_THREADS_VIRTUAL_ENABLED` | Enable or disable Java 21+ Virtual Threads for handling requests | `true`               | `true`, `false`       |
 | `SPRING_DOCKER_COMPOSE_FILE`     | Path to the docker compose file for integration testing          | `./compose-test.yml` | `./compose-test.yml`  |
+| `SPRING_DOCKER_COMPOSE_ENABLED`  | Enable or disable Docker Compose auto-loading                    | `true`               | `true`, `false`       |
 
 **Example:**
 
@@ -72,6 +73,7 @@ CONTEXT_PATH=/api
 SPRING_PROFILES_ACTIVE=dev
 SPRING_THREADS_VIRTUAL_ENABLED=true
 SPRING_DOCKER_COMPOSE_FILE=./compose-test.yml
+SPRING_DOCKER_COMPOSE_ENABLED=true
 ```
 
 **Notes:**
@@ -182,6 +184,26 @@ RABBIT_MQ_PASSWORD=guest
 See [Implementation Details - Asynchronous Notifications](Implementation-Details.md#4-feature-asynchronous-notifications-rabbitmq)
 for architecture details
 
+#### AMQP Publisher Configuration
+
+| Variable                        | Description                                     | Default                              | Example                              |
+|---------------------------------|-------------------------------------------------|--------------------------------------|--------------------------------------|
+| `NOTIFICATIONS_OTP_EXCHANGE`    | RabbitMQ exchange for OTP notification commands | `notifications.commands.v1.exchange` | `notifications.commands.v1.exchange` |
+| `NOTIFICATIONS_OTP_ROUTING_KEY` | Routing key for sending OTP emails              | `send.otp.email`                     | `send.otp.email`                     |
+
+**Example:**
+
+```bash
+NOTIFICATIONS_OTP_EXCHANGE=notifications.commands.v1.exchange
+NOTIFICATIONS_OTP_ROUTING_KEY=send.otp.email
+```
+
+**Usage:**
+
+- Configures where the authentication service publishes OTP notification commands
+- The exchange and routing key must match the configuration expected by your notification service
+- Allows flexibility for different messaging topologies (e.g., separate exchanges per environment)
+
 ---
 
 ### Caching (Redis) Configuration
@@ -264,22 +286,31 @@ APP_UV_FLAG=true
 
 #### OTP (One-Time Password) Configuration
 
-| Variable       | Description                                | Default | Example                 |
-|----------------|--------------------------------------------|---------|-------------------------|
-| `APP_OTP_SIZE` | The number of digits for the generated OTP | `6`     | `6`, `8`                |
-| `APP_OTP_TTL`  | Time-to-live for an OTP                    | `5m`    | `60s`, `2m`, `5m`, `1h` |
+| Variable                  | Description                                               | Default | Example                 |
+|---------------------------|-----------------------------------------------------------|---------|-------------------------|
+| `APP_OTP_SIZE`            | The number of digits for the generated OTP                | `6`     | `6`, `8`                |
+| `APP_OTP_TTL`             | Time-to-live for an OTP                                   | `5m`    | `60s`, `2m`, `5m`, `1h` |
+| `APP_OTP_CONSOLE_ENABLED` | Enable or disable logging OTP codes to console (dev only) | `false` | `true`, `false`         |
 
 **Example:**
 
 ```bash
 APP_OTP_SIZE=6
 APP_OTP_TTL=5m
+APP_OTP_CONSOLE_ENABLED=false
 ```
 
 **Best Practices:**
 
 - **Size**: 6 digits is standard and user-friendly
 - **TTL**: Balance security (shorter is better) with user experience (longer is more convenient)
+
+**Console Logging (Development Only):**
+
+- **Purpose**: Allows viewing OTP codes in application logs during local development without a notification service
+- **Security**: Automatically disabled in `prod` profile via `@Profile("!prod")` annotation
+- **Usage**: Set to `true` in development environments for easier testing
+- **Warning**: Never enable in production - OTP codes would be exposed in logs
 
 #### Challenge Configuration
 
