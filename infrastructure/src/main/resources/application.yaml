@@ -46,6 +46,7 @@ spring:
   docker:
     compose:
       file: ${SPRING_DOCKER_COMPOSE_FILE:./compose-test.yml}
+      enabled: ${SPRING_DOCKER_COMPOSE_ENABLED:true}
 
 # App Config
 app:

@@ -2,8 +2,6 @@
 # compose.yml
 
 networks:
-  bankapp-test:
-    external: true
   bankapp-auth:
     driver: bridge
 
@@ -16,7 +14,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - bankapp-test
+      - bankapp-auth
     depends_on:
       postgres-db:
         condition: service_healthy
@@ -37,7 +35,7 @@ services:
   #    image: bankappproject/bankapp-notification-service
   #    container_name: auth-bankapp-notification-service
   #    networks:
-  #      - bankapp-test
+  #      - bankapp-auth
   #    env_file:
   #      - "docker/.env.docker.notification-service"
   #    depends_on:
@@ -53,7 +51,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - bankapp-test
+      - bankapp-auth
     env_file:
       - "docker/.env.docker"
     healthcheck:
@@ -69,7 +67,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - bankapp-test
+      - bankapp-auth
     env_file:
       - "docker/.env.docker"
     healthcheck:
@@ -85,7 +83,7 @@ services:
       - "5672:5672"
       - "127.0.0.1:15672:15672"
     networks:
-      - bankapp-test
+      - bankapp-auth
     env_file:
       - "docker/.env.docker"
     healthcheck:
