@@ -66,7 +66,7 @@ Understanding why Hexagonal Architecture matters for this authentication service
 | Component        | Technology                | Purpose                                              |
 |------------------|---------------------------|------------------------------------------------------|
 | **Framework**    | Spring Boot 3.5           | Application foundation with autoconfiguration        |
-| **Runtime**      | Java 21 + Virtual Threads | High-concurrency I/O handling with minimal overhead  |
+| **Runtime**      | Java 25 + Virtual Threads | High-concurrency I/O handling with minimal overhead  |
 | **Build Tool**   | Maven 3.9+                | Dependency management and project build              |
 | **Architecture** | Hexagonal (Clean)         | Business logic isolation and technology independence |
 
