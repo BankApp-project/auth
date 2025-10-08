@@ -600,7 +600,6 @@ docker compose up notification-service
 The user-facing web interface built with vanilla JavaScript. Provides the UI for:
 - Email verification flow
 - WebAuthn registration and authentication
-- Session management
 
 **Live Demo:** [https://auth.bankapp.online/](https://auth.bankapp.online/)
 
