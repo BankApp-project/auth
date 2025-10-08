@@ -580,8 +580,8 @@ The notification service consumes OTP events from RabbitMQ and handles email del
 providers (like Resend) to send verification codes to users.
 
 **Integration Details:**
-- Consumes messages from `otp-notification-queue`
-- Processes `OtpNotification` events with email and OTP data
+
+- Processes `EmailNotificationPayload` events with email and OTP data
 - See the [Notification Integration Guide](Notification-Integration) for complete setup
 
 **Quick Start:**
