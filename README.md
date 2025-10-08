@@ -188,7 +188,7 @@ See [Project Status & Limitations](https://github.com/BankApp-project/auth/wiki#
 
 ## 🛠️ Tech Stack
 
-**Core:** Spring Boot 3.5, Java 21, Maven  
+**Core:** Spring Boot 3.5, Java 25, Maven  
 **Data:** PostgreSQL, Redis, Spring Data JPA, Flyway  
 **Security:** Spring Security, WebAuthn4J  
 **Messaging:** RabbitMQ, Spring AMQP  
