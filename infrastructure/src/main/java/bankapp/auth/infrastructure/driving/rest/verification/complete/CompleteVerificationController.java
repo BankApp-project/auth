@@ -35,7 +35,7 @@ public class CompleteVerificationController {
 
     private final CompleteVerificationUseCase completeVerificationUseCase;
 
-    @PostMapping("/complete/email/")
+    @PostMapping("/complete/email")
     @Operation(
             summary = "Complete Email Verification with OTP",
             description = """
