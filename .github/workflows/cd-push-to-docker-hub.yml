@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - '/core/**'
-      - '/infrastructure/**'
+      - 'core/**'
+      - 'infrastructure/**'
 
 jobs:
   build-and-push:

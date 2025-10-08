@@ -105,4 +105,3 @@ logging:
 springdoc:
   swagger-ui:
     use-root-path: ${SWAGGER_ON_ROOT:false}
-
