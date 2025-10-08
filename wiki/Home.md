@@ -639,7 +639,7 @@ See the [API Documentation](https://auth.bankapp.online/api) and [Configuration 
 
 This is a **demonstration project** showcasing modern authentication architecture and security practices. While the
 codebase follows production-quality standards and best practices, it requires additional hardening before deployment in
-a production banking environment.
+a production environment.
 
 **What's Complete:**
 - ✅ Full authentication flows (email verification, WebAuthn registration/login)
