@@ -518,7 +518,7 @@ void shouldGenerateOtpWhenEmailIsValid() {
 #### Commit Guidelines
 
 - Use clear, descriptive commit messages
-- Follow conventional commits format:
+- Follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) format:
   ```
   feat: add credential list to authentication ceremony
   fix: resolve OTP validation timing attack
@@ -583,15 +583,6 @@ providers (like Resend) to send verification codes to users.
 
 - Processes `EmailNotificationPayload` events with email and OTP data
 - See the [Notification Integration Guide](Notification-Integration) for complete setup
-
-**Quick Start:**
-```bash
-# Use the example notification service
-cd docker
-cp .env.notification-service.example .env.notification-service
-# Add your Resend API key
-docker compose up notification-service
-```
 
 ### Frontend Application
 
