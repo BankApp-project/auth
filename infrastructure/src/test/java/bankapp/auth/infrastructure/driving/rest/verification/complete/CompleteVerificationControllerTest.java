@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SpringSecurityConfiguration.class)
 class CompleteVerificationControllerTest {
 
-    public static final String VERIFICATION_COMPLETE_ENDPOINT = "/verification/complete/email/";
+    public static final String VERIFICATION_COMPLETE_ENDPOINT = "/verification/complete/email";
 
     @Autowired
     private MockMvc mockMvc;

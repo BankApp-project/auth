@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional // Automatically rolls back database changes after each test
 public class CompleteVerificationIT implements WithPostgresContainer, WithRedisContainer {
 
-    private static final String VERIFICATION_COMPLETE_ENDPOINT = "/verification/complete/email/";
+    private static final String VERIFICATION_COMPLETE_ENDPOINT = "/verification/complete/email";
     private static final String DEFAULT_EMAIL = "test@bankapp.online";
     private static final String DEFAULT_OTP = "123456";
     private static final String INVALID_OTP = "654321";
