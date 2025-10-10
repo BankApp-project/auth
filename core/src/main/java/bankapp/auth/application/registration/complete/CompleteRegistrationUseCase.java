@@ -42,11 +42,11 @@ public class CompleteRegistrationUseCase {
 
     @TransactionalUseCase
     public AuthenticationGrant handle(@NonNull CompleteRegistrationCommand command) {
-        var challenge = getChallenge(command);
+        var session = getSession(command);
 
-        var credential = verifyAndExtractCredentialRecord(command, challenge);
+        var credential = verifyAndExtractPasskey(command, session);
 
-        saveCredentialRecord(credential);
+        savePasskey(credential);
 
         deleteSession(command.sessionId());
 
@@ -59,15 +59,15 @@ public class CompleteRegistrationUseCase {
         return new AuthenticationGrant(tokens);
     }
 
-    private Session getChallenge(CompleteRegistrationCommand command) {
-        var challenge = sessionRepository.load(command.sessionId());
-        if (challenge.isEmpty()) {
-            throw new CompleteRegistrationException("No such challenge with ID: " + command.sessionId());
+    private Session getSession(CompleteRegistrationCommand command) {
+        var sessionOptional = sessionRepository.load(command.sessionId());
+        if (sessionOptional.isEmpty()) {
+            throw new CompleteRegistrationException("No such session with ID: " + command.sessionId());
         }
-        return challenge.get();
+        return sessionOptional.get();
     }
 
-    private Passkey verifyAndExtractCredentialRecord(CompleteRegistrationCommand command, Session session) {
+    private Passkey verifyAndExtractPasskey(CompleteRegistrationCommand command, Session session) {
         Passkey credential;
         try {
             credential = passkeyVerificationPort.handleRegistration(command.RegistrationResponseJSON(), session);
@@ -78,7 +78,7 @@ public class CompleteRegistrationUseCase {
         return credential;
     }
 
-    private void saveCredentialRecord(Passkey credential) {
+    private void savePasskey(Passkey credential) {
         try {
             passkeyRepository.save(credential);
         } catch (CredentialAlreadyExistsException e) {
