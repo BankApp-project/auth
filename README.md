@@ -12,14 +12,14 @@
 
 Experience passwordless authentication with WebAuthn/FIDO2 using your device's biometrics or hardware security keys.
 
-> **Note:** Currently supports desktop (Windows, macOS, Linux) and Android. iOS compatibility under investigation.
+> ⚠️ Known Issue: Currently only supports Google Passkey Manager. Windows Hello, iOS/iCloud Keychain, and hardware security keys are temporarily incompatible due to credential ID storage limitations (fix in progress).
 
 ---
 
 ## 📖 What is BankApp Auth?
 
 A production-ready authentication microservice demonstrating modern security practices and clean architecture. Features **passwordless authentication** using WebAuthn/FIDO2, eliminating traditional password vulnerabilities.
-
+⚠️ Known Issue: Currently only supports Google Passkey Manager. Windows Hello and hardware security keys are temporarily incompatible due to credential ID storage limitations (fix in progress).
 **Key capabilities:**
 - 📧 Email-based verification with secure OTP
 - 🔐 Passwordless authentication via WebAuthn/FIDO2
