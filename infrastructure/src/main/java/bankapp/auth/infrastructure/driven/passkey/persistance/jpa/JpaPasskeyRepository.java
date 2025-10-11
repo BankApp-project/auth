@@ -16,5 +16,5 @@ public interface JpaPasskeyRepository extends JpaRepository<JpaPasskey, byte[]> 
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE JpaPasskey e SET e.signCount = :signCount WHERE e.id = :id")
-    void updateSignCount(@Param("id") UUID id, @Param("signCount") long signCount);
+    void updateSignCount(@Param("id") byte[] id, @Param("signCount") long signCount);
 }

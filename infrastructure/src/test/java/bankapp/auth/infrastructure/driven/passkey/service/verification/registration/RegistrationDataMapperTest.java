@@ -10,7 +10,6 @@ import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
 import com.webauthn4j.data.attestation.authenticator.COSEKey;
 import com.webauthn4j.data.extension.authenticator.AuthenticationExtensionsAuthenticatorOutputs;
 import com.webauthn4j.data.extension.authenticator.RegistrationExtensionAuthenticatorOutput;
-import com.webauthn4j.util.UUIDUtil;
 import org.junit.jupiter.api.*;
 
 import java.security.PublicKey;
@@ -51,7 +50,7 @@ class RegistrationDataMapperTest {
             Assertions.assertNotNull(registrationData.getAttestationObject());
             AttestedCredentialData attestedCredData = registrationData.getAttestationObject().getAuthenticatorData().getAttestedCredentialData();
             assertThat(attestedCredData).isNotNull();
-            assertThat(result.getId()).isEqualTo(UUIDUtil.fromBytes(attestedCredData.getCredentialId()));
+            assertThat(result.getId()).isEqualTo(attestedCredData.getCredentialId());
             assertThat(result.getUserHandle()).isEqualTo(userId);
             assertThat(result.getPublicKey()).isNotNull();
         }

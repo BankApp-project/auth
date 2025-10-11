@@ -3,10 +3,8 @@ package bankapp.auth.infrastructure.driven.passkey.service.verification.authenti
 import bankapp.auth.domain.model.enums.AuthenticatorTransport;
 import bankapp.auth.infrastructure.utils.TestPasskeyProvider;
 import com.webauthn4j.converter.util.ObjectConverter;
-import com.webauthn4j.util.UUIDUtil;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,8 +34,7 @@ class PasskeyToCredentialRecordMapperTest {
 
         // --- Assert Core Credential Data (using assertArrayEquals for byte arrays) ---
         assertNotNull(res.getAttestedCredentialData(), "AttestedCredentialData should not be null.");
-        //not ideal, TestDataUtil provides 32bytes long credentialId, and our Passkey has it as UUID (16 bytes), its workaround.
-        assertArrayEquals(UUIDUtil.convertUUIDToBytes(testPasskey.getId()), Arrays.copyOfRange(res.getAttestedCredentialData().getCredentialId(), 0, 16), "Credential ID should match.");
+        assertArrayEquals(testPasskey.getId(), res.getAttestedCredentialData().getCredentialId(), "Credential ID should match.");
 
         // Correctly compare the raw COSE public key bytes.
         // The `getPublicKey().getEncoded()` method returns a different format (X.509),

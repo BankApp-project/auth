@@ -7,6 +7,7 @@ import bankapp.auth.application.shared.port.out.dto.AuthenticationGrant;
 import bankapp.auth.infrastructure.crosscutting.config.SpringSecurityConfiguration;
 import bankapp.auth.infrastructure.driving.rest.shared.dto.AuthenticationGrantResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.f4b6a3.uuid.alt.GUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,7 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Objects;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -44,7 +45,7 @@ class CompleteAuthenticationControllerTest {
         // Given
         var sessionId = UUID.randomUUID().toString();
         var authRespJson = "someJSONblob";
-        var credentialId = UUID.randomUUID();
+        var credentialId = GUID.v7().toBytes();
         var request = new CompleteAuthenticationRequest(sessionId, authRespJson, credentialId);
         var requestJson = objectMapper.writeValueAsString(request);
 
@@ -69,7 +70,7 @@ class CompleteAuthenticationControllerTest {
         verify(completeAuthenticationUseCase).handle(argThat(command -> {
             boolean sessionIdMatches = command.sessionId().equals(requestedCommand.sessionId());
             boolean responseJsonMatches = command.AuthenticationResponseJSON().equals(requestedCommand.AuthenticationResponseJSON());
-            boolean credentialIdMatches = Objects.equals(command.credentialId(), requestedCommand.credentialId());
+            boolean credentialIdMatches = Arrays.equals(command.credentialId(), requestedCommand.credentialId());
 
             return sessionIdMatches && responseJsonMatches && credentialIdMatches;
         }));

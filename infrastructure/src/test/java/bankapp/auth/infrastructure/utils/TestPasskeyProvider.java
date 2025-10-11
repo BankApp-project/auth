@@ -22,7 +22,6 @@ import com.webauthn4j.test.TestAttestationUtil;
 import com.webauthn4j.test.TestDataUtil;
 import com.webauthn4j.util.ECUtil;
 import com.webauthn4j.util.MessageDigestUtil;
-import com.webauthn4j.util.UUIDUtil;
 import org.junit.jupiter.api.Assertions;
 
 import java.nio.ByteBuffer;
@@ -81,8 +80,6 @@ public class TestPasskeyProvider {
         Assertions.assertNotNull(attestedCredentialData);
         // Because of TestDataUtil impl of new data creation, it will always be 32x0's
         byte[] credentialIdBytes = attestedCredentialData.getCredentialId();
-        // Because UUID is 16 bytes long, it will be only first 16 0's
-        UUID credentialId = UUIDUtil.fromBytes(credentialIdBytes);
 
         Assertions.assertNotNull(attestedCredentialData.getCOSEKey().getPublicKey());
         byte[] publicKeyBytes = attestedCredentialData.getCOSEKey().getPublicKey().getEncoded();
@@ -94,7 +91,7 @@ public class TestPasskeyProvider {
 
         // STEP 5: Construct the final Passkey object.
         return new Passkey(
-                credentialId,
+                credentialIdBytes,
                 userId,
                 PublicKeyCredentialType.PUBLIC_KEY.getValue(), // "public-key"
                 publicKeyBytes,
@@ -165,7 +162,7 @@ public class TestPasskeyProvider {
 
         // STEP 8: Construct the final Passkey domain object.
         var passkey = new Passkey(
-                UUIDUtil.fromBytes(credentialIdBytes),
+                credentialIdBytes,
                 userId,
                 PublicKeyCredentialType.PUBLIC_KEY.getValue(),
                 publicKeyCoseBytes,

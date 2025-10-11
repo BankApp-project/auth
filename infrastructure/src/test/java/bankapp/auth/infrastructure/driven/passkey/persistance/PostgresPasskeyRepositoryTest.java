@@ -55,7 +55,7 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
 
     @Test
     void load_should_return_empty_optional_if_values_not_present() {
-        var res = repo.load(UUID.randomUUID());
+        var res = repo.load(GUID.v4().toBytes());
 
         assertThat(res).isEmpty();
     }
@@ -123,7 +123,7 @@ public class PostgresPasskeyRepositoryTest implements WithPostgresContainer {
 
     private Passkey createSampleRegistrationData(UUID userHandle) {
 
-        var credentialId = UUID.randomUUID();
+        var credentialId = GUID.v4().toBytes();
 
         var publicKey = GUID.v4().toBytes();
 

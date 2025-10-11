@@ -8,7 +8,6 @@ import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.shared.port.out.service.ChallengeGenerationPort;
-import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
@@ -123,6 +122,6 @@ public class CompleteRegistrationIT implements WithPostgresContainer, WithRedisC
     }
 
     private byte[] getCredentialId(Passkey passkey) {
-        return ByteArrayUtil.uuidToBytes(passkey.getId());
+        return passkey.getId();
     }
 }

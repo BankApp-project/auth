@@ -18,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -57,8 +56,8 @@ class AuthenticationParametersProviderTest {
                 getNormalisedTransports(passkey),
                 "Transports should match");
         assertArrayEquals(
-                ByteArrayUtil.uuidToBytes(passkey.getId()),
-                Arrays.copyOfRange(res.getAuthenticator().getAttestedCredentialData().getCredentialId(), 0, 16),
+                passkey.getId(),
+                res.getAuthenticator().getAttestedCredentialData().getCredentialId(),
                 "Credential ID should match");
         assertArrayEquals(
                 passkey.getPublicKey(),

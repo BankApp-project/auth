@@ -26,7 +26,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.UUID;
 
-import static bankapp.auth.application.shared.service.ByteArrayUtil.uuidToBytes;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,7 +73,7 @@ class PasskeyVerificationServiceTest {
         var authenticationResponseJSON = WebAuthnTestHelper.generateValidAuthenticationResponseJSON(
                 session.challenge().challenge(),
                 RP_ID,
-                uuidToBytes(passkeyInfo.passkey().getId()),
+                passkeyInfo.credentialIdBytes(),
                 maliciousKeyPair,
                 passkeyInfo.passkey().getSignCount()
         );

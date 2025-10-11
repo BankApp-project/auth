@@ -2,7 +2,6 @@ package bankapp.auth.infrastructure.driven.passkey.persistance;
 
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
-import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.driven.passkey.persistance.converters.JpaToEntityPasskeyMapper;
 import bankapp.auth.infrastructure.driven.passkey.persistance.jpa.JpaPasskey;
@@ -73,8 +72,6 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
     /// This method updates signCount
     @Override
     public void updateSignCount(Passkey updatedCredential) {
-        // Convert byte[] id to UUID for JPA query
-        UUID idAsUuid = ByteArrayUtil.bytesToUuid(updatedCredential.getId());
-        jpaPasskeyRepository.updateSignCount(idAsUuid, updatedCredential.getSignCount());
+        jpaPasskeyRepository.updateSignCount(updatedCredential.getId(), updatedCredential.getSignCount());
     }
 }

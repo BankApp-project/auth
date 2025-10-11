@@ -8,6 +8,7 @@ import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
+import com.github.f4b6a3.uuid.alt.GUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,8 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CredentialOptionsServiceLoginFlowTest {
 
@@ -33,7 +33,7 @@ public class CredentialOptionsServiceLoginFlowTest {
     private static final EmailAddress DEFAULT_EMAIL_ADDRESS = new EmailAddress("test@bankapp.online");
     private static final User DEFAULT_USER = User.createNew(DEFAULT_EMAIL_ADDRESS);
     private static final List<Passkey> DEFAULT_USER_CREDENTIALS = List.of(new Passkey(
-            UUID.randomUUID(),
+            GUID.v4().toBytes(),
             DEFAULT_USER.getId(),
             "public-key",
             "test-public-key".getBytes(),
@@ -103,8 +103,7 @@ public class CredentialOptionsServiceLoginFlowTest {
         var allowedCredentials = passkeyOptionsService.getPasskeyRequestOptions(DEFAULT_USER_CREDENTIALS, DEFAULT_SESSION).allowCredentials();
 
         assertNotNull(allowedCredentials);
-        var credentialIdBytes = ByteArrayUtil.bytesToUuid(allowedCredentials.getFirst().id());
-        assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getId(), credentialIdBytes);
+        assertArrayEquals(allowedCredentials.getFirst().id(), DEFAULT_USER_CREDENTIALS.getFirst().getId());
         assertEquals(DEFAULT_USER_CREDENTIALS.getFirst().getTransports(), allowedCredentials.getFirst().transports());
     }
 
