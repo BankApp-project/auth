@@ -13,7 +13,7 @@
 
     <properties>
         <!-- Centralized versions for all test dependencies -->
-        <junit.bom.version>5.13.4</junit.bom.version>
+        <junit.bom.version>6.0.0</junit.bom.version>
         <mockito.version>5.20.0</mockito.version>
         <assertj.version>3.27.6</assertj.version>
     </properties>
