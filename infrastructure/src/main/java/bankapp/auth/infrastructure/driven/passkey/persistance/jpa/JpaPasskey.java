@@ -41,7 +41,7 @@ public class JpaPasskey {
      */
     @Id
     @Column(name = "id", nullable = false, updatable = false, unique = true)
-    private UUID id;
+    private byte[] id;
 
     /**
      * Corresponding User ID
@@ -136,7 +136,7 @@ public class JpaPasskey {
      * Constructor to initialize all fields.
      */
     public JpaPasskey(
-            UUID id,
+            byte[] id,
             UUID userHandle,
             String type,
             byte[] publicKey,

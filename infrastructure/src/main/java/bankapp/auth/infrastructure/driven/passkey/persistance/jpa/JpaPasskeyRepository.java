@@ -11,7 +11,7 @@ import java.util.UUID;
 
 
 @Repository
-public interface JpaPasskeyRepository extends JpaRepository<JpaPasskey, UUID> {
+public interface JpaPasskeyRepository extends JpaRepository<JpaPasskey, byte[]> {
     List<JpaPasskey> findAllByUserHandle(UUID userHandle);
 
     @Modifying(clearAutomatically = true)

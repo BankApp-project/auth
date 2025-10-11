@@ -23,11 +23,8 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
 
     @Override
     public Optional<Passkey> load(byte[] credentialId) {
-        // Convert byte[] to UUID for JPA lookup
-        UUID credentialIdUuid = ByteArrayUtil.bytesToUuid(credentialId);
-
         // we should not fetch all the data from the repo. Only the needed one.
-        var jpaPasskeyOptional = jpaPasskeyRepository.findById(credentialIdUuid);
+        var jpaPasskeyOptional = jpaPasskeyRepository.findById(credentialId);
 
         if (jpaPasskeyOptional.isEmpty()) {
             return Optional.empty();
@@ -56,11 +53,9 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
     }
 
     private JpaPasskey mapToJpaPasskey(Passkey passkey) {
-        // Convert byte[] id to UUID for JPA entity
-        UUID idAsUuid = ByteArrayUtil.bytesToUuid(passkey.getId());
 
         return new JpaPasskey(
-                idAsUuid,
+                passkey.getId(),
                 passkey.getUserHandle(),
                 passkey.getType(),
                 passkey.getPublicKey(),

@@ -23,7 +23,7 @@ class JpaToEntityPasskeyMapperTest {
     }
 
     private JpaPasskey createSampleJpaPasskey() {
-        var credentialId = GUID.v7().toUUID();
+        var credentialId = createSampleCredentialId();
         var userId = GUID.v4().toUUID();
         return new JpaPasskey(
                 credentialId,
@@ -39,6 +39,10 @@ class JpaToEntityPasskeyMapperTest {
                 "attestation-object-bytes".getBytes(),
                 "client-data-json-bytes".getBytes()
         );
+    }
+
+    private byte[] createSampleCredentialId() {
+        return new byte[]{123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123, 123};
     }
 
     @Test

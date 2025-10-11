@@ -4,7 +4,6 @@ import bankapp.auth.application.shared.enums.UserVerificationRequirement;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialDescriptor;
 import bankapp.auth.application.shared.port.out.dto.PublicKeyCredentialRequestOptions;
 import bankapp.auth.application.shared.port.out.dto.Session;
-import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.annotations.Nullable;
 import bankapp.auth.infrastructure.driven.passkey.config.PasskeyRpProperties;
@@ -50,12 +49,12 @@ class PasskeyRequestOptionsAssembler {
         if (userCredentials == null) {
             return new ArrayList<>();
         }
+
         List<PublicKeyCredentialDescriptor> res = new ArrayList<>();
         for (var credential : userCredentials) {
-            var idBytes = ByteArrayUtil.uuidToBytes(credential.getId());
             var credentialDescriptor = new PublicKeyCredentialDescriptor(
                     PASSKEY_TYPE,
-                    idBytes,
+                    credential.getId(),
                     credential.getTransports()
             );
             res.add(credentialDescriptor);
