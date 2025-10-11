@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface PasskeyRepository {
 
-    Optional<Passkey> load(UUID credentialId);
+    Optional<Passkey> load(byte[] credentialId);
 
     /**
      * Loads credential records for the given ID.

@@ -7,7 +7,6 @@ import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
 import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
 import com.webauthn4j.data.extension.authenticator.AuthenticationExtensionsAuthenticatorOutputs;
 import com.webauthn4j.data.extension.authenticator.RegistrationExtensionAuthenticatorOutput;
-import com.webauthn4j.util.UUIDUtil;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,8 @@ public class RegistrationDataMapper {
 
         var authData = getAuthData(registrationData);
         var attCredData = getAttestedCredentialData(registrationData);
-        var credentialId = UUIDUtil.fromBytes(attCredData.getCredentialId());
+        // Keep credential ID as byte[] (raw format)
+        var credentialId = attCredData.getCredentialId();
 
         return new Passkey(
                 credentialId,

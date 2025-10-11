@@ -9,6 +9,7 @@ import bankapp.auth.application.shared.port.out.persistance.SessionRepository;
 import bankapp.auth.application.shared.port.out.persistance.UserRepository;
 import bankapp.auth.application.shared.port.out.service.PasskeyVerificationPort;
 import bankapp.auth.application.shared.port.out.service.TokenIssuingPort;
+import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import bankapp.auth.domain.model.vo.EmailAddress;
@@ -65,7 +66,7 @@ class CompleteRegistrationUseCaseTest {
 
         testUser = User.createNew(new EmailAddress("test@bankapp.online"));
         stubRegistrationData = new Passkey(
-                UUID.randomUUID(),
+                ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
                 testUser.getId(),
                 "public-key",
                 "public key array".getBytes(),

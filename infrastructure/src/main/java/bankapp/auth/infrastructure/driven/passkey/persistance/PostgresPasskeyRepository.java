@@ -2,6 +2,7 @@ package bankapp.auth.infrastructure.driven.passkey.persistance;
 
 import bankapp.auth.application.shared.exception.CredentialAlreadyExistsException;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
+import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.driven.passkey.persistance.converters.JpaToEntityPasskeyMapper;
 import bankapp.auth.infrastructure.driven.passkey.persistance.jpa.JpaPasskey;
@@ -21,9 +22,12 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
     private final JpaToEntityPasskeyMapper mapper;
 
     @Override
-    public Optional<Passkey> load(UUID credentialId) {
+    public Optional<Passkey> load(byte[] credentialId) {
+        // Convert byte[] to UUID for JPA lookup
+        UUID credentialIdUuid = ByteArrayUtil.bytesToUuid(credentialId);
+
         // we should not fetch all the data from the repo. Only the needed one.
-        var jpaPasskeyOptional = jpaPasskeyRepository.findById(credentialId);
+        var jpaPasskeyOptional = jpaPasskeyRepository.findById(credentialIdUuid);
 
         if (jpaPasskeyOptional.isEmpty()) {
             return Optional.empty();
@@ -52,8 +56,11 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
     }
 
     private JpaPasskey mapToJpaPasskey(Passkey passkey) {
+        // Convert byte[] id to UUID for JPA entity
+        UUID idAsUuid = ByteArrayUtil.bytesToUuid(passkey.getId());
+
         return new JpaPasskey(
-                passkey.getId(),
+                idAsUuid,
                 passkey.getUserHandle(),
                 passkey.getType(),
                 passkey.getPublicKey(),
@@ -71,6 +78,8 @@ public class PostgresPasskeyRepository implements PasskeyRepository {
     /// This method updates signCount
     @Override
     public void updateSignCount(Passkey updatedCredential) {
-        jpaPasskeyRepository.updateSignCount(updatedCredential.getId(), updatedCredential.getSignCount());
+        // Convert byte[] id to UUID for JPA query
+        UUID idAsUuid = ByteArrayUtil.bytesToUuid(updatedCredential.getId());
+        jpaPasskeyRepository.updateSignCount(idAsUuid, updatedCredential.getSignCount());
     }
 }

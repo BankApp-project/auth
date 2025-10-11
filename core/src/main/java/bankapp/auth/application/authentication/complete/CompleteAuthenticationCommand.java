@@ -5,7 +5,7 @@ import java.util.UUID;
 public record CompleteAuthenticationCommand(
         UUID sessionId,
     String AuthenticationResponseJSON,
-    UUID credentialId
+        byte[] credentialId
 ) {
     public CompleteAuthenticationCommand {
         if (AuthenticationResponseJSON == null || AuthenticationResponseJSON.isBlank()) {

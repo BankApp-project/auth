@@ -1,5 +1,6 @@
 package bankapp.auth.infrastructure.driven.passkey.persistance.converters;
 
+import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.infrastructure.driven.passkey.persistance.jpa.JpaPasskey;
 import org.springframework.stereotype.Component;
@@ -24,8 +25,11 @@ public class JpaToEntityPasskeyMapper {
             return null;
         }
 
+        // Convert UUID id to byte[] for domain model
+        byte[] idAsBytes = ByteArrayUtil.uuidToBytes(jpaPasskey.getId());
+
         return new Passkey(
-                jpaPasskey.getId(),
+                idAsBytes,
                 jpaPasskey.getUserHandle(),
                 jpaPasskey.getType(),
                 jpaPasskey.getPublicKey(),

@@ -5,6 +5,7 @@ import bankapp.auth.application.shared.port.out.dto.LoginResponse;
 import bankapp.auth.application.shared.port.out.persistance.PasskeyRepository;
 import bankapp.auth.application.shared.port.out.service.ChallengeGenerationPort;
 import bankapp.auth.application.shared.port.out.service.PasskeyOptionsPort;
+import bankapp.auth.application.shared.service.ByteArrayUtil;
 import bankapp.auth.domain.model.Passkey;
 import bankapp.auth.domain.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,7 +92,7 @@ public class CompleteVerificationLoginFlowTest extends CompleteVerificationBaseT
 
     private List<Passkey> getPasskeys() {
         var credential = new Passkey(
-                UUID.randomUUID(),
+                ByteArrayUtil.uuidToBytes(UUID.randomUUID()),
                 defaultUser.getId(),
                 "public-key",
                 new byte[]{5, 6, 7, 8}, // publicKey

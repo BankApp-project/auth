@@ -28,7 +28,7 @@ public class CompleteAuthenticationUseCaseTest {
     private final static Clock DEFAULT_CLOCK = Clock.systemUTC();
     private final static Instant DEFAULT_EXPIRATION_TIME = Instant.now(DEFAULT_CLOCK).plusSeconds(DEFAULT_TTL);
 
-    private UUID credentialId;
+    private byte[] credentialId;
     private Passkey passkey;
     private final static UUID DEFAULT_SESSION_ID = UUID.randomUUID();
     private final static UUID DEFAULT_USER_ID = UUID.randomUUID();
@@ -75,7 +75,7 @@ public class CompleteAuthenticationUseCaseTest {
     }
 
     private Passkey getCredentialRecord() {
-        var credentialId = UUID.randomUUID();
+        var credentialId = ByteArrayUtil.uuidToBytes(UUID.randomUUID());
         return new Passkey(
                 credentialId,
                 DEFAULT_USER_ID,
